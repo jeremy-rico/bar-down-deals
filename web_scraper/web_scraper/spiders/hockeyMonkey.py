@@ -28,6 +28,8 @@ class PureHockeySpider(scrapy.Spider):
                     "url": response.url,
                     "name": item.css("a.product-item-link::text").get().strip(),
                 }
+            next_links = response.css("div.pages a.action.next")
+            yield from response.follow_all(next_links, self.parse_category)
         else:
             subcategory_links = response.css("div.shop-by-category a")
             yield from response.follow_all(subcategory_links, self.parse_category)
