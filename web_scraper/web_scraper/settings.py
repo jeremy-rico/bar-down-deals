@@ -57,6 +57,7 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
+# NOTE: Rotating user agents fixed 460 response
 DOWNLOADER_MIDDLEWARES = {
     "web_scraper.middlewares.WebScraperDownloaderMiddleware": 543,
     "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
@@ -71,10 +72,11 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    "web_scraper.pipelines.WebScraperPipeline": 300,
-# }
-
+ITEM_PIPELINES = {
+    "scrapy.pipelines.images.ImagesPipeline": 1,
+    # "web_scraper.pipelines.WebScraperPipeline": 300,
+}
+IMAGES_STORE = "/home/ec2-user/Downloads/temp-images"
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 # AUTOTHROTTLE_ENABLED = True

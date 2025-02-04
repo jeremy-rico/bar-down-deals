@@ -1,9 +1,9 @@
-# from pathlib import Path
-
 import scrapy
 
+from web_scraper.items import Product, ProductLoader
 
-class PureHockeySpider(scrapy.Spider):
+
+class HockeyMonkeySpider(scrapy.Spider):
     name = "hockeyMonkey"
     start_urls = [
         "https://www.hockeymonkey.com/clearance.html",
@@ -11,25 +11,47 @@ class PureHockeySpider(scrapy.Spider):
 
     def parse(self, response):
         """
-        Follow the href to each category and call the parse_category method
+        Starting from the clearance categories page, explore each category link.
         """
         category_links = response.css("div.shop-by-category a.sub-category-image")
+        category_links = [category_links[0]]  # TODO: REMOVE
         yield from response.follow_all(category_links, self.parse_category)
 
     def parse_category(self, response):
         """
-        Some categories (like hockey sticks) have sub categories
+        Determine if there are subcategories.
         """
-        items = response.css("div.product-item-info")
-        if items:
-            items = [items[0]]
-            for item in items:
-                yield {
-                    "url": response.url,
-                    "name": item.css("a.product-item-link::text").get().strip(),
-                }
-            next_links = response.css("div.pages a.action.next")
-            yield from response.follow_all(next_links, self.parse_category)
-        else:
-            subcategory_links = response.css("div.shop-by-category a")
+        subcategory_links = response.css("div.shop-by-category a")
+        if subcategory_links:
             yield from response.follow_all(subcategory_links, self.parse_category)
+        else:
+            yield from self.parse_products(response)
+
+    def parse_products(self, response):
+        """
+        Scrape product details, following all next links
+        """
+
+        # NOTE: Update css values here
+        css_map = {
+            "url": "a.product-item-link::attr(href)",
+            "image_urls": "img.product-image-photo::attr(data-src)",
+            "title": "a.product-item-link::text",
+            "price": "span.normal-price.is-clearance span.price::text",
+            "originalPrice": "span.old-price span.price::text",
+        }
+
+        # Get all products on page
+        prods = response.css("div.product-item-info")
+        prods = [prods[0]]  # TODO: Remove this
+
+        # Extract product details
+        for prod in prods:
+            l = ProductLoader(item=Product(), selector=prod)
+            for field_name, css in css_map.items():
+                l.add_css(field_name, css)
+            l.add_value("store", "Hockey Monkey")
+            yield l.load_item()
+
+        next_links = response.css("div.pages a.action.next")
+        yield from response.follow_all(next_links, self.parse_category)
