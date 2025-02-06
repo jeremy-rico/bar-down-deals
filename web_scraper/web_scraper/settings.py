@@ -1,3 +1,5 @@
+from web_scraper.helpers import get_ssm_param
+
 # Scrapy settings for web_scraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -12,6 +14,12 @@ BOT_NAME = "web_scraper"
 SPIDER_MODULES = ["web_scraper.spiders"]
 NEWSPIDER_MODULE = "web_scraper.spiders"
 
+# Database configuration
+DB_NAME = get_ssm_param("DB_NAME", "postgres")
+DB_HOST = get_ssm_param("DB_HOST", "localhost")
+DB_USER = get_ssm_param("DB_USER", "postgres")
+DB_PASSWORD = get_ssm_param("DB_PASSWORD", "", secure=True)
+DB_PORT = get_ssm_param("DB_PORT", "5432")
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "web_scraper (+http://www.yourdomain.com)"
@@ -76,8 +84,16 @@ ITEM_PIPELINES = {
     "scrapy.pipelines.images.ImagesPipeline": 1,
     # "web_scraper.pipelines.WebScraperPipeline": 300,
 }
-IMAGES_STORE = "/home/ec2-user/Downloads/temp-images"
-# Enable and configure the AutoThrottle extension (disabled by default)
+IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
+
+# AWS configuration
+AWS_REGION = "us-west-1"
+AWS_ACCESS_KEY_ID = None
+AWS_SECRET_ACCESS_KEY = None
+
+# Database Configuration
+
+# Enable and configure the AutoThrottle extension
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 # AUTOTHROTTLE_ENABLED = True
 # The initial download delay
