@@ -15,11 +15,11 @@ SPIDER_MODULES = ["web_scraper.spiders"]
 NEWSPIDER_MODULE = "web_scraper.spiders"
 
 # Database configuration
-DB_NAME = get_ssm_param("DB_NAME", "postgres")
-DB_HOST = get_ssm_param("DB_HOST", "localhost")
-DB_USER = get_ssm_param("DB_USER", "postgres")
-DB_PASSWORD = get_ssm_param("DB_PASSWORD", "", secure=True)
-DB_PORT = get_ssm_param("DB_PORT", "5432")
+PG_NAME = get_ssm_param("DB_NAME", "postgres")
+PG_HOST = get_ssm_param("DB_HOST", "localhost")
+PG_USER = get_ssm_param("DB_USER", "postgres")
+PG_PASSWORD = get_ssm_param("DB_PASSWORD", "", secure=True)
+PG_PORT = get_ssm_param("DB_PORT", "5432")
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "web_scraper (+http://www.yourdomain.com)"
@@ -57,6 +57,10 @@ ROBOTSTXT_OBEY = True
 #    "Accept-Language": "en",
 # }
 
+# NOTE: The integer value after each pipeline or middleware determine
+# the order in which they run: items go through from lower valued to
+# higher valued classes.
+
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
@@ -82,7 +86,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "scrapy.pipelines.images.ImagesPipeline": 1,
-    # "web_scraper.pipelines.WebScraperPipeline": 300,
+    "web_scraper.pipelines.PostgresPipeline": 300,
 }
 IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
 

@@ -1,5 +1,4 @@
 import scrapy
-
 from web_scraper.items import Product, ProductLoader
 
 
@@ -38,7 +37,7 @@ class HockeyMonkeySpider(scrapy.Spider):
             "image_urls": "img.product-image-photo::attr(data-src)",
             "title": "a.product-item-link::text",
             "price": "span.normal-price.is-clearance span.price::text",
-            "originalPrice": "span.old-price span.price::text",
+            "original_price": "span.old-price span.price::text",
         }
 
         # Get all products on page

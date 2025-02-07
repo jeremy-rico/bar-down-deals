@@ -1,11 +1,7 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.org/en/latest/topics/items.html
-
 from itemloaders.processors import Join, MapCompose, TakeFirst
 from scrapy.item import Field, Item
 from scrapy.loader import ItemLoader
+from web_scraper.helpers import removeDollarSign
 
 
 class Product(Item):
@@ -14,13 +10,8 @@ class Product(Item):
     images = Field()
     title = Field()
     price = Field()
-    originalPrice = Field()
+    original_price = Field()
     store = Field()
-
-
-# Helper function to remove dollar symbol from string
-def removeDollarSign(s):
-    return s[1 : len(s)]
 
 
 class ProductLoader(ItemLoader):
@@ -29,5 +20,8 @@ class ProductLoader(ItemLoader):
     title_out = TakeFirst()
     price_in = MapCompose(removeDollarSign)
     price_out = TakeFirst()
-    originalPrice_in = MapCompose(removeDollarSign)
-    originalPrice_out = TakeFirst()
+    original_price_in = MapCompose(removeDollarSign)
+    original_price_out = TakeFirst()
+    store_out = TakeFirst()
+    url_out = TakeFirst()
+    # image_urls_out = Join()
