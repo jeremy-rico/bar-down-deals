@@ -56,21 +56,9 @@ connect to it from our EC2 instance
    - When creating the RDS, you will have the option to connect it to an EC2
      instance. This will automatically create a security group for the two to
      communicate.
-   - Otherwise you will need to create a custom secutiry group
-3. Installing psql to test connection
-   - Use `yum search "postgres"` to find the version of postgres offered by
-     yum
-   - Once you find the version use `yum install -y postgres16` (my latest
-     version offered was 16)
-4. Creating the database
-   - The name you gave your RDS instance is NOT the DB_NAME.
-   - On creation, RDS only creates the defauly database named 'postgres'
-   - You will need to use the following information to connect to the database
-     either using psycopg2 in python or psql from the terminal
-   1. Host: RDS -> Databases -> Endpoint
-   2. User: User name you assigned at cretion
-   3. Password: Password you assigned at creation
-   4. Post: 5432
+   - Otherwise you will need to create a custom security group
+3. Accessing the database
+   - See the #PostgresSQL Section
 
 ### Securley storing secrets with SSM
 
@@ -95,3 +83,53 @@ the project. We will use Amazon's SSM parameter store to encrypt and store them.
    3b. install boto3 on instance
    3c. use botos ssm.get_parameter() see: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm/client/get_parameter.html
 4. These values can now be used with psycopg2 to connect to the database
+
+## PostgreSQL
+
+### Installing
+
+Since we used RDS to manage our database, we didn't have to manually install
+a postgres server. However, if in the future you want to run a local postgres
+instance see: https://www.postgresql.org/docs/16/tutorial-install.html for
+installation instructions
+
+### Acessing the database
+
+In order to start using our database, we need to connect to it.
+
+1. Installing psql on EC2
+   - Use `yum search "postgres"` to find the version of postgres offered by
+     yum
+   - Once you find the version use `yum install -y postgres16` (my latest
+     version offered was 16)
+   - Note that the search results on literally return a 'postgres16' package,
+     but if there are any that start with 'postgresXX' then you can do `yum
+install postgresXX`
+2. Accessing the database
+
+   - You will need to use the following information to connect to the database
+
+   1. Host: RDS -> Databases -> Endpoint
+   2. User: User name you assigned at cretion
+   3. Password: Password you assigned at creation
+   4. Database name: postgres (or your database name)
+   5. Post: 5432 (default)
+
+   - A note on the password, I recommend letting AWS auto generate the password
+     and then storing in SMM. You can then securly store the password and get it
+     at anytime in the SMM console.
+   - After you have all this info, use the following line to connect to the
+     database:
+
+   ```bash
+   psql -h <endpoint> -U <user> -d <database_name>
+   ```
+
+   - If it is your first time connecting to the database the the database_name
+     will ALWAYS be 'postgres'. After you have created a database, you will use
+     the name of that database when connecting. A server can have multiple
+     databases. Usually one per project.
+
+### Creating the database and SQL queries.
+
+- Read the [postgres docs](https://www.postgresql.org/docs/16/). They are quite good and will get you started creating databases, tables, data types, and writing queries.

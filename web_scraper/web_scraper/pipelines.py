@@ -3,13 +3,15 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
+# import asyncio
+# import asyncpg
+from datetime import datetime
+
 import psycopg2
 
 # useful for handling different item types with a single interface
-# from itemadapter import ItemAdapter
-# import asyncio
-# import asyncpg
-from scrapy.exceptions import NotConfigured
+from itemadapter import ItemAdapter
+from scrapy.exceptions import DropItem, NotConfigured
 
 
 class PostgresPipeline:
@@ -59,22 +61,44 @@ class PostgresPipeline:
             spider.logger.error(f"Failed to connect to database, {e}")
 
     def close_spider(self, spider):
+        query = f"""
+            UPDATE websites 
+            SET last_scraped = %s 
+            WHERE name = %s;
+        """
+        values = (datetime.now(), spider.website_name)
+        self.cur.execute(query, values)
         self.cur.close()
+
+        self.conn.commit()
         self.conn.close()
         spider.logger.info(f"Closed connection to database {self.pg_name}")
 
+    def validate(self, item):
+        adapter = ItemAdapter(item)
+        if not adapter.get("price"):
+            raise DropItem("Missing Price")
+
     def process_item(self, item, spider):
-        columns = ", ".join(item.keys())
-        item["image_urls"] = item["image_urls"][0]
-        item["images"] = item["images"][0]
-        values = tuple(item.values())
-        values_template = ", ".join(["%s" for _ in range(len(values))])
-        query = f"""
-            INSERT INTO {self.pg_table} ({columns}) 
-            VALUES ({values_template});
-            """
-        print(values)
-        self.cur.execute(query, values)
-        self.cur.execute(f"SELECT * FROM {self.pg_table}")
-        data = self.cur.fetchone()
-        print(data)
+        self.validate(item)
+        # adapter = ItemAdapter(item)
+        # columns = ", ".join(adapter.field_names())
+        # values = tuple(adapter.values())
+        # values_template = ", ".join(["%s" for _ in range(len(values))])
+        # query = f"""
+        #     INSERT INTO {self.pg_table} ({columns})
+        #     VALUES ({values_template});
+        #     """
+        # values = (
+        #     adapter["image_urls"][0],
+        #     adapter["images"][0],
+        #     adapter["original_price"],
+        #     adapter["price"],
+        #     adapter["store"],
+        #     adapter["title"],
+        #     adapter["url"],
+        # )
+        # self.cur.execute(query, values)
+        # self.cur.execute(f"SELECT * FROM {self.pg_table}")
+        # data = self.cur.fetchone()
+        # print(data)

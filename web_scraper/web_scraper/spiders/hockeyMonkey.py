@@ -4,6 +4,7 @@ from web_scraper.items import Product, ProductLoader
 
 class HockeyMonkeySpider(scrapy.Spider):
     name = "hockeyMonkey"
+    website_name = "Hockey Monkey"  # Used to update db website table
     start_urls = [
         "https://www.hockeymonkey.com/clearance.html",
     ]
