@@ -1,5 +1,6 @@
 import scrapy
-from web_scraper.items import Product, ProductLoader
+
+from hockey_sales.items import Product, ProductLoader
 
 
 class HockeyMonkeySpider(scrapy.Spider):

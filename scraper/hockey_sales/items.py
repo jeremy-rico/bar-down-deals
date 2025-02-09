@@ -1,7 +1,8 @@
 from itemloaders.processors import Join, MapCompose, TakeFirst
 from scrapy.item import Field, Item
 from scrapy.loader import ItemLoader
-from web_scraper.helpers import removeDollarSign
+
+from hockey_sales.utils import removeDollarSign
 
 
 class Product(Item):
