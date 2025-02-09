@@ -61,12 +61,15 @@ class PostgresPipeline:
             spider.logger.error(f"Failed to connect to database, {e}")
 
     def close_spider(self, spider):
+        """
+        Update website last_scraped and close db connection
+        """
         query = f"""
             UPDATE websites 
             SET last_scraped = %s 
-            WHERE name = %s;
+            WHERE url = %s;
         """
-        values = (datetime.now(), spider.website_name)
+        values = (datetime.now(), spider.base_url)
         self.cur.execute(query, values)
         self.cur.close()
 
@@ -80,8 +83,11 @@ class PostgresPipeline:
             raise DropItem("Missing Price")
 
     def process_item(self, item, spider):
+        """
+        Validate item, insert product and deal to database
+        """
         self.validate(item)
-        # adapter = ItemAdapter(item)
+        adapter = ItemAdapter(item)
         # columns = ", ".join(adapter.field_names())
         # values = tuple(adapter.values())
         # values_template = ", ".join(["%s" for _ in range(len(values))])

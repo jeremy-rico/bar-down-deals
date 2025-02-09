@@ -1,13 +1,12 @@
 import scrapy
-
 from hockey_sales.items import Product, ProductLoader
 
 
 class HockeyMonkeySpider(scrapy.Spider):
     name = "hockeyMonkey"
-    website_name = "Hockey Monkey"  # Used to update db website table
+    base_url = "https://www.hockeymonkey.com/"  # Used to update db website table
     start_urls = [
-        "https://www.hockeymonkey.com/clearance.html",
+        base_url + "clearance.html",
     ]
 
     def parse(self, response):
@@ -35,9 +34,11 @@ class HockeyMonkeySpider(scrapy.Spider):
 
         # NOTE: Update css values here
         css_map = {
+            "name": "a.product-item-link::text",
+            "brand": "strong.brand-name::text",
+            # "category": "",
             "url": "a.product-item-link::attr(href)",
             "image_urls": "img.product-image-photo::attr(data-src)",
-            "title": "a.product-item-link::text",
             "price": "span.normal-price.is-clearance span.price::text",
             "original_price": "span.old-price span.price::text",
         }
@@ -51,7 +52,6 @@ class HockeyMonkeySpider(scrapy.Spider):
             l = ProductLoader(item=Product(), selector=prod)
             for field_name, css in css_map.items():
                 l.add_css(field_name, css)
-            l.add_value("store", "Hockey Monkey")
             yield l.load_item()
 
         next_links = response.css("div.pages a.action.next")
