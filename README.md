@@ -137,3 +137,32 @@ install postgresXX`
 ### Creating the database and SQL queries.
 
 - Read the [postgres docs](https://www.postgresql.org/docs/16/). They are quite good and will get you started creating databases, tables, data types, and writing queries.
+
+## FastAPI
+
+FastAPI has some [amazing docs](https://fastapi.tiangolo.com/tutorial/). You can
+find most all FastAPI related information there. These notes will stick to
+things that only directly relate to this project.
+
+### Setting up a dev environment
+
+In order to test out the apis in development you have to do two things.
+
+1. Open up port 8000 in the EC2's security group.
+   a. Navigate to the security group
+   b. add new inbound rule
+   c. Type: Custom TCP
+   Port Range: 8000
+   Source: My IP
+   d. Save rules
+
+2. Set up FastAPI dev server to listen on all ports
+
+   ```bash
+   fastapi dev main.py --host 0.0.0.0
+   ```
+
+3. Use your EC2's public IPv4 address in a browser
+   ```
+   <my.ec2.public.ipv4>:8000
+   ```

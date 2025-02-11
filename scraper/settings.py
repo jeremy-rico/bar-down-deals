@@ -1,6 +1,6 @@
-from hockey_sales.utils import get_ssm_param
+# from scraper.utils import get_ssm_param
 
-# Scrapy settings for hockey_sales project
+# Scrapy settings for scraper project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,20 +9,20 @@ from hockey_sales.utils import get_ssm_param
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "hockey_sales"
+BOT_NAME = "scraper"
 
-SPIDER_MODULES = ["hockey_sales.spiders"]
-NEWSPIDER_MODULE = "hockey_sales.spiders"
+SPIDER_MODULES = ["scraper.spiders"]
+NEWSPIDER_MODULE = "scraper.spiders"
 
 # Database configuration
-PG_NAME = get_ssm_param("DB_NAME", "postgres")
-PG_HOST = get_ssm_param("DB_HOST", "localhost")
-PG_USER = get_ssm_param("DB_USER", "postgres")
-PG_PASSWORD = get_ssm_param("DB_PASSWORD", "", secure=True)
-PG_PORT = get_ssm_param("DB_PORT", "5432")
+# PG_NAME = get_ssm_param("DB_NAME", "postgres")
+# PG_HOST = get_ssm_param("DB_HOST", "localhost")
+# PG_USER = get_ssm_param("DB_USER", "postgres")
+# PG_PASSWORD = get_ssm_param("DB_PASSWORD", "", secure=True)
+# PG_PORT = get_ssm_param("DB_PORT", "5432")
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = "hockey_sales (+http://www.yourdomain.com)"
+# USER_AGENT = "scraper (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -64,14 +64,14 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    "hockey_sales.middlewares.WebScraperSpiderMiddleware": 543,
+#    "scraper.middlewares.WebScraperSpiderMiddleware": 543,
 # }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # NOTE: Rotating user agents fixed 460 response
 DOWNLOADER_MIDDLEWARES = {
-    "hockey_sales.middlewares.WebScraperDownloaderMiddleware": 543,
+    "scraper.middlewares.WebScraperDownloaderMiddleware": 543,
     "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
     "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
 }
@@ -86,7 +86,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "scrapy.pipelines.images.ImagesPipeline": 1,
-    "hockey_sales.pipelines.PostgresPipeline": 300,
+    "scraper.pipelines.PostgresPipeline": 300,
 }
 IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
 

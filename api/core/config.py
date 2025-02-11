@@ -1,0 +1,32 @@
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy import URL
+
+from api.utils.aws import get_ssm_param
+
+
+class Settings(BaseSettings):
+    """Application settings."""
+
+    PROJECT_NAME: str = "Hero API"
+    DATABASE_URL: URL = URL.create(
+        drivername="postgresql",
+        username=get_ssm_param("DB_USER", "postgres"),
+        password=get_ssm_param("DB_PASSWORD", "", secure=True),
+        host=get_ssm_param("DB_HOST", "localhost"),
+        port=get_ssm_param("DB_PORT", "5432"),
+        database=get_ssm_param("DB_NAME", "postgres"),
+    )
+    DEBUG: bool = False
+
+    # JWT Settings
+    JWT_SECRET: str  # Change in production
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION: int = 30  # minutes
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
+
+
+settings = Settings()
