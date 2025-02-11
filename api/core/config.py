@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Hero API"
     DATABASE_URL: URL = URL.create(
-        drivername="postgresql",
+        drivername="postgresql+asyncpg",
         username=get_ssm_param("DB_USER", "postgres"),
         password=get_ssm_param("DB_PASSWORD", "", secure=True),
         host=get_ssm_param("DB_HOST", "localhost"),
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # JWT Settings
-    JWT_SECRET: str  # Change in production
+    JWT_SECRET: str = "test"  # Change in production
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION: int = 30  # minutes
 

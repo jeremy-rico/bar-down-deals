@@ -1,4 +1,13 @@
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    DECIMAL,
+    TIMESTAMP,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import relationship
 
 from api.core.database import Base
@@ -9,10 +18,13 @@ class Website(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    url = Column(Text, nullable=False)
+    url = Column(Text, nullable=False, unique=True)
     last_scraped = Column(TIMESTAMP, default=None)
 
     deals = relationship("Deal", back_populates="website")
+
+    def __repr__(self) -> str:
+        return f"Website(id={self.id}, name={self.name}, url={self.url})"
 
 
 class Category(Base):

@@ -11,6 +11,11 @@ A web application which scrapes the web for the best deals on hockey equipment.
 - Frontend: ReactJS
 - Database: PostgreSQL
 
+# TODO
+
+1. properly install psycopg2 instead of psycopg2-binary in
+   scraper/requirements.txt
+
 # Notes
 
 ## AWS

@@ -1,4 +1,6 @@
-# from scraper.utils import get_ssm_param
+from sqlalchemy import URL
+
+from api.utils.aws import get_ssm_param
 
 # Scrapy settings for scraper project
 #
@@ -15,11 +17,14 @@ SPIDER_MODULES = ["scraper.spiders"]
 NEWSPIDER_MODULE = "scraper.spiders"
 
 # Database configuration
-# PG_NAME = get_ssm_param("DB_NAME", "postgres")
-# PG_HOST = get_ssm_param("DB_HOST", "localhost")
-# PG_USER = get_ssm_param("DB_USER", "postgres")
-# PG_PASSWORD = get_ssm_param("DB_PASSWORD", "", secure=True)
-# PG_PORT = get_ssm_param("DB_PORT", "5432")
+DATABASE_URL = URL.create(
+    drivername="postgresql",
+    username=get_ssm_param("DB_USER", "postgres"),
+    password=get_ssm_param("DB_PASSWORD", "", secure=True),
+    host=get_ssm_param("DB_HOST", "localhost"),
+    port=get_ssm_param("DB_PORT", "5432"),
+    database=get_ssm_param("DB_NAME", "postgres"),
+)
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "scraper (+http://www.yourdomain.com)"

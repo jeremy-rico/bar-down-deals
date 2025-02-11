@@ -1,96 +1,61 @@
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-# Ensure backend folder is in Python path
-# from datetime import datetime
-
-import psycopg2
+from datetime import datetime
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
-from scrapy.exceptions import DropItem, NotConfigured
+from scrapy.exceptions import DropItem
+from sqlalchemy import URL, select
+from sqlalchemy.dialects.postgresql import insert
 
-from api.core.database import get_session
+# shared model definitions
+from api.src.products.models import Category, Deal, Product, Website
+
+# database connection
+from scraper.database import get_session
 
 
 class PostgresPipeline:
-    def __init__(self):
-        self.session = get_session()
+    def __init__(self, database_url: URL):
+        self.database_url = database_url
 
-    # @classmethod
-    # def from_crawler(cls, crawler):
-    #     """
-    #     Grab project settings values
-    #     """
-    #     pass
-    #     # pg_host = crawler.settings.get("PG_HOST")
-    # pg_name = crawler.settings.get("PG_NAME")
-    # pg_user = crawler.settings.get("PG_USER")
-    # pg_password = crawler.settings.get("PG_PASSWORD")
-    # pg_port = crawler.settings.get("PG_PORT")
-    # pg_table = crawler.settings.get("PG_TABLE", "products")
-    # # batch_size = crawler.settings.getint("PG_BATCH_SIZE", 50)
-    #
-    # if not all([pg_host, pg_name, pg_user, pg_password]):
-    #     raise NotConfigured("PostgreSQL settings are missing")
-    #
-    # return cls(pg_host, pg_name, pg_user, pg_password, pg_port, pg_table)
+    @classmethod
+    def from_crawler(cls, crawler):
+        database_url = crawler.settings.get("DATABASE_URL")
+        return cls(database_url)
 
-    # def open_spider(self, spider):
-    #     try:
-    #         self.conn = psycopg2.connect(
-    #             host=self.pg_host,
-    #             dbname=self.pg_name,
-    #             user=self.pg_user,
-    #             password=self.pg_password,
-    #             port=self.pg_port,
-    #         )
-    #         self.cur = self.conn.cursor()
-    #         spider.logger.info(f"Successfully connected to {self.pg_name}")
-    #     except Exception as e:
-    #         spider.logger.error(f"Failed to connect to database, {e}")
-    #
-    # def close_spider(self, spider):
-    #     """
-    #     Insert or update website db table, close db connection
-    #     """
-    #     query = f"""
-    #         INSERT INTO websites (name, url)
-    #         VALUES (%s, %s)
-    #         ON CONFLICT (url) DO UPDATE SET last_scraped=NOW();
-    #     """
-    #     values = (spider.website_name, spider.base_url)
-    #     self.cur.execute(query, values)
-    #     self.cur.close()
-    #
-    #     self.conn.commit()
-    #     self.conn.close()
-    #     spider.logger.info(f"Closed connection to database {self.pg_name}")
-    #
-    # def validate(self, item):
-    #     adapter = ItemAdapter(item)
-    #     if not adapter.get("price"):
-    #         raise DropItem("Missing Price")
-    #
+    def open_spider(self, spider):
+        """
+        Get SQLAlchemy session
+        """
+        self.session = get_session(self.database_url)
+
+    def close_spider(self, spider):
+        """
+        Update website timestamp, close db connection
+        """
+        # self.session.commit()
+        self.upsert_website(spider)
+        self.session.commit()
+        self.session.close()
+
+    def validate(self, item):
+        adapter = ItemAdapter(item)
+        if not adapter.get("price"):
+            raise DropItem("Missing Price")
+
+    def upsert_website(self, spider):
+        stmt = (
+            insert(Website)
+            .values(
+                name=spider.website_name,
+                url=spider.base_url,
+                last_scraped=datetime.now(),
+            )
+            .on_conflict_do_update(
+                index_elements=["url"], set_=dict(last_scraped=datetime.now())
+            )
+        )
+        self.session.execute(stmt)
+        # return website
+
     def process_item(self, item, spider):
-        pass
-
-    #     """
-    #     Validate item, insert product and deal to database
-    #     """
-    #     self.validate(item)
-    # adapter = ItemAdapter(item)
-    # name = item["name"]
-    # brand = item["brand"]
-    # image_url = item["image_urls"][0]
-    # print(name)
-    # print(brand)
-    # print(image_url)
-    # get_prod_id_query = f"""
-    #     SELECT id from products JOIN deals
-    #     ON name={name}
-    # """
-    # prod_id = self.cur.execute(query)
-    # price = item["price"]
-    # original_price = item["original_price"]
-    # url = item["url"]
+        self.validate(item)
