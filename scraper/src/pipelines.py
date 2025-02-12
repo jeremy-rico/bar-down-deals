@@ -1,16 +1,16 @@
 from datetime import datetime
 
+# shared model definitions
+from api.src.products.models import Category, Deal, Product, Website
+
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from sqlalchemy import URL, select
 from sqlalchemy.dialects.postgresql import insert
 
-# shared model definitions
-from api.src.products.models import Category, Deal, Product, Website
-
 # database connection
-from scraper.database import get_session
+from scraper.src.database import get_session
 
 
 class PostgresPipeline:
@@ -72,8 +72,9 @@ class PostgresPipeline:
         self.validate(item)
 
         # Upsert website
+        # TODO: Only call when site needs to be created and at spider close
         website = self.upsert_website(spider)
-
+        print(item)
         # Insert product details
         product = Product(
             name=item["name"],

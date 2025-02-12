@@ -1,6 +1,5 @@
-from sqlalchemy import URL
-
 from api.utils.aws import get_ssm_param
+from sqlalchemy import URL
 
 # Scrapy settings for scraper project
 #
@@ -13,8 +12,8 @@ from api.utils.aws import get_ssm_param
 
 BOT_NAME = "scraper"
 
-SPIDER_MODULES = ["scraper.spiders"]
-NEWSPIDER_MODULE = "scraper.spiders"
+SPIDER_MODULES = ["scraper.src.spiders"]
+NEWSPIDER_MODULE = "scraper.src.spiders"
 
 # Database configuration
 DATABASE_URL = URL.create(
@@ -76,7 +75,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # NOTE: Rotating user agents fixed 460 response
 DOWNLOADER_MIDDLEWARES = {
-    "scraper.middlewares.WebScraperDownloaderMiddleware": 543,
+    "scraper.src.middlewares.WebScraperDownloaderMiddleware": 543,
     "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
     "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
 }
@@ -91,7 +90,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "scrapy.pipelines.images.ImagesPipeline": 1,
-    "scraper.pipelines.PostgresPipeline": 300,
+    "scraper.src.pipelines.PostgresPipeline": 300,
 }
 IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
 

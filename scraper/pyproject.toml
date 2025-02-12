@@ -1,0 +1,17 @@
+[project]
+name = "scraper"
+version = "0.1.0"
+description = "Web scraper for bar down deals"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.36.18",
+    "botocore>=1.36.18",
+    "pillow>=11.1.0",
+    "psycopg2>=2.9.10",
+    "pydantic>=2.10.6",
+    "pydantic-settings>=2.7.1",
+    "scrapy>=2.12.0",
+    "scrapy-user-agents>=0.1.1",
+    "sqlalchemy>=2.0.38",
+]

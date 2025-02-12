@@ -2,7 +2,7 @@ from itemloaders.processors import Join, MapCompose, TakeFirst
 from scrapy.item import Field, Item
 from scrapy.loader import ItemLoader
 
-from scraper.utils import cleanBrand, cleanPrice
+from scraper.src.utils import cleanBrand, cleanPrice
 
 
 class Product(Item):

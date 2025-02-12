@@ -143,6 +143,27 @@ install postgresXX`
 
 - Read the [postgres docs](https://www.postgresql.org/docs/16/). They are quite good and will get you started creating databases, tables, data types, and writing queries.
 
+## psycopg2
+
+### Installation
+
+For development use
+
+```
+uv add psycopg2-binary
+```
+
+For development we install from source which needs a few dependencies
+
+1. a C compiler
+2. Python header files (probably already installed)
+3. libq header files
+4. pg_config program (installed by libq)
+
+```
+sudo yum install libpq-dev
+```
+
 ## FastAPI
 
 FastAPI has some [amazing docs](https://fastapi.tiangolo.com/tutorial/). You can

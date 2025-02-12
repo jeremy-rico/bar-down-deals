@@ -1,12 +1,12 @@
 import scrapy
 
-from scraper.items import Product, ProductLoader
+from scraper.src.items import Product, ProductLoader
 
 
 class HockeyMonkeySpider(scrapy.Spider):
     name = "hockeyMonkey"
     website_name = "Hockey Monkey"
-    base_url = "https://www.hockeymonkey.com/"  # Used to update db website table
+    base_url = "https://www.hockeymonkey.com/"
     start_urls = [
         base_url + "clearance.html",
     ]
