@@ -30,11 +30,8 @@ class PostgresPipeline:
 
     def close_spider(self, spider):
         """
-        Update website timestamp, close db connection
+        Close db connection
         """
-        # self.session.commit()
-        self.upsert_website(spider)
-        self.session.commit()
         self.session.close()
 
     def validate(self, item):
@@ -43,6 +40,12 @@ class PostgresPipeline:
             raise DropItem("Missing Price")
 
     def upsert_website(self, spider):
+        """
+        INSERT new website or UPDATE existing website's last_scraped timestamp
+
+        Returns:
+            Written website object
+        """
         stmt = (
             insert(Website)
             .values(
@@ -53,9 +56,42 @@ class PostgresPipeline:
             .on_conflict_do_update(
                 index_elements=["url"], set_=dict(last_scraped=datetime.now())
             )
+            .returning(Website)
         )
-        self.session.execute(stmt)
-        # return website
+
+        result = self.session.execute(stmt)
+        self.session.commit()
+
+        return result.scalar()
 
     def process_item(self, item, spider):
+        """
+        Validate item, upsert website, insert product and deal details to database
+        """
+        # TODO: Exception handling
         self.validate(item)
+
+        # Upsert website
+        website = self.upsert_website(spider)
+
+        # Insert product details
+        product = Product(
+            name=item["name"],
+            brand=item["brand"],
+            # category_id
+            image_url=item["images"][0]["path"],
+            # description=
+        )
+        self.session.add(product)
+        self.session.flush()
+
+        # Insert deal details
+        deal = Deal(
+            product_id=product.id,
+            website_id=website.id,
+            price=item["price"],
+            original_price=item["original_price"],
+            url=item["url"],
+        )
+        self.session.add(deal)
+        self.session.flush()
