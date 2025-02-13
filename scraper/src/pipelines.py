@@ -1,10 +1,10 @@
 from datetime import datetime
 
-# shared model definitions
-from api.src.deals.models import Category, Deal, Product, Website
-
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+
+# shared model definitions
+from models.deals import Deal, Product, Website
 from scrapy.exceptions import DropItem
 from sqlalchemy import URL
 from sqlalchemy.dialects.postgresql import insert
@@ -27,6 +27,7 @@ class PostgresPipeline:
         Get SQLAlchemy session
         """
         self.session = get_session(self.database_url)
+        self.website = self.upsert_website(spider)
 
     def close_spider(self, spider):
         """
@@ -41,7 +42,7 @@ class PostgresPipeline:
 
     def upsert_website(self, spider):
         """
-        INSERT new website or UPDATE existing website's last_scraped timestamp
+        UPDATE website timestamp or INSERT new website
 
         Returns:
             Written website object
@@ -71,10 +72,6 @@ class PostgresPipeline:
         # TODO: Exception handling
         self.validate(item)
 
-        # Upsert website
-        # TODO: Only call when site needs to be created and at spider close
-        website = self.upsert_website(spider)
-        print(item)
         # Insert product details
         product = Product(
             name=item["name"],
@@ -89,7 +86,7 @@ class PostgresPipeline:
         # Insert deal details
         deal = Deal(
             product_id=product.id,
-            website_id=website.id,
+            website_id=self.website.id,
             price=item["price"],
             original_price=item["original_price"],
             url=item["url"],

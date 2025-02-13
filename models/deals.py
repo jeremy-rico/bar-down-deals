@@ -1,11 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import (DECIMAL, TIMESTAMP, Column, ForeignKey, Integer,
-                        String, Text, func)
+from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.core.database import Base
+from models.base import Base
 
 
 class Website(Base):
@@ -35,10 +34,13 @@ class Product(Base):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(255))
+    # TODO: Find a better way of avoiding duplicate products
+    name: Mapped[str] = mapped_column(String(255), index=True, unique=True)
     brand: Mapped[Optional[str]] = mapped_column(String(255))
-    category_id: Mapped[Optional[int]] = mapped_column(ForeignKey("categories.id", ondelete="SET NULL"))
-    image_url: Mapped[Optional[str]] 
+    category_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("categories.id", ondelete="SET NULL")
+    )
+    image_url: Mapped[Optional[str]]
     description: Mapped[Optional[str]]
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
