@@ -11,14 +11,13 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from alembic import context
 from api.core.config import settings
-from models.base import Base
+from api.core.database import Base
 
 # Automatically import all models
-src_path = Path(__file__).parent.parent
-for path in src_path.rglob("models/*.py"):
+src_path = Path(__file__).parent.parent / "api" / "src"
+for path in src_path.rglob("models.py"):
     if path.name != "__init__.py":
         module_path = str(path.relative_to(Path(__file__).parent.parent)).replace(
             os.sep, "."
