@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings  # , SettingsConfigDict
 from sqlalchemy import URL
 
 from api.utils.aws import get_ssm_param
@@ -7,7 +7,7 @@ from api.utils.aws import get_ssm_param
 class Settings(BaseSettings):
     """Application settings."""
 
-    PROJECT_NAME: str = "Hero API"
+    PROJECT_NAME: str = "Bar Down Deals API"
     DATABASE_URL: URL = URL.create(
         drivername="postgresql+asyncpg",
         username=get_ssm_param("DB_USER", "postgres"),
@@ -19,14 +19,15 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # JWT Settings
-    JWT_SECRET: str = "test"  # Change in production
+    JWT_SECRET: str = "test"  # TODO: Change in production
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION: int = 30  # minutes
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-    )
+    # # TODO: Remove this? No need for .env file
+    # model_config = SettingsConfigDict(
+    #     env_file=".env",
+    #     env_file_encoding="utf-8",
+    # )
 
 
 settings = Settings()

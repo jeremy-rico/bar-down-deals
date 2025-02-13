@@ -3,39 +3,112 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.core.exceptions import AlreadyExistsException, NotFoundException
-from api.src.products.models import Website
-from api.src.products.schemas import WebsiteCreate
+from api.src.deals.models import Deal, Product, Website
+from api.src.deals.schemas import DealCreate, DealResponse, DealUpdate
 
 
-class WebsiteRepository:
-    """Repository for handling Website database operations."""
+class DealRepository:
+    """Repository for handling Hero database operations."""
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, website_data: WebsiteCreate) -> Website:
-        """Create a new Website.
+    async def create(self, deal_data: DealCreate) -> Deal:
+        """Create a new deal.
 
         Args:
-            website_data: Wesbite creation data
+            deal_data: Deal creation data
 
         Returns:
-            Website: Created website
+            Deal: Created deal
 
         Raises:
-            AlreadyExistsException: If website with same url already exists
+            AlreadyExistsException: If deal with same alias already exists
         """
-        website = Website(**website_data.model_dump())
+        deal = Deal(**deal_data.model_dump())
         try:
-            self.session.add(website)
+            self.session.add(deal)
             await self.session.commit()
-            await self.session.refresh(website)
-            return website
+            await self.session.refresh(deal)
+            return deal
         except IntegrityError:
             await self.session.rollback()
             raise AlreadyExistsException(
-                f"Website with url {website.url} already exists"
+                f"Deal with alias {deal_data.id} already exists"
             )
+
+    async def get_by_id(self, deal_id: int) -> Deal:
+        """Get deal by ID.
+
+        Args:
+            deal_id: Deal ID
+
+        Returns:
+            Deal: Found deal
+
+        Raises:
+            NotFoundException: If deal not found
+        """
+        query = select(Deal).where(Deal.id == deal_id)
+        result = await self.session.execute(query)
+        deal = result.scalar_one_or_none()
+        # deal = result.scalar.first()
+
+        if not deal:
+            raise NotFoundException(f"Deal with id {deal_id} not found")
+        return deal
+
+    async def get_all(self) -> list[Deal]:
+        """Get all deals.
+
+        Returns:
+            List[Deal]: List of all deals
+        """
+        query = select(Deal).join(Deal.product_id)
+        result = await self.session.execute(query)
+        print(result.scalars().first())
+        return list(result.scalars().all())
+
+    async def update(self, deal_id: int, deal_data: DealUpdate) -> Deal:
+        """Update deal by ID.
+
+        Args:
+            deal_id: Deal ID
+            deal_data: Deal update data
+
+        Returns:
+            Deal: Updated deal
+
+        Raises:
+            NotFoundException: If deal not found
+        """
+        update_data = deal_data.model_dump(exclude_unset=True)
+        if not update_data:
+            raise ValueError("No fields to update")
+
+        query = update(Deal).where(Deal.id == deal_id).values(**update_data)
+        result = await self.session.execute(query)
+
+        if result.rowcount == 0:
+            raise NotFoundException(f"Deal with id {deal_id} not found")
+
+        await self.session.commit()
+        return await self.get_by_id(deal_id)
+
+    async def delete(self, deal_id: int) -> None:
+        """Delete deal by ID.
+
+        Args:
+            deal_id: Deal ID
+
+        Raises:
+            NotFoundException: If deal not found
+        """
+        query = delete(Deal).where(Deal.id == deal_id)
+        result = await self.session.execute(query)
+
+        if result.rowcount == 0:
+            raise NotFoundException(f"Deal with id {deal_id} not found")
 
 
 # class HeroRepository:

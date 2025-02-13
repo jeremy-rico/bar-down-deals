@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from api.core.config import settings
 from api.core.logging import get_logger, setup_logging
-from api.src.heroes.routes import router as heroes_router
+from api.src.deals.routes import router as deals_router
 from api.src.users.routes import router as auth_router
 from api.utils.migrations import run_migrations
 
@@ -10,6 +10,7 @@ from api.utils.migrations import run_migrations
 setup_logging()
 
 # Optional: Run migrations on startup
+# TODO: get this working
 run_migrations()
 
 # Set up logger for this module
@@ -22,7 +23,7 @@ app = FastAPI(
 
 # Include routers
 app.include_router(auth_router)
-app.include_router(heroes_router)
+app.include_router(deals_router)
 
 
 @app.get("/health")
@@ -34,4 +35,4 @@ async def health_check():
 async def root():
     """Root endpoint."""
     logger.debug("Root endpoint called")
-    return {"message": "Welcome to Hero API!"}
+    return {"message": "Welcome to Bar Down Deals API!"}

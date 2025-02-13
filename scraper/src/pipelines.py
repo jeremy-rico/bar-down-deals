@@ -1,12 +1,12 @@
 from datetime import datetime
 
 # shared model definitions
-from api.src.products.models import Category, Deal, Product, Website
+from api.src.deals.models import Category, Deal, Product, Website
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
-from sqlalchemy import URL, select
+from sqlalchemy import URL
 from sqlalchemy.dialects.postgresql import insert
 
 # database connection

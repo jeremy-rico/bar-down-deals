@@ -27,7 +27,7 @@ def get_password_hash(password: str) -> str:
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """Create JWT access token."""
     to_encode = data.copy()
-    expire = datetime.utcnow() + (
+    expire = datetime.now(datetime.timezone.utc) + (
         expires_delta or timedelta(minutes=settings.JWT_EXPIRATION)
     )
     to_encode.update({"exp": expire})
