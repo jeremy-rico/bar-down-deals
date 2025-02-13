@@ -36,7 +36,11 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Set sqlalchemy.url
-config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
+# NOTE: must be a string literal NOT a URL object, thats why we render as string
+# and decrypt password
+config.set_main_option(
+    "sqlalchemy.url", settings.DATABASE_URL.render_as_string(hide_password=False)
+)
 
 # Add your model's MetaData object here for 'autogenerate' support
 target_metadata = Base.metadata
@@ -50,6 +54,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        ssl=True,
     )
 
     with context.begin_transaction():
