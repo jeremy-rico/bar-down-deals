@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -9,22 +10,24 @@ class DealBase(BaseModel):
     """
 
     # Product atts
-    product_name: str 
-    brand: str
-    # category:
-    image_url: str
-    description: str
-    created_at: datetime
-
-    # Website atts
-    website_name: str 
-    website_url: str
+    # product_name: str
+    # brand: str
+    # # category:
+    # image_url: str
+    # description: str
+    # created_at: datetime
+    #
+    # # Website atts
+    # website_name: str
+    # website_url: str
 
     # Deal atts
+    product_id: int
+    website_id: int
     price: float
-    original_price: float
-    discount: float
-    deal_url: str
+    original_price: Optional[float]
+    discount: Optional[float]
+    url: str
     scraped_at: datetime
 
 

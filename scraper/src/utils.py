@@ -1,7 +1,7 @@
 # import boto3
 
 
-def cleanPrice(s: str):
+def clean_price(s: str):
     """
     Remove dollar symbol from string
     """
@@ -10,10 +10,17 @@ def cleanPrice(s: str):
     return s
 
 
-def cleanBrand(s: str):
+def clean_brand(s: str):
     """
     Clean scraped brand string
     """
     if s.lower().startswith("by"):
         return s.split()[-1]
     return s
+
+
+def get_discount(salePrice: float, originalPrice: float | None) -> str | None:
+    if not originalPrice:
+        return None
+    salePrice, originalPrice = float(salePrice), float(originalPrice)
+    return f"{(originalPrice - salePrice) / originalPrice * 100:.2f}"

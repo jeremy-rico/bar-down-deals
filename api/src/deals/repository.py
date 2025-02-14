@@ -1,9 +1,9 @@
-from models.deals import Deal, Product, Website
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.core.exceptions import AlreadyExistsException, NotFoundException
+from api.src.deals.models import Deal, Product, Website
 from api.src.deals.schemas import DealCreate, DealResponse, DealUpdate
 
 
@@ -64,9 +64,9 @@ class DealRepository:
         Returns:
             List[Deal]: List of all deals
         """
-        query = select(Deal).join(Deal.product_id)
+        query = select(Deal)  # .join(Deal.product_id)
         result = await self.session.execute(query)
-        print(result.scalars().first())
+        # print(result.scalars().first())
         return list(result.scalars().all())
 
     async def update(self, deal_id: int, deal_data: DealUpdate) -> Deal:

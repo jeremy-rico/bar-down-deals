@@ -60,7 +60,7 @@ class Deal(Base):
     )
     price: Mapped[float] = mapped_column(DECIMAL(10, 2))
     original_price: Mapped[Optional[float]] = mapped_column(DECIMAL(10, 2))
-    discount: Mapped[Optional[float]] = mapped_column(DECIMAL(2, 2))
+    discount: Mapped[Optional[float]] = mapped_column(DECIMAL(4, 2))
     url: Mapped[str]
     scraped_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 

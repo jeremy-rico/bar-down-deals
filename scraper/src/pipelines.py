@@ -6,11 +6,12 @@ from api.src.deals.models import Deal, Product, Website
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
-from sqlalchemy import URL
+from sqlalchemy import URL, select
 from sqlalchemy.dialects.postgresql import insert
 
 # database connection
 from scraper.src.database import get_session
+from scraper.src.utils import get_discount
 
 
 class PostgresPipeline:
@@ -33,6 +34,7 @@ class PostgresPipeline:
         """
         Close db connection
         """
+        self.session.commit()
         self.session.close()
 
     def validate(self, item):
@@ -45,7 +47,7 @@ class PostgresPipeline:
         UPDATE website timestamp or INSERT new website
 
         Returns:
-            Written website object
+            Written website
         """
         stmt = (
             insert(Website)
@@ -65,6 +67,31 @@ class PostgresPipeline:
 
         return result.scalar()
 
+    def upsert_product(self, item):
+        """
+        INSERT new product or do nothing
+
+        Returns:
+            Written or existing product
+        """
+        stmt = select(Product).where(Product.name == item.get("name"))
+        product = self.session.scalars(stmt).first()
+
+        if not product:
+            product = Product(
+                name=item.get("name"),
+                brand=item.get("brand", None),
+                category_id=item.get("category_id", None),
+                image_url=item.get("images")[0]["path"] if item.get("images") else "",
+                description=item.get("description", None),
+            )
+
+            self.session.add(product)
+            self.session.flush()
+            self.session.refresh(product)
+
+        return product
+
     def process_item(self, item, spider):
         """
         Validate item, upsert website, insert product and deal details to database
@@ -73,23 +100,21 @@ class PostgresPipeline:
         self.validate(item)
 
         # Insert product details
-        product = Product(
-            name=item["name"],
-            brand=item["brand"],
-            # category_id
-            image_url=item["images"][0]["path"],
-            # description=
+        product = self.upsert_product(item)
+
+        discount = get_discount(
+            item.get("price"),
+            item.get("original_price", None),
         )
-        self.session.add(product)
-        self.session.flush()
 
         # Insert deal details
         deal = Deal(
             product_id=product.id,
             website_id=self.website.id,
-            price=item["price"],
-            original_price=item["original_price"],
-            url=item["url"],
+            price=item.get("price"),
+            original_price=item.get("original_price", None),
+            discount=discount,
+            url=item.get("url"),
         )
         self.session.add(deal)
         self.session.flush()

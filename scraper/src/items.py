@@ -2,7 +2,7 @@ from itemloaders.processors import Join, MapCompose, TakeFirst
 from scrapy.item import Field, Item
 from scrapy.loader import ItemLoader
 
-from scraper.src.utils import cleanBrand, cleanPrice
+from scraper.src.utils import clean_brand, clean_price
 
 
 class Product(Item):
@@ -21,9 +21,9 @@ class Product(Item):
 class ProductLoader(ItemLoader):
     default_input_processor = MapCompose(str.strip)
     # default_output_processor = TakeFirst()
-    brand_in = MapCompose(cleanBrand)
-    price_in = MapCompose(cleanPrice)
-    original_price_in = MapCompose(cleanPrice)
+    brand_in = MapCompose(clean_brand)
+    price_in = MapCompose(clean_price)
+    original_price_in = MapCompose(clean_price)
 
     name_out = TakeFirst()
     brand_out = TakeFirst()
