@@ -1,5 +1,5 @@
-from api.src.deals.repository import DealRepository
-from api.src.deals.schemas import DealCreate, DealResponse, DealUpdate
+from src.deals.repository import DealRepository
+from src.deals.schemas import DealCreate, DealResponse, DealUpdate
 
 
 class DealService:

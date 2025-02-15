@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, status
+
+# from api.src.users.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.core.database import get_session
-from api.core.logging import get_logger
-from api.core.security import get_current_user
-from api.src.deals.repository import DealRepository
-from api.src.deals.schemas import DealCreate, DealResponse, DealUpdate
-from api.src.deals.service import DealService
-from api.src.users.models import User
+from core.database import get_session
+from core.logging import get_logger
+from core.security import get_current_user
+from src.deals.repository import DealRepository
+from src.deals.schemas import DealCreate, DealResponse, DealUpdate
+from src.deals.service import DealService
 
 # Set up logger for this module
 logger = get_logger(__name__)

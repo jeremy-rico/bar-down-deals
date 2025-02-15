@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.core.database import Base
+from core.database import Base
 
 
 class Website(Base):

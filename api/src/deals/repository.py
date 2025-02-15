@@ -2,9 +2,9 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.core.exceptions import AlreadyExistsException, NotFoundException
-from api.src.deals.models import Deal, Product, Website
-from api.src.deals.schemas import DealCreate, DealResponse, DealUpdate
+from core.exceptions import AlreadyExistsException, NotFoundException
+from src.deals.models import Deal, Product, Website
+from src.deals.schemas import DealCreate, DealResponse, DealUpdate
 
 
 class DealRepository:

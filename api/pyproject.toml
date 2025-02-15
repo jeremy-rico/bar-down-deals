@@ -23,6 +23,7 @@ dependencies = [
     "autoflake>=2.3.1",
     "python-multipart>=0.0.20",
     "boto3>=1.36.19",
+    "sqlmodel>=0.0.22",
 ]
 
 [tool.pytest.ini_options]

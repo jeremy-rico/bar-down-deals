@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 
-from api.core.config import settings
-from api.core.logging import get_logger, setup_logging
-from api.src.deals.routes import router as deals_router
-from api.src.users.routes import router as auth_router
-from api.utils.migrations import run_migrations
+from core.config import settings
+from core.logging import get_logger, setup_logging
+from src.deals.routes import router as deals_router
+from src.users.routes import router as auth_router
+from utils.migrations import run_migrations
 
 # Set up logging configuration
 setup_logging()
