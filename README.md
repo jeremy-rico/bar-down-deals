@@ -153,7 +153,7 @@ For development use
 uv add psycopg2-binary
 ```
 
-For development we install from source which needs a few dependencies
+For production install from source which needs a few dependencies
 
 1. a C compiler
 2. Python header files (probably already installed)

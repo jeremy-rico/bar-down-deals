@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.exceptions import AlreadyExistsException, NotFoundException
-from core.logging import get_logger
-from core.security import get_password_hash
+from src.core.exceptions import AlreadyExistsException, NotFoundException
+from src.core.logging import get_logger
+from src.core.security import get_password_hash
 from src.users.models import User
 from src.users.schemas import UserCreate
 

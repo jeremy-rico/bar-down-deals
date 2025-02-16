@@ -1,4 +1,4 @@
-import os
+# import os
 import subprocess
 import sys
 
@@ -12,8 +12,8 @@ def run_migrations():
     """
     try:
         # Ensure the current directory is in the Python path
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        sys.path.insert(0, current_dir)
+        # current_dir = os.path.dirname(os.path.abspath(__file__))
+        # sys.path.insert(0, current_dir)
 
         # Use sys.executable to run the Alembic module
         result = subprocess.run(

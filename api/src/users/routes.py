@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_session
-from core.logging import get_logger
-from core.security import get_current_user
+from src.core.database import get_session
+from src.core.logging import get_logger
+from src.core.security import get_current_user
 from src.users.models import User
 from src.users.schemas import LoginData, Token, UserCreate, UserResponse
 from src.users.service import UserService

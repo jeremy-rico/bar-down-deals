@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings  # , SettingsConfigDict
 from sqlalchemy import URL
 
-from utils.aws import get_ssm_param
+from src.aws.utils import get_ssm_param
 
 
 class Settings(BaseSettings):

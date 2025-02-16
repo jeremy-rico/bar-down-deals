@@ -2,10 +2,10 @@ from datetime import timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.config import settings
-from core.exceptions import UnauthorizedException
-from core.logging import get_logger
-from core.security import create_access_token, verify_password
+from src.core.config import settings
+from src.core.exceptions import UnauthorizedException
+from src.core.logging import get_logger
+from src.core.security import create_access_token, verify_password
 from src.users.models import User
 from src.users.repository import UserRepository
 from src.users.schemas import LoginData, Token, UserCreate
