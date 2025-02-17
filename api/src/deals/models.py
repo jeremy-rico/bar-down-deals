@@ -1,69 +1,72 @@
 from datetime import datetime
-from typing import Optional
 
-from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from src.core.database import Base
+# from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String, func
+from sqlmodel import Field, Relationship, SQLModel, func
 
 
-class Website(Base):
-    __tablename__ = "websites"
+# ======================+====== Website Models ==================================
+class WebsiteBase(SQLModel):
+    name: str = Field(max_length=255)
+    url: str
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(255))
-    url: Mapped[str] = mapped_column(unique=True)
-    last_scraped: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
-    deals = relationship("Deal", back_populates="website")
+class Website(WebsiteBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    last_scraped: datetime | None = Field(default=func.now())
+
+    deals: list["Deal"] = Relationship(back_populates="website", cascade_delete=True)
 
     def __repr__(self) -> str:
         return f"Website(id={self.id}, name={self.name}, url={self.url})"
 
 
-class Category(Base):
-    __tablename__ = "categories"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[int] = mapped_column(String(255), unique=True)
-
-    products = relationship("Product", back_populates="category")
-
-
-class Product(Base):
-    __tablename__ = "products"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+# ============================= Product Models =================================
+class ProductBase(SQLModel):
     # TODO: Find a better way of avoiding duplicate products
-    name: Mapped[str] = mapped_column(String(255), index=True, unique=True)
-    brand: Mapped[Optional[str]] = mapped_column(String(255))
-    category_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("categories.id", ondelete="SET NULL")
-    )
-    image_url: Mapped[Optional[str]]
-    description: Mapped[Optional[str]]
-    created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
-
-    category = relationship("Category", back_populates="products")
-    deals = relationship("Deal", back_populates="product")
+    name: str = Field(max_length=255, index=True, unique=True)
+    brand: str | None = Field(max_length=255)
+    image_url: str | None
+    description: str | None
 
 
-class Deal(Base):
-    __tablename__ = "deals"
+class Product(ProductBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    # category_id: int | None = Field(default=None, foreign_key="category.id")
+    created_at: datetime = Field(default=func.now())
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id", ondelete="CASCADE")
-    )
-    website_id: Mapped[int] = mapped_column(
-        ForeignKey("websites.id", ondelete="CASCADE")
-    )
-    price: Mapped[float] = mapped_column(DECIMAL(10, 2))
-    original_price: Mapped[Optional[float]] = mapped_column(DECIMAL(10, 2))
-    discount: Mapped[Optional[float]] = mapped_column(DECIMAL(4, 2))
-    url: Mapped[str]
-    scraped_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
+    deals: list["Deal"] = Relationship(back_populates="product", cascade_delete=True)
 
-    # Relationships
-    product = relationship("Product", back_populates="deals")
-    website = relationship("Website", back_populates="deals")
+    def __repr__(self) -> str:
+        return f"Product(id={self.id}, name={self.name}, brand={self.brand}, created_at={self.created_at}, deals={self.deals})"
+
+
+# ============================== Deal Models ===================================
+class DealBase(SQLModel):
+
+    price: float
+    original_price: float | None
+    discount: float | None
+    url: str
+
+
+class Deal(DealBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", ondelete="CASCADE")
+    website_id: int = Field(foreign_key="website.id", ondelete="CASCADE")
+    scraped_at: datetime = Field(default=func.now())
+
+    product: Product = Relationship(back_populates="deals")
+    website: Website = Relationship(back_populates="deals")
+
+
+class DealPublic(DealBase):
+    pass
+
+
+# class Category(Base):
+#     __tablename__ = "categories"
+#
+#     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+#     name: Mapped[int] = mapped_column(String(255), unique=True)
+#
+#     products = relationship("Product", back_populates="category")

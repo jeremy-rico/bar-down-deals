@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from src.core.config import settings
 
 # Create declarative base for models
-Base = declarative_base()
+# Base = declarative_base()
 
 
 async def get_session() -> AsyncSession:

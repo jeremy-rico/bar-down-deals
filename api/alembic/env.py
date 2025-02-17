@@ -7,10 +7,10 @@ from pathlib import Path
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlmodel import SQLModel
 
 from alembic import context
 from src.core.config import settings
-from src.core.database import Base
 
 # Automatically import all models
 src_path = Path(__file__).parent.parent / "src"
@@ -24,7 +24,7 @@ for path in src_path.rglob("models.py"):
         except Exception as e:
             print(f"Failed to import {module_path}: {e}")
 
-# this is the Alembic Config object
+# This is the Alembic Config object
 config = context.config
 
 # Interpret the config file for Python logging
@@ -39,7 +39,7 @@ config.set_main_option(
 )
 
 # Add your model's MetaData object here for 'autogenerate' support
-target_metadata = Base.metadata
+target_metadata = SQLModel.metadata
 
 
 def run_migrations_offline() -> None:

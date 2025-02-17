@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from src.core.config import settings
@@ -9,16 +11,17 @@ from src.users.routes import router as auth_router
 # Set up logging configuration
 setup_logging()
 
-# Optional: Run migrations on startup
-run_migrations()
-
 # Set up logger for this module
 logger = get_logger(__name__)
 
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    debug=settings.DEBUG,
-)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    run_migrations()
+    yield
+
+
+app = FastAPI(title=settings.PROJECT_NAME, debug=settings.DEBUG, lifespan=lifespan)
 
 # Include routers
 app.include_router(auth_router)
