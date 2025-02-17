@@ -1,7 +1,6 @@
 import asyncio
 import importlib
 import os
-import sys
 from logging.config import fileConfig
 from pathlib import Path
 
@@ -9,14 +8,12 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-# Add the project root directory to the Python path
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from alembic import context
 from src.core.config import settings
 from src.core.database import Base
 
 # Automatically import all models
-src_path = Path(__file__).parent.parent / "api" / "src"
+src_path = Path(__file__).parent.parent / "src"
 for path in src_path.rglob("models.py"):
     if path.name != "__init__.py":
         module_path = str(path.relative_to(Path(__file__).parent.parent)).replace(

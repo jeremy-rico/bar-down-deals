@@ -10,7 +10,7 @@ from src.users.routes import router as auth_router
 setup_logging()
 
 # Optional: Run migrations on startup
-# run_migrations()
+run_migrations()
 
 # Set up logger for this module
 logger = get_logger(__name__)
