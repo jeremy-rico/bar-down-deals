@@ -1,7 +1,7 @@
 import boto3
 
 
-def get_ssm_param(name, default="", secure=False):
+def get_ssm_param(name, default="", secure=False) -> str:
     """
     Fetch parameters from AWS SSM parameter store
     """

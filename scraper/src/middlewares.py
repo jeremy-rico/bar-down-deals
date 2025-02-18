@@ -3,10 +3,18 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-from scrapy import signals
-
 # useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
+from itemadapter import ItemAdapter, is_item
+from scrapy import signals
+from swiftshadow.classes import ProxyInterface
+
+
+class ProxyRotationMiddleware:
+    def __init__(self):
+        self.swift = ProxyInterface(autoRotate=True)
+
+    def process_request(self, request, spider):
+        request.meta["proxy"] = self.swift.get().as_string()
 
 
 class WebScraperSpiderMiddleware:
