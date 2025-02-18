@@ -21,6 +21,10 @@ class Website(WebsiteBase, table=True):
         return f"Website(id={self.id}, name={self.name}, url={self.url})"
 
 
+class WebsiteResponse(WebsiteBase):
+    id: int
+
+
 # ============================= Product Models =================================
 class ProductBase(SQLModel):
     # TODO: Find a better way of avoiding duplicate products
@@ -41,6 +45,10 @@ class Product(ProductBase, table=True):
         return f"Product(id={self.id}, name={self.name}, brand={self.brand}, created_at={self.created_at}, deals={self.deals})"
 
 
+class ProductResponse(ProductBase):
+    id: int
+
+
 # ============================== Deal Models ===================================
 class DealBase(SQLModel):
     price: Decimal = Field(max_digits=10, decimal_places=2)
@@ -57,12 +65,25 @@ class Deal(DealBase, table=True):
     website_id: int = Field(foreign_key="website.id", ondelete="CASCADE")
     last_scraped: datetime = Field(default=func.now())
 
-    product: Product = Relationship(back_populates="deals")
-    website: Website = Relationship(back_populates="deals")
+    product: Product = Relationship(
+        back_populates="deals", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    website: Website = Relationship(
+        back_populates="deals", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+
+class DealCreate(DealBase):
+    pass
 
 
 class DealResponse(DealBase):
-    pass
+    id: int
+    # product_id: int
+    # website_id: int
+    last_scraped: datetime
+    product: ProductResponse
+    website: WebsiteResponse
 
 
 # class Category(Base):

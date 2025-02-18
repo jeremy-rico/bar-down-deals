@@ -11,7 +11,7 @@ from swiftshadow.classes import ProxyInterface
 
 class ProxyRotationMiddleware:
     def __init__(self):
-        self.swift = ProxyInterface(autoRotate=True)
+        self.swift = ProxyInterface(countries=["US"], protocol="https", autoRotate=True)
 
     def process_request(self, request, spider):
         request.meta["proxy"] = self.swift.get().as_string()

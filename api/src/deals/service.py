@@ -1,5 +1,6 @@
+from src.deals.models import DealResponse
 from src.deals.repository import DealRepository
-from src.deals.schemas import DealCreate, DealResponse, DealUpdate
+from src.deals.schemas import DealCreate, DealUpdate
 
 
 class DealService:

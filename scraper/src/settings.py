@@ -39,12 +39,12 @@ ROBOTSTXT_OBEY = True
 
 # Configure the amount of time (in secs) that the downloader will wait before
 # timing out (default: 180)
-# DOWNLOAD_TIMEOUT = 30
+DOWNLOAD_TIMEOUT = 30
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 0.5
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -54,6 +54,13 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 16
 
 # Disable Telnet Console (enabled by default)
 # TELNETCONSOLE_ENABLED = False
+
+# Retry Middleware
+RETRY_ENABLED = True
+RETRY_TIMES = 2
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 418, 429]
+
+RANDOM_UA_PER_PROXY = True
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
@@ -78,6 +85,7 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
     "scraper.src.middlewares.ProxyRotationMiddleware": 350,
     "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
+    "scrapy.downloadermiddlewares.retry.RetryMiddleware": 500,
     "scraper.src.middlewares.WebScraperDownloaderMiddleware": 543,
 }
 

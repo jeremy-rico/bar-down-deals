@@ -3,8 +3,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
-from src.deals.models import Deal, Product, Website
-from src.deals.schemas import DealCreate, DealResponse, DealUpdate
+from src.deals.models import Deal, DealResponse, Product, Website
+from src.deals.schemas import DealCreate, DealUpdate
 
 
 class DealRepository:
@@ -49,8 +49,8 @@ class DealRepository:
         Raises:
             NotFoundException: If deal not found
         """
-        query = select(Deal).where(Deal.id == deal_id)
-        result = await self.session.execute(query)
+        stmt = select(Deal).where(Deal.id == deal_id)
+        result = await self.session.execute(stmt)
         deal = result.scalar_one_or_none()
         # deal = result.scalar.first()
 
@@ -64,9 +64,8 @@ class DealRepository:
         Returns:
             List[Deal]: List of all deals
         """
-        query = select(Deal)  # .join(Deal.product_id)
-        result = await self.session.execute(query)
-        # print(result.scalars().first())
+        stmt = select(Deal)
+        result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
     async def update(self, deal_id: int, deal_data: DealUpdate) -> Deal:

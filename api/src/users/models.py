@@ -5,14 +5,14 @@ from sqlmodel import Field, SQLModel
 class UserBase(SQLModel):
     """User model."""
 
-    email: str = Field(max_length=255, unique=True)
+    email: EmailStr = Field(max_length=255, unique=True)
 
 
 class User(UserBase, table=True):
     """User table definition"""
 
     id: int | None = Field(default=None, primary_key=True)
-    email: str = Field(max_length=255, unique=True, index=True)
+    email: EmailStr = Field(max_length=255, unique=True, index=True)
     hashed_password: str
 
 

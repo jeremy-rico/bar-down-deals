@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -27,7 +27,7 @@ def get_password_hash(password: str) -> str:
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """Create JWT access token."""
     to_encode = data.copy()
-    expire = datetime.now(datetime.timezone.utc) + (
+    expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.JWT_EXPIRATION)
     )
     to_encode.update({"exp": expire})
@@ -46,15 +46,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(
             token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
         )
-        user_id: str = payload.get("sub")
+        user_id: str | None = payload.get("sub")
         if user_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
     # Import here to avoid circular imports
-    from api.core.database import get_session
-    from api.src.users.service import UserService
+    from src.core.database import get_session
+    from src.users.service import UserService
 
     async for session in get_session():
         user = await UserService(session).get_user(int(user_id))
