@@ -1,13 +1,14 @@
 from datetime import datetime
+from decimal import Decimal
 
 # from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String, func
-from sqlmodel import Field, Relationship, SQLModel, func
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint, func
 
 
 # ======================+====== Website Models ==================================
 class WebsiteBase(SQLModel):
     name: str = Field(max_length=255)
-    url: str
+    url: str = Field(unique=True)
 
 
 class Website(WebsiteBase, table=True):
@@ -42,24 +43,25 @@ class Product(ProductBase, table=True):
 
 # ============================== Deal Models ===================================
 class DealBase(SQLModel):
-
-    price: float
-    original_price: float | None
-    discount: float | None
+    price: Decimal = Field(max_digits=10, decimal_places=2)
+    original_price: Decimal | None = Field(max_digits=10, decimal_places=2)
+    discount: Decimal | None = Field(max_digits=4, decimal_places=2)
     url: str
 
 
 class Deal(DealBase, table=True):
+    __table_args__ = (UniqueConstraint("price", "url", name="price_url_unique"),)
+
     id: int | None = Field(default=None, primary_key=True)
     product_id: int = Field(foreign_key="product.id", ondelete="CASCADE")
     website_id: int = Field(foreign_key="website.id", ondelete="CASCADE")
-    scraped_at: datetime = Field(default=func.now())
+    last_scraped: datetime = Field(default=func.now())
 
     product: Product = Relationship(back_populates="deals")
     website: Website = Relationship(back_populates="deals")
 
 
-class DealPublic(DealBase):
+class DealResponse(DealBase):
     pass
 
 

@@ -1,11 +1,10 @@
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.core.logging import get_logger
 from src.core.security import get_password_hash
-from src.users.models import User
-from src.users.schemas import UserCreate
+from src.users.models import User, UserCreate
 
 logger = get_logger(__name__)
 
@@ -31,7 +30,9 @@ class UserRepository:
         # Check if user exists
         existing_user = await self.get_by_email(user_data.email)
         if existing_user:
-            raise AlreadyExistsException("Email already registered")
+            raise AlreadyExistsException(
+                f"User with email {user_data.email} already exists"
+            )
 
         # Create user
         user = User(

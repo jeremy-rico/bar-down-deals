@@ -1,6 +1,3 @@
-# import boto3
-
-
 def clean_price(s: str):
     """
     Remove dollar symbol from string
@@ -19,8 +16,8 @@ def clean_brand(s: str):
     return s
 
 
-def get_discount(salePrice: float, originalPrice: float | None) -> str | None:
+def get_discount(salePrice: float, originalPrice: float | None) -> float | None:
     if not originalPrice:
         return None
     salePrice, originalPrice = float(salePrice), float(originalPrice)
-    return f"{(originalPrice - salePrice) / originalPrice * 100:.2f}"
+    return (originalPrice - salePrice) / originalPrice * 100

@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 # shared model definitions
@@ -21,6 +22,7 @@ class PostgresPipeline:
     @classmethod
     def from_crawler(cls, crawler):
         database_url = crawler.settings.get("DATABASE_URL")
+        logging.getLogger("botocore").setLevel(crawler.settings.get("BOTO_LOG_LEVEL"))
         return cls(database_url)
 
     def open_spider(self, spider):
@@ -42,7 +44,7 @@ class PostgresPipeline:
         if not adapter.get("price"):
             raise DropItem("Missing Price")
 
-    def upsert_website(self, spider):
+    def upsert_website(self, spider) -> Website:
         """
         UPDATE website timestamp or INSERT new website
 
@@ -67,7 +69,7 @@ class PostgresPipeline:
 
         return result.scalar()
 
-    def upsert_product(self, item):
+    def upsert_product(self, item) -> Product:
         """
         INSERT new product or do nothing
 
@@ -92,9 +94,37 @@ class PostgresPipeline:
 
         return product
 
-    def process_item(self, item, spider):
+    def upsert_deal(self, item, product) -> Deal:
+        """Upsert deal"""
+        discount = get_discount(
+            item.get("price"),
+            item.get("original_price", None),
+        )
+
+        stmt = (
+            insert(Deal)
+            .values(
+                product_id=product.id,
+                website_id=self.website.id,
+                price=item.get("price"),
+                original_price=item.get("original_price", None),
+                discount=discount,
+                url=item.get("url"),
+            )
+            .on_conflict_do_update(
+                constraint="price_url_unique", set_=dict(last_scraped=datetime.now())
+            )
+            .returning(Deal)
+        )
+
+        result = self.session.execute(stmt)
+        self.session.commit()
+
+        return result.scalar()
+
+    def process_item(self, item, spider) -> Deal:
         """
-        Validate item, upsert website, insert product and deal details to database
+        Validate item, upsert website, product, and deal details to database
         """
         # TODO: Exception handling
         self.validate(item)
@@ -102,19 +132,6 @@ class PostgresPipeline:
         # Insert product details
         product = self.upsert_product(item)
 
-        discount = get_discount(
-            item.get("price"),
-            item.get("original_price", None),
-        )
-
         # Insert deal details
-        deal = Deal(
-            product_id=product.id,
-            website_id=self.website.id,
-            price=item.get("price"),
-            original_price=item.get("original_price", None),
-            discount=discount,
-            url=item.get("url"),
-        )
-        self.session.add(deal)
-        self.session.flush()
+        deal = self.upsert_deal(item, product)
+        return deal

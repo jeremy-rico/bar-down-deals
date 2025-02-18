@@ -1,6 +1,7 @@
 import asyncio
 import importlib
 import os
+import sys
 from logging.config import fileConfig
 from pathlib import Path
 
@@ -8,6 +9,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
+
+# Add the project root directory to the Python path
+sys.path.append(str(Path(__file__).parent.parent))
 
 from alembic import context
 from src.core.config import settings

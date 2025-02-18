@@ -7,8 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_session
 from src.core.logging import get_logger
 from src.core.security import get_current_user
-from src.users.models import User
-from src.users.schemas import LoginData, Token, UserCreate, UserResponse
+from src.users.models import LoginData, Token, User, UserCreate, UserResponse
 from src.users.service import UserService
 
 logger = get_logger(__name__)

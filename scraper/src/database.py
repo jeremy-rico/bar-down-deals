@@ -10,7 +10,7 @@ def get_session(database_url: URL) -> Session:
         Session: Database session
     """
     # Create engine
-    engine = create_engine(database_url, echo=True, future=True)
+    engine = create_engine(database_url, echo=False, future=True)
 
     # Create session
     return Session(engine)
