@@ -83,7 +83,7 @@ class PostgresPipeline:
             product = Product(
                 name=item.get("name"),
                 brand=item.get("brand", None),
-                category_id=item.get("category_id", None),
+                # category_id=item.get("category_id", None),
                 image_url=item.get("images")[0]["path"] if item.get("images") else "",
                 description=item.get("description", None),
             )
@@ -128,6 +128,7 @@ class PostgresPipeline:
         """
         # TODO: Exception handling
         self.validate(item)
+        print(item)
 
         # Insert product details
         product = self.upsert_product(item)

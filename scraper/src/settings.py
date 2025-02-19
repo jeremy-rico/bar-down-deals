@@ -27,6 +27,7 @@ DATABASE_URL = URL.create(
     database=get_ssm_param("DB_NAME", "postgres"),
 )
 
+SCRAPERAPI_KEY = get_ssm_param("SCRAPERAPI_KEY", "", secure=True)
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "scraper (+http://www.yourdomain.com)"
@@ -44,9 +45,9 @@ DOWNLOAD_TIMEOUT = 30
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0.5
+DOWNLOAD_DELAY = 2
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 5
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -57,10 +58,10 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 16
 
 # Retry Middleware
 RETRY_ENABLED = True
-RETRY_TIMES = 2
+RETRY_TIMES = 10
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 418, 429]
 
-RANDOM_UA_PER_PROXY = True
+# RANDOM_UA_PER_PROXY = True
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
@@ -82,9 +83,9 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # NOTE: Rotating user agents fixed 460 response
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
-    "scraper.src.middlewares.ProxyRotationMiddleware": 350,
-    "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
+    # "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
+    # "scraper.src.middlewares.ProxyRotationMiddleware": 350,
+    # "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
     "scrapy.downloadermiddlewares.retry.RetryMiddleware": 500,
     "scraper.src.middlewares.WebScraperDownloaderMiddleware": 543,
 }
