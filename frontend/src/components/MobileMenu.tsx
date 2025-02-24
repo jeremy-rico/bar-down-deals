@@ -1,4 +1,4 @@
-import { headerLinks, navigation } from "@/constants/index.tsx";
+import { navigation } from "@/constants/index.tsx";
 import HeaderLinks from "@/components/HeaderLinks.tsx";
 import { DisclosureButton } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
