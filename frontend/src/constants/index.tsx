@@ -1,4 +1,4 @@
-export const categories = [
+export const navigation = [
   { id: 1, title: "New", href: "/deals/new" },
   { id: 2, title: "Sticks", href: "/deals/sticks" },
   { id: 3, title: "Skates", href: "/deals/skates" },

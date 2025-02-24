@@ -1,17 +1,28 @@
-import HamburgerIcon from "@/components/icons/HamburgerIcon.tsx";
-import XIcon from "@/components/icons/XIcon.tsx";
-import MobileNavBar from "@/components/MobileNavBar.tsx";
+import { headerLinks, navigation } from "@/constants/index.tsx";
+import HeaderLinks from "@/components/HeaderLinks.tsx";
+import { DisclosureButton } from "@headlessui/react";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-export default function MobileMenu(isOpen, onOpen) {
+export default function MobileMenu() {
   return (
-    <nav className="md:hidden">
-      <button
-        className="relative inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
-        onClick={onOpen}
-      >
-        {isOpen ? <XIcon /> : <HamburgerIcon />}
-      </button>
-      {isOpen && <MobileNavBar />}
-    </nav>
+    <div className="border-t-2 border-blue-600">
+      <div className="flex justify-evenly py-4 text-white">
+        <HeaderLinks />
+      </div>
+
+      <div className="flex-col px-4 text-white">
+        {navigation.map((item) => (
+          <DisclosureButton
+            key={item.title}
+            as="a"
+            href={item.href}
+            className="flex justify-between items-center py-4 "
+          >
+            {item.title}
+            <ChevronRightIcon className="block mx-2 text-white size-9" />
+          </DisclosureButton>
+        ))}
+      </div>
+    </div>
   );
 }

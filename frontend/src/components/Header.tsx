@@ -1,49 +1,42 @@
 "use client";
-import { useState } from "react";
-import {
-  Disclosure,
-  DisclosureButton,
-  DiscolsurePanel,
-  Input,
-  Menu,
-  MenuButton,
-  MenuItems,
-  MenuItem,
-} from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Disclosure, DisclosurePanel } from "@headlessui/react";
 import Search from "@/components/Search.tsx";
+import HeaderLinks from "@/components/HeaderLinks.tsx";
+import NavBar from "@/components/NavBar.tsx";
+import MobileMenu from "@/components/MobileMenu.tsx";
+import MobileMenuButton from "@/components/MobileMenuButton.tsx";
 
 export default function Header() {
   //const [isOpen, setIsOpen] = useState(false);
   return (
     <Disclosure as="nav" className="bg-black">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className="relative flex h-16 items-center justify-between">
-          <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
-            {/* Mobile menu button*/}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
-              <span className="absolute -inset-0.5" />
-              <span className="sr-only">Open main menu</span>
-              <Bars3Icon
-                aria-hidden="true"
-                className="block size-6 group-data-open:hidden"
-              />
-              <XMarkIcon
-                aria-hidden="true"
-                className="hidden size-6 group-data-open:block"
-              />
-            </DisclosureButton>
-          </div>
+        <div className="flex h-16 items-center justify-between">
           {/* Logo Hero */}
-          <a className="text-white text-lg">LOGO</a>
+          <a className="text-blue-500 text-2xl">LOGO</a>
+
+          {/* Search Form */}
           <Search />
-          <div>
-            <a className="text-white text-lg">About</a>
-            <a className="text-white text-lg">Contact</a>
-            <a className="text-white text-lg">Sign In</a>
+
+          {/* Header Links */}
+          <div className="hidden md:flex">
+            <HeaderLinks />
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <MobileMenuButton />
           </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      <DisclosurePanel className="md:hidden">
+        <MobileMenu />
+      </DisclosurePanel>
+
+      {/* Navigation Bar Button */}
+      <NavBar />
     </Disclosure>
   );
 }
