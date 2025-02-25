@@ -1,5 +1,14 @@
-import Image from "next/image";
+//import Image from "next/image";
+import TodaysDeals from "@/components/TodaysDeals.tsx";
 
 export default function Home() {
-  return <h1>Welcome to Bar Down Deals</h1> 
+  return (
+    <div className="mx-auto max-w-2xl px-3 pt-2 md:py-8 md:max-w-7xl 2xl:px-0">
+      <TodaysDeals />
+      <TodaysDeals />
+      <TodaysDeals />
+      <TodaysDeals />
+      <TodaysDeals />
+    </div>
+  );
 }

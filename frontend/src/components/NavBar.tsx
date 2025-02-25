@@ -4,7 +4,7 @@ import { navigation } from "@/constants/index.tsx";
 
 export default function NavBar() {
   const items = navigation.map((item) => (
-    <li key={item.id}>
+    <li key={item.title}>
       <Link href={item.href}>{item.title}</Link>
     </li>
   ));

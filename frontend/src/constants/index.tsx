@@ -1,15 +1,15 @@
 export const navigation = [
-  { id: 1, title: "New", href: "/deals/new" },
-  { id: 2, title: "Sticks", href: "/deals/sticks" },
-  { id: 3, title: "Skates", href: "/deals/skates" },
-  { id: 4, title: "Protective", href: "/deals/protective" },
-  { id: 5, title: "Accessories", href: "/deals/accessories" },
-  { id: 6, title: "Bags", href: "/deals/bags" },
-  { id: 7, title: "Apparel", href: "/deals/apparel" },
-  { id: 8, title: "Jerseys", href: "/deals/jerseys" },
-  { id: 9, title: "Goalie", href: "/deals/goalie" },
-  { id: 10, title: "Brand", href: "/deals/brands" },
-  { id: 11, title: "Coupons", href: "/coupons" },
+  { title: "New", href: "/deals/new" },
+  { title: "Sticks", href: "/deals/sticks" },
+  { title: "Skates", href: "/deals/skates" },
+  { title: "Protective", href: "/deals/protective" },
+  { title: "Bags", href: "/deals/bags" },
+  { title: "Accessories", href: "/deals/accessories" },
+  { title: "Apparel", href: "/deals/apparel" },
+  //{ title: "Jerseys", href: "/deals/jerseys" },
+  { title: "Goalie", href: "/deals/goalie" },
+  { title: "Roller", href: "/deals/roller" },
+  { title: "Coupons", href: "/coupons" },
 ];
 
 export const headerLinks = [
