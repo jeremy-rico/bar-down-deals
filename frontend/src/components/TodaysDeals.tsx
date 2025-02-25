@@ -1,50 +1,10 @@
-const deals = [
-  {
-    id: 1,
-    product: {
-      id: 1,
-      name: "Bauer Nexus Senior Hockey Stick",
-      brand: "Bauer",
-      image_url: "/bauer-hockey-stick-nexus-sync-sr_1.webp",
-      description: "A very cool hockey stick",
-    },
-    website: {
-      id: 1,
-      name: "Hockey Site",
-      url: "https://www.hockesite.com",
-    },
-    price: 198.99,
-    original_price: 205.89,
-    discount: 23.0,
-    href: "https://www.hockeymonkey.com/bauer-hockey-stick-nexus-sync-sr.html",
-    last_scraped: 1212412,
-  },
-  {
-    id: 2,
-    product: {
-      id: 1,
-      name: "Bauer Nexus Senior Hockey Stick",
-      brand: "Bauer",
-      image_url: "/bauer-hockey-stick-nexus-sync-sr_1.webp",
-      description: "A very cool hockey stick",
-    },
-    website: {
-      id: 1,
-      name: "Hockey Site",
-      url: "https://www.hockesite.com",
-    },
-    price: 198.99,
-    original_price: 205.89,
-    discount: 23.08,
-    href: "https://www.hockeymonkey.com/bauer-hockey-stick-nexus-sync-sr.html",
-    last_scraped: 1212412,
-  },
-];
-
 import DealCard from "@/components/DealCard.tsx";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-export default function TodayDeal() {
+export default async function TodayDeal() {
+  const data = await fetch("http://13.52.178.97:8000/deals");
+  const deals = await data.json();
+
   return (
     <div id="todays deals" className="my-4">
       <a href="/deals/today" className="flex items-center">

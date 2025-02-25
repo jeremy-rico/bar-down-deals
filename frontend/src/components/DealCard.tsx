@@ -1,10 +1,12 @@
 import Image from "next/image";
+const s3_prefix =
+  "https://bar-down-deals-bucket.s3.us-west-1.amazonaws.com/images/";
 export default function DealCard({ deal }) {
   return (
     <div className="group relative">
       {/* Product Image */}
       <Image
-        src={deal.product.image_url}
+        src={s3_prefix + deal.product.image_url}
         width={500}
         height={500}
         alt="product image"
@@ -16,7 +18,7 @@ export default function DealCard({ deal }) {
       <div id="deal info" className="mt-4 flex-col justify-between">
         <div>
           <h3 className="text-md text-gray-800">
-            <a href={deal.href}>
+            <a href={deal.url}>
               <span aria-hidden="true" className="absolute inset-0" />
               {deal.product.name}
             </a>
@@ -27,11 +29,20 @@ export default function DealCard({ deal }) {
         <div id="price info">
           <p className="text-lg font-extrabold text-red-500 ">${deal.price}</p>
           <div className="flex gap-x-3">
-            <p className="text-md font-extralight text-gray-500">
+            <p className="text-md font-extralight line-through text-gray-500">
               ${deal.original_price}
             </p>
-            <p className="text-md font-bold text-red-500">{deal.discount}%</p>
+            <p className="text-md font-bold text-red-500">
+              {" "}
+              You save {deal.discount}%
+            </p>
           </div>
+        </div>
+
+        {/* Website Info */}
+        <div>
+          <p className="pt-2 text-sm text-gray-400">by {deal.website.name}</p>
+          {/*<p>Found at {deal.last_scraped}</p>*/}
         </div>
       </div>
     </div>

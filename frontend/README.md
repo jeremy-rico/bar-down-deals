@@ -34,3 +34,30 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Getting images from s3
+
+Your s3 bucket is set to private by default. To make the bucket public:
+
+1. AWS Console
+2. Go to your bucker > Permissions
+3. Scroll to Block Public access > disable
+4. Add the following policy under Bucket Policy
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bar-down-deals-bucket/images/full/*.jpg"
+    }
+  ]
+}
+```
+
+This ensures only puublic access for read and not other CORS methods (PUT,
+UPDATE, DELETE)
