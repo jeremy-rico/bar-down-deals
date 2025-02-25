@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 # from sqlalchemy import DECIMAL, TIMESTAMP, ForeignKey, String, func
-from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint, func
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, UniqueConstraint
 
 
 # ======================+====== Website Models ==================================
@@ -13,7 +13,7 @@ class WebsiteBase(SQLModel):
 
 class Website(WebsiteBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    last_scraped: datetime | None = Field(default=func.now())
+    last_scraped: datetime = Field(sa_column=Column(DateTime(timezone=True)))
 
     deals: list["Deal"] = Relationship(back_populates="website", cascade_delete=True)
 
@@ -37,7 +37,7 @@ class ProductBase(SQLModel):
 class Product(ProductBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     # category_id: int | None = Field(default=None, foreign_key="category.id")
-    created_at: datetime = Field(default=func.now())
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
 
     deals: list["Deal"] = Relationship(back_populates="product", cascade_delete=True)
 
@@ -63,7 +63,7 @@ class Deal(DealBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     product_id: int = Field(foreign_key="product.id", ondelete="CASCADE")
     website_id: int = Field(foreign_key="website.id", ondelete="CASCADE")
-    last_scraped: datetime = Field(default=func.now())
+    last_scraped: datetime = Field(sa_column=Column(DateTime(timezone=True)))
 
     product: Product = Relationship(
         back_populates="deals", sa_relationship_kwargs={"lazy": "selectin"}

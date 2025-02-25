@@ -1,10 +1,13 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
-from src.deals.models import Deal, DealResponse, Product, Website
-from src.deals.schemas import DealCreate, DealUpdate
+from src.deals.models import Deal
+
+# from src.deals.schemas import DealCreate, DealUpdate
 
 
 class DealRepository:
@@ -13,30 +16,59 @@ class DealRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, deal_data: DealCreate) -> Deal:
-        """Create a new deal.
-
-        Args:
-            deal_data: Deal creation data
+    async def get_all(
+        self, sort_by: str, page: int, limit: int, added_since
+    ) -> list[Deal]:
+        """Get filtered deals.
 
         Returns:
-            Deal: Created deal
-
-        Raises:
-            AlreadyExistsException: If deal with same alias already exists
+            List[Deal]: List of all deals
         """
-        deal = Deal(**deal_data.model_dump())
-        try:
-            self.session.add(deal)
-            await self.session.commit()
-            await self.session.refresh(deal)
-            return deal
-        except IntegrityError:
-            await self.session.rollback()
-            raise AlreadyExistsException(
-                f"Deal with alias {deal_data.id} already exists"
-            )
+        stmt = select(Deal)
+        if added_since:
+            timeframes = {
+                "today": datetime.now(timezone.utc) - timedelta(days=1),
+                "week": datetime.now(timezone.utc) - timedelta(weeks=1),
+                "month": datetime.now(timezone.utc) - timedelta(weeks=4),
+                "year": datetime.now(timezone.utc) - timedelta(days=365),
+            }
+            if added_since in timeframes:
+                stmt = stmt.filter(Deal.last_scraped >= timeframes[added_since])
 
+        if sort_by == "date":
+            stmt = stmt.order_by(Deal.last_scraped)
+        elif sort_by == "discount":
+            stmt = stmt.order_by(Deal.discount.desc())
+
+        offset = (page - 1) * limit
+        stmt = stmt.offset(offset).limit(limit)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    # async def create(self, deal_data: DealCreate) -> Deal:
+    #     """Create a new deal.
+    #
+    #     Args:
+    #         deal_data: Deal creation data
+    #
+    #     Returns:
+    #         Deal: Created deal
+    #
+    #     Raises:
+    #         AlreadyExistsException: If deal with same alias already exists
+    #     """
+    #     deal = Deal(**deal_data.model_dump())
+    #     try:
+    #         self.session.add(deal)
+    #         await self.session.commit()
+    #         await self.session.refresh(deal)
+    #         return deal
+    #     except IntegrityError:
+    #         await self.session.rollback()
+    #         raise AlreadyExistsException(
+    #             f"Deal with alias {deal_data.id} already exists"
+    #         )
+    #
     async def get_by_id(self, deal_id: int) -> Deal:
         """Get deal by ID.
 
@@ -58,56 +90,47 @@ class DealRepository:
             raise NotFoundException(f"Deal with id {deal_id} not found")
         return deal
 
-    async def get_all(self) -> list[Deal]:
-        """Get all deals.
-
-        Returns:
-            List[Deal]: List of all deals
-        """
-        stmt = select(Deal)
-        result = await self.session.execute(stmt)
-        return list(result.scalars().all())
-
-    async def update(self, deal_id: int, deal_data: DealUpdate) -> Deal:
-        """Update deal by ID.
-
-        Args:
-            deal_id: Deal ID
-            deal_data: Deal update data
-
-        Returns:
-            Deal: Updated deal
-
-        Raises:
-            NotFoundException: If deal not found
-        """
-        update_data = deal_data.model_dump(exclude_unset=True)
-        if not update_data:
-            raise ValueError("No fields to update")
-
-        query = update(Deal).where(Deal.id == deal_id).values(**update_data)
-        result = await self.session.execute(query)
-
-        if result.rowcount == 0:
-            raise NotFoundException(f"Deal with id {deal_id} not found")
-
-        await self.session.commit()
-        return await self.get_by_id(deal_id)
-
-    async def delete(self, deal_id: int) -> None:
-        """Delete deal by ID.
-
-        Args:
-            deal_id: Deal ID
-
-        Raises:
-            NotFoundException: If deal not found
-        """
-        query = delete(Deal).where(Deal.id == deal_id)
-        result = await self.session.execute(query)
-
-        if result.rowcount == 0:
-            raise NotFoundException(f"Deal with id {deal_id} not found")
+    # async def update(self, deal_id: int, deal_data: DealUpdate) -> Deal:
+    #     """Update deal by ID.
+    #
+    #     Args:
+    #         deal_id: Deal ID
+    #         deal_data: Deal update data
+    #
+    #     Returns:
+    #         Deal: Updated deal
+    #
+    #     Raises:
+    #         NotFoundException: If deal not found
+    #     """
+    #     update_data = deal_data.model_dump(exclude_unset=True)
+    #     if not update_data:
+    #         raise ValueError("No fields to update")
+    #
+    #     query = update(Deal).where(Deal.id == deal_id).values(**update_data)
+    #     result = await self.session.execute(query)
+    #
+    #     if result.rowcount == 0:
+    #         raise NotFoundException(f"Deal with id {deal_id} not found")
+    #
+    #     await self.session.commit()
+    #     return await self.get_by_id(deal_id)
+    #
+    # async def delete(self, deal_id: int) -> None:
+    #     """Delete deal by ID.
+    #
+    #     Args:
+    #         deal_id: Deal ID
+    #
+    #     Raises:
+    #         NotFoundException: If deal not found
+    #     """
+    #     query = delete(Deal).where(Deal.id == deal_id)
+    #     result = await self.session.execute(query)
+    #
+    #     if result.rowcount == 0:
+    #         raise NotFoundException(f"Deal with id {deal_id} not found")
+    #
 
 
 # class HeroRepository:

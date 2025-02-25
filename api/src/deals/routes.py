@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Query, status
 
 # from api.src.users.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +10,7 @@ from src.core.logging import get_logger
 from src.core.security import get_current_user
 from src.deals.models import Deal, DealResponse
 from src.deals.repository import DealRepository
+from src.deals.schemas import FilterParams
 from src.deals.service import DealService
 from src.users.models import User
 
@@ -24,14 +27,20 @@ def get_deal_service(session: AsyncSession = Depends(get_session)) -> DealServic
 
 
 @router.get("/", response_model=list[DealResponse])
-async def get_all_deals(
+async def get_deals(
+    filter_query: Annotated[FilterParams, Query()],
     service: DealService = Depends(get_deal_service),
     # current_user: User = Depends(get_current_user),
 ) -> list[DealResponse]:
-    """Get all deals."""
+    """Get paginated deals."""
     logger.debug("Fetching all deals")
     try:
-        deals = await service.get_all_deals()
+        deals = await service.get_deals(
+            filter_query.sort_by,
+            filter_query.page,
+            filter_query.limit,
+            filter_query.added_since,
+        )
         logger.info(f"Retrieved {len(deals)} deals")
         return deals
     except Exception as e:
