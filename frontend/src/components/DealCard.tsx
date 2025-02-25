@@ -11,7 +11,7 @@ export default function DealCard({ deal }) {
         height={500}
         alt="product image"
         placeholder="empty" // "empty" | "blur" | "data:image/..."
-        className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+        className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-70"
       />
 
       {/* Product Info */}

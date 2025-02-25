@@ -17,3 +17,5 @@ export const headerLinks = [
   { id: 2, title: "Contact", href: "/contact" },
   { id: 3, title: "Sign In", href: "/signin" },
 ];
+
+export const api = "http://13.52.178.97:8000/";
