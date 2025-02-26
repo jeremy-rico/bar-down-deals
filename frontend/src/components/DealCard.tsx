@@ -7,11 +7,11 @@ export default function DealCard({ deal }) {
       {/* Product Image */}
       <Image
         src={s3_prefix + deal.product.image_url}
-        width={500}
-        height={500}
+        width={200}
+        height={200}
         alt="product image"
         placeholder="empty" // "empty" | "blur" | "data:image/..."
-        className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-70"
+        className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 "
       />
 
       {/* Product Info */}
@@ -23,26 +23,20 @@ export default function DealCard({ deal }) {
               {deal.product.name}
             </a>
           </h3>
+          <p className="text-sm text-gray-400">by {deal.website.name}</p>
         </div>
 
         {/* Price Info */}
-        <div id="price info">
+        <div id="price info" className="pt-2">
           <p className="text-lg font-extrabold text-red-500 ">${deal.price}</p>
-          <div className="flex gap-x-3">
+          <div className="flex items-center gap-x-3">
             <p className="text-md font-extralight line-through text-gray-500">
               ${deal.original_price}
             </p>
-            <p className="text-md font-bold text-red-500">
-              {" "}
+            <p className="hidden md:block whitespace-nowrap text-md font-bold text-red-500">
               You save {deal.discount}%
             </p>
           </div>
-        </div>
-
-        {/* Website Info */}
-        <div>
-          <p className="pt-2 text-sm text-gray-400">by {deal.website.name}</p>
-          {/*<p>Found at {deal.last_scraped}</p>*/}
         </div>
       </div>
     </div>

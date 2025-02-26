@@ -8,18 +8,21 @@ import {
 
 export default function HeaderLinks() {
   const links = headerLinks.map((item) => (
-    <li key={item.id} className="flex justify-between items-center">
-      <Link href={item.href} className="whitespace-nowrap">
+    <li key={item.id} className="px-2 py-2 rounded hover:bg-gray-800">
+      <Link
+        href={item.href}
+        className="flex items-center gap-x-2 whitespace-nowrap"
+      >
         {item.title}
+        {item.title == "About" && <QuestionMarkCircleIcon className="size-7" />}
+        {item.title == "Contact" && <PhoneIcon className="size-6" />}
+        {item.title == "Sign In" && <UserCircleIcon className="size-7" />}
       </Link>
-      {item.title == "About" && (
-        <QuestionMarkCircleIcon className="mx-3 size-7" />
-      )}
-      {item.title == "Contact" && <PhoneIcon className="mx-3 size-6" />}
-      {item.title == "Sign In" && <UserCircleIcon className="mx-3 size-7" />}
     </li>
   ));
   return (
-    <ul className="flex text-white text-lg lg:text-xl gap-x-3">{links}</ul>
+    <ul className="flex justify-between gap-x-2 text-white text-lg lg:text-xl">
+      {links}
+    </ul>
   );
 }
