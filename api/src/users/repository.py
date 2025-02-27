@@ -57,8 +57,8 @@ class UserRepository:
         Raises:
             NotFoundException: If user not found
         """
-        query = select(User).where(User.id == user_id)
-        result = await self.session.execute(query)
+        stmt = select(User).where(User.id == user_id)
+        result = await self.session.execute(stmt)
         user = result.scalar_one_or_none()
 
         if not user:

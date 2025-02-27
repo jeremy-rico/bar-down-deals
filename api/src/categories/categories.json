@@ -1,0 +1,35 @@
+{
+  "New": [],
+  "Sticks": [],
+  "Skates": [],
+  "Protective": [
+    "Helmets",
+    "Cages & Sheilds",
+    "Gloves",
+    "Shoulder Pads",
+    "Shin Guards",
+    "Elbow Pads",
+    "Pants",
+    "Pant Shells",
+    "Jocks & Undergarments"
+  ],
+  "Bags": [],
+  "Accessories": [],
+  "Apparel": [],
+  "Goalie": [
+    "Goalie Sticks",
+    "Goalie Skates",
+    "Leg Pads",
+    "Masks",
+    "Blockers",
+    "Chest & Arm",
+    "Pants",
+    "Knee Protectors",
+    "Catchers",
+    "Goalie Jocks",
+    "Goalie Bags"
+  ],
+  "Roller": ["Inline Skates", "Inline Wheels", "Pants"],
+  "Coupons": [],
+  "Promos": []
+}

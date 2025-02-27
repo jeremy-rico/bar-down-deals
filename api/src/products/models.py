@@ -1,0 +1,45 @@
+from datetime import datetime
+from typing import TYPE_CHECKING, Literal
+
+from pydantic import BaseModel
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from src.categories.models import Category, CategoryResponse
+    from src.deals.models import Deal
+
+
+# ============================= Product Models =================================
+class ProductBase(SQLModel):
+    # TODO: Find a better way of avoiding duplicate products
+    name: str = Field(max_length=255, index=True, unique=True)
+    brand: str | None = Field(max_length=255)
+    image_url: str | None
+    description: str | None
+
+
+class Product(ProductBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    category_id: int | None = Field(
+        default=None, foreign_key="category.id", ondelete="SET NULL"
+    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
+
+    deals: list["Deal"] = Relationship(back_populates="product", cascade_delete=True)
+    category: "Category" = Relationship(back_populates="products")
+
+    def __repr__(self) -> str:
+        return f"Product(id={self.id}, name={self.name}, brand={self.brand}, created_at={self.created_at}, deals={self.deals})"
+
+
+class ProductResponse(ProductBase):
+    id: int
+    category: "CategoryResponse"
+
+
+# =========================== Filter Query Parameter Model ====================
+class FilterParams(BaseModel):
+    sort_by: Literal["date"] = "date"
+    page: int = Field(1, ge=1)
+    limit: int = Field(20, gt=0, le=100)
+    added_since: Literal["today", "week", "month", "year", "all"] = "all"
