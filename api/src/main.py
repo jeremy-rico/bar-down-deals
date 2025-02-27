@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    await populate_categories()
+    await populate_categories(settings.CATEGORIES)
     yield
 
 

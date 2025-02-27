@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings  # , SettingsConfigDict
+from pydantic_settings import BaseSettings
 from sqlalchemy import URL
 
 from src.aws.utils import get_ssm_param
@@ -28,6 +28,50 @@ class Settings(BaseSettings):
     #     env_file=".env",
     #     env_file_encoding="utf-8",
     # )
+
+    CATEGORIES: list[str] = [
+        # Major Categories
+        "Sticks",
+        "Skates",
+        "Protective",
+        "Bags",
+        "Roller",
+        "Goalie",
+        "Apparel",
+        "Accessories",
+        # Sizing
+        "Senior",
+        "Intermediate",
+        "Junior",
+        "Youth",
+        # Stick Type
+        "Composite",
+        "Street",
+        "Wooden",
+        # Protective
+        "Helmets",
+        "Cages & Sheilds",
+        "Gloves",
+        "Shoulder Pads",
+        "Shin Guards",
+        "Elbow Pads",
+        "Pants",
+        "Pant Shells",
+        "Jocks",
+        # Goalie
+        "Leg Pads",
+        "Masks",
+        "Blockers",
+        "Chest & Arm",
+        "Knee Protectors",
+        "Catchers",
+        # Roller
+        "Inline Skates",
+        "Inline Wheels",
+        # Savings
+        "Coupons",
+        "Promos",
+    ]
 
 
 settings = Settings()

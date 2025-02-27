@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Literal, Optional, Required
+from typing import TYPE_CHECKING, Literal, Optional
 
 from pydantic import BaseModel
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, UniqueConstraint

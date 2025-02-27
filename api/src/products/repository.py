@@ -31,12 +31,10 @@ class ProductRepository:
                 "year": datetime.now(timezone.utc) - timedelta(days=365),
             }
             if added_since in timeframes:
-                stmt = stmt.filter(Product.last_scraped >= timeframes[added_since])
+                stmt = stmt.filter(Product.created_at >= timeframes[added_since])
 
         if sort_by == "date":
-            stmt = stmt.order_by(Product.last_scraped)
-        elif sort_by == "discount":
-            stmt = stmt.order_by(Product.discount.desc())
+            stmt = stmt.order_by(Product.created_at)
 
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)
