@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Literal, Optional, Required
+from typing import TYPE_CHECKING, Literal, Optional
 
 from pydantic import BaseModel
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, UniqueConstraint
@@ -17,7 +17,7 @@ class WebsiteBase(SQLModel):
 
 class Website(WebsiteBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    last_scraped: datetime = Field(sa_column=Column(DateTime(timezone=True)))
+    updated_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
 
     deals: list["Deal"] = Relationship(back_populates="website", cascade_delete=True)
 
@@ -34,12 +34,10 @@ class DealBase(SQLModel):
     price: Decimal = Field(max_digits=10, decimal_places=2)
     original_price: Decimal | None = Field(max_digits=10, decimal_places=2)
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
-    url: str
+    url: str = Field(unique=True)
 
 
 class Deal(DealBase, table=True):
-    __table_args__ = (UniqueConstraint("price", "url", name="price_url_unique"),)
-
     id: int | None = Field(default=None, primary_key=True)
     product_id: int = Field(foreign_key="product.id", ondelete="CASCADE")
     website_id: int = Field(foreign_key="website.id", ondelete="CASCADE")
@@ -60,7 +58,8 @@ class DealCreate(DealBase):
 
 class DealResponse(DealBase):
     id: int
-    last_scraped: datetime
+    updated_at: datetime
+    created_at: datetime
     product: "ProductResponse"
     website: "WebsiteResponse"
 

@@ -33,10 +33,10 @@ class DealRepository:
                 "year": datetime.now(timezone.utc) - timedelta(days=365),
             }
             if added_since in timeframes:
-                stmt = stmt.filter(Deal.last_scraped >= timeframes[added_since])
+                stmt = stmt.filter(Deal.created_at >= timeframes[added_since])
 
         if sort_by == "date":
-            stmt = stmt.order_by(Deal.last_scraped)
+            stmt = stmt.order_by(Deal.created_at)
         elif sort_by == "discount":
             stmt = stmt.order_by(Deal.discount.desc())
 

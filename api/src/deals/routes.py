@@ -3,13 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.categories.models import CategoryResponse
 from src.core.database import get_session
 from src.core.logging import get_logger
 from src.deals.models import DealResponse, FilterParams, WebsiteResponse
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
-from src.products.models import ProductResponse
+from src.products.models import CategoryResponse, ProductResponse
 
 # Set up logger for this module
 logger = get_logger(__name__)

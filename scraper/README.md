@@ -25,7 +25,7 @@ For other distros and docker see the [psycopg2 docs](https://www.psycopg.org/doc
 
 ### Editing pythonpath in venv for neovim lspconfig
 
-Scrapy's root directory is at ../../bar-down-deals since that's where scrapy.cfg
+Scrapy's root directory is at /bar-down-deals since that's where scrapy.cfg
 is located. This gives scrapy access to modules in the api project. Therefore
 imports in this project will need to look like this
 

@@ -3,18 +3,11 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from urllib.parse import urlencode
+
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter, is_item
-from scrapy import signals
-from swiftshadow.classes import ProxyInterface
-
-
-class ProxyRotationMiddleware:
-    def __init__(self):
-        self.swift = ProxyInterface(countries=["US"], protocol="https", autoRotate=True)
-
-    def process_request(self, request, spider):
-        request.meta["proxy"] = self.swift.get().as_string()
+from scrapy import Request, signals
 
 
 class WebScraperSpiderMiddleware:
@@ -109,3 +102,17 @@ class WebScraperDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class ScraperApiProxyMiddleware:
+    def __init__(self, scraperapi_key):
+        self.API_KEY = scraperapi_key
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(scraperapi_key=crawler.settings.get("SCRAPERAPI_KEY"))
+
+    def process_request(self, request, spider):
+        request.meta["proxy"] = (
+            f"http://scraperapi:{self.API_KEY}@proxy-server.scraperapi.com:8001"
+        )
