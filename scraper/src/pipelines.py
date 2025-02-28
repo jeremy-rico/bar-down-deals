@@ -1,8 +1,9 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 # shared model definitions
-from api.src.deals.models import Deal, Product, Website
+from api.src.deals.models import Deal, Website
+from api.src.products.models import Category, Product
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
@@ -27,7 +28,7 @@ class PostgresPipeline:
 
     def open_spider(self, spider):
         """
-        Get SQLAlchemy session
+        Get db session
         """
         self.session = get_session(self.database_url)
         self.website = self.upsert_website(spider)
@@ -56,10 +57,10 @@ class PostgresPipeline:
             .values(
                 name=spider.website_name,
                 url=spider.base_url,
-                last_scraped=datetime.now(),
+                updated_at=datetime.now(timezone.utc),
             )
             .on_conflict_do_update(
-                index_elements=["url"], set_=dict(last_scraped=datetime.now())
+                index_elements=["url"], set_=dict(updated_at=datetime.now(timezone.utc))
             )
             .returning(Website)
         )
@@ -86,6 +87,7 @@ class PostgresPipeline:
                 # category_id=item.get("category_id", None),
                 image_url=item.get("images")[0]["path"] if item.get("images") else "",
                 description=item.get("description", None),
+                created_at=datetime.now(timezone.utc),
             )
 
             self.session.add(product)
@@ -95,7 +97,9 @@ class PostgresPipeline:
         return product
 
     def upsert_deal(self, item, product) -> Deal:
-        """Upsert deal"""
+        """
+        Upsert deal. On url conflict, update price and updated_at timestamp
+        """
         discount = get_discount(
             item.get("price"),
             item.get("original_price", None),
@@ -110,9 +114,14 @@ class PostgresPipeline:
                 original_price=item.get("original_price", None),
                 discount=discount,
                 url=item.get("url"),
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
             )
             .on_conflict_do_update(
-                constraint="price_url_unique", set_=dict(last_scraped=datetime.now())
+                index_elements=["url"],
+                set_=dict(
+                    price=item.get("price"), updated_at=datetime.now(timezone.utc)
+                ),
             )
             .returning(Deal)
         )

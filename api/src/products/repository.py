@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions import NotFoundException
-from src.products.models import Product
+from src.products.models import Category, Product
 
 
 class ProductRepository:
@@ -17,8 +16,11 @@ class ProductRepository:
     async def get_all(
         self, sort_by: str, page: int, limit: int, added_since
     ) -> list[Product]:
-        """Get filtered products.
+        """
+        Get filtered products.
 
+        Args:
+            sort_by:
         Returns:
             List[Product]: List of all products
         """
@@ -41,6 +43,11 @@ class ProductRepository:
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
+    async def get_all_categories(self) -> list[Category]:
+        stmt = select(Category)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
     async def get_by_id(self, product_id: int) -> Product:
         """Get product by ID.
 
@@ -56,7 +63,6 @@ class ProductRepository:
         stmt = select(Product).where(Product.id == product_id)
         result = await self.session.execute(stmt)
         product = result.scalar_one_or_none()
-        # product = result.scalar.first()
 
         if not product:
             raise NotFoundException(f"Product with id {product_id} not found")

@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import scrapy
@@ -39,7 +38,6 @@ class HockeyMonkeySpider(scrapy.Spider):
         """
         Scrape product details, following all next links
         """
-
         # Get all products on page
         prods = response.css(self.exp["product_links"]["css"])
         prods = [prods[0]]  # TODO: Remove this

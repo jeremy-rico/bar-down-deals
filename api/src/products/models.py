@@ -4,11 +4,35 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
-from src.categories.models import CategoryProductLink
-
 if TYPE_CHECKING:
-    from src.categories.models import Category, CategoryResponse
     from src.deals.models import Deal
+
+
+# ======================== Category Product Link Table =========================
+class CategoryProductLink(SQLModel, table=True):
+    category_id: int | None = Field(
+        default=None, foreign_key="category.id", primary_key=True
+    )
+    product_id: int | None = Field(
+        default=None, foreign_key="product.id", primary_key=True
+    )
+
+
+# ============================= Category Models =================================
+class CategoryBase(SQLModel):
+    name: str = Field(max_length=255, unique=True)
+
+
+class Category(CategoryBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+    products: list["Product"] = Relationship(
+        back_populates="categories", link_model=CategoryProductLink
+    )
+
+
+class CategoryResponse(CategoryBase):
+    id: int
 
 
 # ============================= Product Models =================================
@@ -32,8 +56,8 @@ class Product(ProductBase, table=True):
     def __repr__(self) -> str:
         return (
             f"Product(id={self.id}, name={self.name}, "
-            "brand={self.brand},created_at={self.created_at}, "
-            "deals={self.deals},categories={self.categories})"
+            f"brand={self.brand},created_at={self.created_at}, "
+            f"deals={self.deals},categories={self.categories})"
         )
 
 
@@ -44,6 +68,13 @@ class ProductResponse(ProductBase):
 
 # =========================== Filter Query Parameter Model ====================
 class FilterParams(BaseModel):
+    """
+    sort_by: how to sort response
+    page: pagination
+    limit: max items per response
+    added_since: timeframe since item was added to db
+    """
+
     sort_by: Literal["date"] = "date"
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
