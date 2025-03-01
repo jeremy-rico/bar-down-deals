@@ -34,6 +34,7 @@ class Settings(BaseSettings):
         "Sticks",
         "Skates",
         "Protective",
+        "Gamewear",
         "Bags",
         "Roller",
         "Goalie",
@@ -58,6 +59,7 @@ class Settings(BaseSettings):
         "Pants",
         "Pant Shells",
         "Jocks",
+        "Base Layer",
         # Goalie
         "Leg Pads",
         "Masks",
@@ -65,9 +67,16 @@ class Settings(BaseSettings):
         "Chest & Arm",
         "Knee Protectors",
         "Catchers",
+        "Goalie Sticks",
+        "Goalie Skates",
         # Roller
         "Inline Skates",
         "Inline Wheels",
+        "Inline Pants",
+        # Apparel Sizing
+        "Adult",
+        "Womens",
+        "Headwear",
         # Savings
         "Coupons",
         "Promos",

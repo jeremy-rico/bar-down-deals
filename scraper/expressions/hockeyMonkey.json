@@ -1,34 +1,65 @@
 {
-    "category_links": {
-        "css": "div.shop-by-category a.sub-category-image"
+  "category_links": {
+    "css": "div.shop-by-category a.sub-category-image"
+  },
+  "next_links": {
+    "css": "div.pages a.action.next"
+  },
+  "product_info": {
+    "brand": {
+      "css": "strong.brand-name::text"
     },
-    "next_links": {
-        "css": "div.pages a.action.next"
+    "image_urls": {
+      "css": "img.product-image-photo::attr(data-src)"
     },
-    "product_info": {
-        "brand": {
-            "css": "strong.brand-name::text"
-        },
-        "image_urls": {
-            "css": "img.product-image-photo::attr(data-src)"
-        },
-        "name": {
-            "css": "a.product-item-link::text"
-        },
-        "original_price": {
-            "css": "span.old-price span.price::text"
-        },
-        "price": {
-            "css": "span.normal-price.is-clearance span.price::text"
-        },
-        "url": {
-            "css": "a.product-item-link::attr(href)"
-        }
+    "name": {
+      "css": "div.page-title-wrapper.product h1 span::text"
     },
-    "product_links": {
-        "css": "div.product-item-info"
+    "original_price": {
+      "css": "div.price-box.price-final_price span#oldprice-configurable span.price::text"
     },
-    "subcategory_links": {
-        "css": "div.shop-by-category a"
+    "price": {
+      "css": "div.price-box.price-final_price span.normal-price.is-clearance span.price::text"
+    },
+    "description": {
+      "css": "div#description p::text"
     }
+  },
+  "product_links": {
+    "css": "div.product-item-info a"
+  },
+  "subcategory_links": {
+    "css": "div.shop-by-category a"
+  },
+  "categories": {
+    "clearance-hockey-sticks": ["Sticks", "Composite"],
+    "senior-clearance-hockey-sticks.html": ["Senior"],
+    "intermediate-clearance-hockey-sticks.html": ["Intermediate"],
+    "junior-clearance-hockey-sticks.html": ["Junior"],
+    "clearance-hockey-sticks-yth.html": ["Youth"],
+    "closeout-iceskates.html": ["Skates"],
+    "closeoutinline.html": ["Roller", "Inline Skates"],
+    "closeouthelmets.html": ["Protective", "Helmets"],
+    "closeout-cages-shields.html": ["Protective", "Cages & Shields"],
+    "closeoutgloves.html": ["Protective", "Gloves"],
+    "closproteq-sp.html": ["Protective", "Shoulder Pads"],
+    "closproteq-sg.html": ["Protective", "Shin Guards"],
+    "closproteq-ep.html": ["Protective", "Elbow Pads"],
+    "closproteq-ip.html": ["Protective", "Pants"],
+    "clearance-ice-hockey-pant-shells.html": ["Protective", "Pant Shells"],
+    "closproteq-eb.html": ["Bags"],
+    "wheels-clearance.html": ["Roller", "Inline Wheels"],
+    "closproteq-rhp.html": ["Roller", "Inline Pants"],
+    "closeout-undergarments.html": ["Protective", "Base Layer", "Jocks"],
+    "closeout-apparel": ["Apparel"],
+    "clearance-adult-hockey-apparel.html": ["Adult"],
+    "clearance-youth-hockey-apparel.html": ["Youth"],
+    "clearance-womens-hockey-apparel.html": ["Womens"],
+    "clearance-hockey-headwear.html": ["Headwear"],
+    "clearance-gamewear.html": ["Gamewear", "Jerseys"],
+    "clearance-hockey-socks.html": ["Gamewear", "Socks"],
+    "clearance-footwear.html": ["Apparel", "Footwear"],
+    "clearance-accessories.html": ["Accessories"]
+  }
 }
+

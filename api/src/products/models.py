@@ -56,8 +56,8 @@ class Product(ProductBase, table=True):
     def __repr__(self) -> str:
         return (
             f"Product(id={self.id}, name={self.name}, "
-            f"brand={self.brand},created_at={self.created_at}, "
-            f"deals={self.deals},categories={self.categories})"
+            f"brand={self.brand}, created_at={self.created_at}, "
+            f"deals={self.deals}, categories={self.categories})"
         )
 
 
