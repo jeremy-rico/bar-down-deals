@@ -64,10 +64,10 @@ RETRY_TIMES = 5
 # RANDOM_UA_PER_PROXY = True
 
 # Override the default request headers:
-# DEFAULT_REQUEST_HEADERS = {
-#     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#     "Accept-Language": "en",
-# }
+DEFAULT_REQUEST_HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en",
+}
 
 # NOTE: The integer value after each pipeline or middleware determine
 # the order in which they run: items go through from lower valued to
@@ -88,7 +88,7 @@ DOWNLOADER_MIDDLEWARES = {
     # "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
     # "scrapy.downloadermiddlewares.retry.RetryMiddleware": 500,
     # "scraper.src.middlewares.WebScraperDownloaderMiddleware": 543,
-    "scraper.src.middlewares.ScraperApiProxyMiddleware": 350,
+    # "scraper.src.middlewares.ScraperApiProxyMiddleware": 350,
     "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 400,
 }
 
@@ -102,7 +102,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     # "scrapy.pipelines.images.ImagesPipeline": 1,
-    # "scraper.src.pipelines.PostgresPipeline": 300,
+    "scraper.src.pipelines.PostgresPipeline": 300,
 }
 IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
 

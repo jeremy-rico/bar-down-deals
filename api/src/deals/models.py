@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Literal, Optional
 
 from pydantic import BaseModel
-from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, UniqueConstraint
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from src.products.models import Product, ProductResponse
@@ -70,3 +70,4 @@ class FilterParams(BaseModel):
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
     added_since: Literal["today", "week", "month", "year", "all"] = "all"
+    categories: list[int] | None = Field(default=None)

@@ -10,6 +10,7 @@ from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from sqlalchemy import URL, select
 from sqlalchemy.dialects.postgresql import insert
+from sqlmodel import col
 
 # database connection
 from scraper.src.database import get_session
@@ -50,7 +51,7 @@ class PostgresPipeline:
         UPDATE website timestamp or INSERT new website
 
         Returns:
-            Written website
+            Website
         """
         stmt = (
             insert(Website)
@@ -65,40 +66,47 @@ class PostgresPipeline:
             .returning(Website)
         )
 
-        result = self.session.execute(stmt)
+        website = self.session.execute(stmt)
         self.session.commit()
 
-        return result.scalar()
+        return website.scalars().one()
 
     def upsert_product(self, item) -> Product:
         """
         INSERT new product or do nothing
 
         Returns:
-            Written or existing product
+           Product
         """
+
+        stmt = select(Category).where(col(Category.name).in_(item.get("categories")))
+        categories = list(self.session.scalars(stmt).all())
+
         stmt = select(Product).where(Product.name == item.get("name"))
-        product = self.session.scalars(stmt).first()
+        product = self.session.scalar(stmt)
+        if product:
+            return product
 
-        if not product:
-            product = Product(
-                name=item.get("name"),
-                brand=item.get("brand", None),
-                # category_id=item.get("category_id", None),
-                image_url=item.get("images")[0]["path"] if item.get("images") else "",
-                description=item.get("description", None),
-                created_at=datetime.now(timezone.utc),
-            )
-
-            self.session.add(product)
-            self.session.flush()
-            self.session.refresh(product)
+        product = Product(
+            name=item.get("name"),
+            brand=item.get("brand", None),
+            categories=categories,
+            image_url=item.get("images")[0]["path"] if item.get("images") else "",
+            description=item.get("description", None),
+            created_at=datetime.now(timezone.utc),
+        )
+        self.session.add(product)
+        self.session.commit()
+        self.session.refresh(product)
 
         return product
 
     def upsert_deal(self, item, product) -> Deal:
         """
-        Upsert deal. On url conflict, update price and updated_at timestamp
+        INSERT deal or UPDATE price and updated_at
+
+        Returns:
+            Deal
         """
         discount = get_discount(
             item.get("price"),
@@ -126,18 +134,17 @@ class PostgresPipeline:
             .returning(Deal)
         )
 
-        result = self.session.execute(stmt)
+        deal = self.session.execute(stmt)
         self.session.commit()
 
-        return result.scalar()
+        return deal.scalars().one()
 
     def process_item(self, item, spider) -> Deal:
         """
-        Validate item, upsert website, product, and deal details to database
+        Validate item, upsert product and deal info to database
         """
         # TODO: Exception handling
         self.validate(item)
-        print(item)
 
         # Insert product details
         product = self.upsert_product(item)

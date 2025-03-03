@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import urlparse
 
 
 def clean_price(s: str):

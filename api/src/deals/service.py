@@ -35,7 +35,12 @@ class DealService:
         return DealResponse.model_validate(deal)
 
     async def get_deals(
-        self, sort_by: str, page: int, limit: int, added_since: str
+        self,
+        sort_by: str,
+        page: int,
+        limit: int,
+        added_since: str,
+        categories: list[int] | None,
     ) -> list[DealResponse]:
         """
         Get all deals.
@@ -43,7 +48,9 @@ class DealService:
         Returns:
             List[DealResponse]: List of all deals
         """
-        deals = await self.repository.get_all(sort_by, page, limit, added_since)
+        deals = await self.repository.get_all(
+            sort_by, page, limit, added_since, categories
+        )
         return [DealResponse.model_validate(deal) for deal in deals]
 
     # async def update_deal(self, deal_id: int, deal_data: DealUpdate) -> DealResponse:
