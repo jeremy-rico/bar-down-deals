@@ -37,6 +37,7 @@ async def get_deals(
             filter_query.page,
             filter_query.limit,
             filter_query.added_since,
+            filter_query.categories,
         )
         logger.info(f"Retrieved {len(deals)} deals")
         return deals

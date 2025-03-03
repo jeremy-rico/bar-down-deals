@@ -41,16 +41,18 @@ class ProductBase(SQLModel):
     name: str = Field(max_length=255, index=True, unique=True)
     brand: str | None = Field(max_length=255)
     image_url: str | None
-    description: str | None
 
 
 class Product(ProductBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
+    description: str | None
 
     deals: list["Deal"] = Relationship(back_populates="product", cascade_delete=True)
     categories: list["Category"] = Relationship(
-        back_populates="products", link_model=CategoryProductLink
+        back_populates="products",
+        link_model=CategoryProductLink,
+        sa_relationship_kwargs={"lazy": "selectin"},
     )
 
     def __repr__(self) -> str:
@@ -63,7 +65,12 @@ class Product(ProductBase, table=True):
 
 class ProductResponse(ProductBase):
     id: int
-    category: "CategoryResponse"
+    categories: list["CategoryResponse"]
+
+
+class ProductIDResponse(ProductBase):
+    id: int
+    description: str | None
 
 
 # =========================== Filter Query Parameter Model ====================

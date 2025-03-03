@@ -3,11 +3,11 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col, func
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.deals.models import Deal
-
-# from src.deals.schemas import DealCreate, DealUpdate
+from src.products.models import Category, CategoryProductLink, Product
 
 
 class DealRepository:
@@ -17,7 +17,12 @@ class DealRepository:
         self.session = session
 
     async def get_all(
-        self, sort_by: str, page: int, limit: int, added_since
+        self,
+        sort_by: str,
+        page: int,
+        limit: int,
+        added_since: str,
+        categories: list[int] | None,
     ) -> list[Deal]:
         """Get filtered deals.
 
@@ -25,6 +30,18 @@ class DealRepository:
             List[Deal]: List of all deals
         """
         stmt = select(Deal)
+
+        if categories:
+            stmt = stmt.join(Product).join(CategoryProductLink)
+            stmt = (
+                stmt.where(col(CategoryProductLink.category_id).in_(categories))
+                .group_by(col(Deal.id))
+                .having(
+                    func.count(col(CategoryProductLink.category_id).distinct())
+                    >= len(categories)
+                )
+            )
+
         if added_since:
             timeframes = {
                 "today": datetime.now(timezone.utc) - timedelta(days=1),
@@ -33,12 +50,12 @@ class DealRepository:
                 "year": datetime.now(timezone.utc) - timedelta(days=365),
             }
             if added_since in timeframes:
-                stmt = stmt.filter(Deal.created_at >= timeframes[added_since])
+                stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
 
         if sort_by == "date":
-            stmt = stmt.order_by(Deal.created_at)
+            stmt = stmt.order_by(col(Deal.created_at))
         elif sort_by == "discount":
-            stmt = stmt.order_by(Deal.discount.desc())
+            stmt = stmt.order_by(col(Deal.discount).desc())
 
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)
@@ -81,7 +98,7 @@ class DealRepository:
         Raises:
             NotFoundException: If deal not found
         """
-        stmt = select(Deal).where(Deal.id == deal_id)
+        stmt = select(Deal).where(col(Deal.id) == deal_id)
         result = await self.session.execute(stmt)
         deal = result.scalar_one_or_none()
         # deal = result.scalar.first()
