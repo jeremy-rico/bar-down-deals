@@ -101,7 +101,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # "scrapy.pipelines.images.ImagesPipeline": 1,
+    "scrapy.pipelines.images.ImagesPipeline": 1,
     "scraper.src.pipelines.PostgresPipeline": 300,
 }
 IMAGES_STORE = "s3://bar-down-deals-bucket/images/"

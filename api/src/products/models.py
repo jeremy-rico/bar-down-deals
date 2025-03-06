@@ -11,10 +11,10 @@ if TYPE_CHECKING:
 # ======================== Category Product Link Table =========================
 class CategoryProductLink(SQLModel, table=True):
     category_id: int | None = Field(
-        default=None, foreign_key="category.id", primary_key=True
+        default=None, foreign_key="category.id", primary_key=True, ondelete="CASCADE"
     )
     product_id: int | None = Field(
-        default=None, foreign_key="product.id", primary_key=True
+        default=None, foreign_key="product.id", primary_key=True, ondelete="CASCADE"
     )
 
 

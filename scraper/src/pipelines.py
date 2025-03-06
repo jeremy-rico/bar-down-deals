@@ -18,14 +18,16 @@ from scraper.src.utils import get_discount
 
 
 class PostgresPipeline:
-    def __init__(self, database_url: URL):
+    def __init__(self, database_url: URL, s3_host: str):
         self.database_url = database_url
+        self.s3_host = s3_host
 
     @classmethod
     def from_crawler(cls, crawler):
         database_url = crawler.settings.get("DATABASE_URL")
         logging.getLogger("botocore").setLevel(crawler.settings.get("BOTO_LOG_LEVEL"))
-        return cls(database_url)
+        s3_host = crawler.settings.get("IMAGES_STORE")
+        return cls(database_url, s3_host)
 
     def open_spider(self, spider):
         """
@@ -87,11 +89,15 @@ class PostgresPipeline:
         if product:
             return product
 
+        image_url = item.get("images")[0]
+        if image_url:
+            image_url = self.s3_host + image_url.get("path")
+
         product = Product(
             name=item.get("name"),
             brand=item.get("brand", None),
             categories=categories,
-            image_url=item.get("images")[0]["path"] if item.get("images") else "",
+            image_url=image_url if image_url else self.s3_host,
             description=item.get("description", None),
             created_at=datetime.now(timezone.utc),
         )

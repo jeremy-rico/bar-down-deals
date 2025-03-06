@@ -12,7 +12,7 @@ class Product(Item):
     description = Field()
     url = Field()
     image_urls = Field()
-    # images = Field()
+    images = Field()
     price = Field()
     original_price = Field()
 
