@@ -6,9 +6,9 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'bar-down-deals-bucket.s3.us-west-1.amazonaws.com',
-        port: '',
+        //port: '',
         pathname: '/images/full/*.jpg',
-        search: '',
+        //search: '',
       },
     ],
   },

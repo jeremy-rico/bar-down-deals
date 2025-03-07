@@ -1,12 +1,10 @@
 import Image from "next/image";
-const s3_prefix =
-  "https://bar-down-deals-bucket.s3.us-west-1.amazonaws.com/images/";
 export default function DealCard({ deal }) {
   return (
     <div className="group relative">
       {/* Product Image */}
       <Image
-        src={s3_prefix + deal.product.image_url}
+        src={deal.product.image_url}
         width={200}
         height={200}
         alt="product image"
