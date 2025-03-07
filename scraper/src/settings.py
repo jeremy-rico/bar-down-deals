@@ -105,7 +105,7 @@ ITEM_PIPELINES = {
     "scraper.src.pipelines.PostgresPipeline": 300,
 }
 IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
-
+S3_HOST = "https://bar-down-deals-bucket.s3.us-west-1.amazonaws.com/images/"
 # AWS configuration
 AWS_REGION = "us-west-1"
 AWS_ACCESS_KEY_ID = None

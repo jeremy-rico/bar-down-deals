@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timezone
+from urllib.parse import urljoin
 
 # shared model definitions
 from api.src.deals.models import Deal, Website
@@ -26,7 +27,7 @@ class PostgresPipeline:
     def from_crawler(cls, crawler):
         database_url = crawler.settings.get("DATABASE_URL")
         logging.getLogger("botocore").setLevel(crawler.settings.get("BOTO_LOG_LEVEL"))
-        s3_host = crawler.settings.get("IMAGES_STORE")
+        s3_host = crawler.settings.get("S3_HOST")
         return cls(database_url, s3_host)
 
     def open_spider(self, spider):
@@ -91,7 +92,7 @@ class PostgresPipeline:
 
         image_url = item.get("images")[0]
         if image_url:
-            image_url = self.s3_host + image_url.get("path")
+            image_url = urljoin(self.s3_host, image_url.get("path"))
 
         product = Product(
             name=item.get("name"),
