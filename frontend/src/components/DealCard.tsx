@@ -1,7 +1,7 @@
 import Image from "next/image";
 export default function DealCard({ deal }) {
   return (
-    <div className="group relative">
+    <div className="group relative flex-shrink-0 w-52 lg:w-[238px]">
       {/* Product Image */}
       <Image
         src={deal.product.image_url}
@@ -32,7 +32,7 @@ export default function DealCard({ deal }) {
               ${deal.original_price}
             </p>
             <p className="hidden md:block whitespace-nowrap text-md font-bold text-red-500">
-              You save {deal.discount}%
+              You save {Math.round(deal.discount)}%
             </p>
           </div>
         </div>

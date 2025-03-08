@@ -1,6 +1,6 @@
-import DealCard from "@/components/DealCard.tsx";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { api } from "@/constants/index.tsx";
+import Carousel from "@/components/Carousel.tsx";
 
 export default async function TodaysDeal() {
   const data = await fetch(
@@ -10,17 +10,13 @@ export default async function TodaysDeal() {
 
   return (
     <div id="todays deals" className="my-4">
-      <a href="/deals/today" className="flex items-center">
+      <a href="/deals/today" className="flex items-center my-2">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">
           Today's Deals
         </h2>
         <ChevronRightIcon className="size-6 mx-2" />
       </a>
-      <div className="mt-6 grid grid-rows-1 grid-cols-3 gap-x-6 gap-y-10 lg:grid-cols-5 xl:gap-x-8">
-        {deals.map((deal) => (
-          <DealCard key={deal.id} deal={deal} as="div" />
-        ))}
-      </div>
+      <Carousel deals={deals.concat(deals).concat(deals)} />
     </div>
   );
 }
