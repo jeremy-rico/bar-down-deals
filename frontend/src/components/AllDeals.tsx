@@ -14,7 +14,7 @@ export default async function TodaysDeal() {
         </h2>
         <ChevronRightIcon className="size-6 mx-2" />
       </a>
-      <div className="mt-6 grid grid-rows-1 grid-cols-3 gap-x-6 gap-y-10 lg:grid-cols-5 xl:gap-x-8">
+      <div className="mt-6 grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-8">
         {deals.map((deal) => (
           <DealCard key={deal.id} deal={deal} as="div" />
         ))}

@@ -23,30 +23,32 @@ export default function NavBar({ navigation }) {
             <PopoverBackdrop className="fixed bg-black/50" />
             <PopoverPanel
               anchor="bottom"
-              className="absolute flex flex-col flex-wrap gap-y-4 h-80 w-full px-9 py-2 bg-gray-200 rounded shadow"
+              className="absolute h-80 w-full pt-4 pb-2 bg-gray-200 rounded shadow"
             >
-              {item.children &&
-                item.children.map((child) => (
-                  <div key={child.title}>
-                    <Link
-                      href={child.href}
-                      className="text-gray-700 text-md font-bold whitespace-nowrap"
-                    >
-                      {child.title}
-                    </Link>
-                    {child.children &&
-                      child.children.map((gchild) => (
-                        <div key={gchild.title}>
-                          <Link
-                            href={gchild.href}
-                            className="text-gray-600 text-sm ml-2"
-                          >
-                            {gchild.title}
-                          </Link>
-                        </div>
-                      ))}
-                  </div>
-                ))}
+              <div className="h-full flex flex-col flex-wrap max-w-7xl mx-auto gap-y-4">
+                {item.children &&
+                  item.children.map((child) => (
+                    <div key={child.title} className="flex flex-col">
+                      <Link
+                        href={child.href}
+                        className="text-gray-700 text-lg font-bold hover:underline"
+                      >
+                        {child.title}
+                      </Link>
+                      {child.children &&
+                        child.children.map((gchild) => (
+                          <div key={gchild.title}>
+                            <Link
+                              href={gchild.href}
+                              className="text-gray-600 text-md hover:underline"
+                            >
+                              {gchild.title}
+                            </Link>
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+              </div>
             </PopoverPanel>
           </Popover>
         ))}
