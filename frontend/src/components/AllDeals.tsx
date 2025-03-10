@@ -1,5 +1,8 @@
 import DealCard from "@/components/DealCard.tsx";
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronDoubleRightIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
 import { api } from "@/constants/index.tsx";
 
 export default async function TodaysDeal() {
@@ -8,16 +11,20 @@ export default async function TodaysDeal() {
 
   return (
     <div id="all deals" className="my-4">
-      <a href="/deals/" className="flex items-center">
+      <a href="/deals/" className="flex items-center mb-6">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">
           All Deals
         </h2>
         <ChevronRightIcon className="size-6 mx-2" />
       </a>
-      <div className="mt-6 grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-8">
+      <div className="grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-8">
         {deals.map((deal) => (
           <DealCard key={deal.id} deal={deal} as="div" />
         ))}
+      </div>
+      <div className="flex items-center text-gray-500">
+        <p className="font-thin text-md">Browse All Deals</p>
+        <ChevronDoubleRightIcon className="size-5 mx-1" />
       </div>
     </div>
   );

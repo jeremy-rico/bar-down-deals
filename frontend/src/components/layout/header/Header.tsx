@@ -1,9 +1,9 @@
-import { Disclosure, DisclosurePanel } from "@headlessui/react";
-import Search from "@/components/Search.tsx";
-import HeaderLinks from "@/components/HeaderLinks.tsx";
-import NavBar from "@/components/NavBar.tsx";
-import MobileMenu from "@/components/MobileMenu.tsx";
-import MobileMenuButton from "@/components/MobileMenuButton.tsx";
+import { Disclosure } from "@headlessui/react";
+import Search from "@/components/layout/header/Search.tsx";
+import HeaderLinks from "@/components/layout/header/HeaderLinks.tsx";
+import NavBar from "@/components/layout/header/NavBar.tsx";
+import MobileMenu from "@/components/layout/header/MobileMenu.tsx";
+import MobileMenuButton from "@/components/layout/header/MobileMenuButton.tsx";
 import { navigation } from "@/constants/index.tsx";
 import Link from "next/link";
 

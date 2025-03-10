@@ -1,5 +1,5 @@
 import { navigation } from "@/constants/index.tsx";
-import HeaderLinks from "@/components/HeaderLinks.tsx";
+import HeaderLinks from "@/components/layout/header/HeaderLinks.tsx";
 import {
   Disclosure,
   DisclosureButton,

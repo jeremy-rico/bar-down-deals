@@ -4,19 +4,19 @@ import Carousel from "@/components/Carousel.tsx";
 
 export default async function TodaysDeal() {
   const data = await fetch(
-    api + "deals/?sort_by=discount&added_since=month&page=1&limit=5",
+    api + "deals/?sort_by=discount&added_since=month&page=1&limit=20",
   );
   const deals = await data.json();
 
   return (
-    <div id="todays deals" className="my-4">
-      <a href="/deals/today" className="flex items-center my-2">
+    <div id="todays deals">
+      <a href="/deals/today" className="flex items-center mb-6">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">
           Today's Deals
         </h2>
         <ChevronRightIcon className="size-6 mx-2" />
       </a>
-      <Carousel deals={deals.concat(deals).concat(deals)} />
+      <Carousel deals={deals} />
     </div>
   );
 }

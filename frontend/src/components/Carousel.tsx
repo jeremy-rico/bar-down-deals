@@ -39,13 +39,13 @@ const Carousel = ({ deals }) => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute top-1/3 left-2 transform -translate-y-1/2 bg-black bg-opacity-25 text-white p-1 rounded-full"
+        className="absolute top-1/3 left-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full"
       >
         <ChevronDoubleLeftIcon className="size-7" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute top-1/3 right-2 transform -translate-y-1/2 bg-black bg-opacity-25 text-white p-1 rounded-full"
+        className="absolute top-1/3 right-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full"
       >
         <ChevronDoubleRightIcon className="size-7" />
       </button>

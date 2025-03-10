@@ -27,14 +27,16 @@ export default function DealCard({ deal }) {
         {/* Price Info */}
         <div id="price info" className="pt-2">
           <p className="text-lg font-extrabold text-red-500 ">${deal.price}</p>
-          <div className="flex items-center gap-x-3">
-            <p className="text-md font-extralight line-through text-gray-500">
-              ${deal.original_price}
-            </p>
-            <p className="hidden md:block whitespace-nowrap text-md font-bold text-red-500">
-              You save {Math.round(deal.discount)}%
-            </p>
-          </div>
+          {deal.original_price && (
+            <div className="flex items-center gap-x-3">
+              <p className="text-md font-extralight line-through text-gray-500">
+                ${deal.original_price}
+              </p>
+              <p className="hidden md:block whitespace-nowrap text-md font-bold text-red-500">
+                You save {Math.round(deal.discount)}%
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
