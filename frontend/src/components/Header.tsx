@@ -5,6 +5,7 @@ import NavBar from "@/components/NavBar.tsx";
 import MobileMenu from "@/components/MobileMenu.tsx";
 import MobileMenuButton from "@/components/MobileMenuButton.tsx";
 import { navigation } from "@/constants/index.tsx";
+import Link from "next/link";
 
 export default async function Header() {
   return (
@@ -12,7 +13,9 @@ export default async function Header() {
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="flex h-20 lg:h-16 items-center justify-between">
           {/* Logo Hero */}
-          <a className="text-blue-500 text-2xl">LOGO</a>
+          <Link className="text-blue-500 text-2xl" href="/">
+            LOGO
+          </Link>
 
           {/* Search Form */}
           <Search />
@@ -30,9 +33,7 @@ export default async function Header() {
       </div>
 
       {/* Mobile Navigation Menu */}
-      <DisclosurePanel className="lg:hidden">
-        <MobileMenu navigation={navigation} />
-      </DisclosurePanel>
+      <MobileMenu navigation={navigation} />
 
       {/* Navigation Bar */}
       <NavBar navigation={navigation} />

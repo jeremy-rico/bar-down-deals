@@ -20,18 +20,18 @@ export default function NavBar({ navigation }) {
               {item.title}
               <ChevronDownIcon className="size-4 text-gray-200" />
             </PopoverButton>
-            <PopoverBackdrop className="fixed bg-black/50" />
             <PopoverPanel
               anchor="bottom"
-              className="absolute h-80 w-full pt-4 pb-2 bg-gray-200 rounded shadow"
+              transition
+              className="absolute h-80 w-full pt-4 pb-2 bg-gray-200 rounded shadow overflow-hidden transition-[height] duration-200 ease-in-out data-[closed]:h-0"
             >
-              <div className="h-full flex flex-col flex-wrap max-w-7xl mx-auto gap-y-4">
+              <div className="h-5/6  flex flex-col flex-wrap max-w-7xl mx-auto gap-y-4">
                 {item.children &&
                   item.children.map((child) => (
                     <div key={child.title} className="flex flex-col">
                       <Link
                         href={child.href}
-                        className="text-gray-700 text-lg font-bold hover:underline"
+                        className="text-gray-700 text-lg mb-2 font-bold hover:underline"
                       >
                         {child.title}
                       </Link>
