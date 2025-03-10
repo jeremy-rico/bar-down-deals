@@ -11,7 +11,7 @@ export default async function TodaysDeal() {
 
   return (
     <div id="all deals" className="my-4">
-      <a href="/deals/" className="flex items-center mb-6">
+      <a href="/deals" className="flex items-center mb-6">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">
           All Deals
         </h2>
