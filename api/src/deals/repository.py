@@ -30,10 +30,14 @@ class DealRepository:
         Returns:
             List[Deal]: List of all deals
         """
-        stmt = select(Deal)
+        stmt = (
+            select(Deal)
+            .join(Product)
+            .join(CategoryProductLink)
+            .group_by(Deal.id, Product.name)
+        )
 
         if categories:
-            stmt = stmt.join(Product).join(CategoryProductLink)
             stmt = (
                 stmt.where(col(CategoryProductLink.category_id).in_(categories))
                 .group_by(col(Deal.id))
@@ -65,7 +69,7 @@ class DealRepository:
         elif sort == "price" and order == "desc":
             stmt = stmt.order_by(col(Deal.price).desc())
         elif sort == "alphabetical":
-            stmt = stmt.order_by(col(Deal.Product.name).desc())
+            stmt = stmt.order_by(col(Product.name).asc())
 
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)

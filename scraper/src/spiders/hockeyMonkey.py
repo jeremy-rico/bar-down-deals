@@ -22,7 +22,7 @@ class HockeyMonkeySpider(scrapy.Spider):
         Starting from the clearance categories page, explore each category link.
         """
         category_links = response.css(self.exp["category_links"]["css"])
-        category_links = [category_links[0]]  # TODO: REMOVE
+        # category_links = [category_links[0]]  # TODO: REMOVE
         yield from response.follow_all(category_links, self.parse_category)
 
     def parse_category(self, response):
@@ -45,7 +45,7 @@ class HockeyMonkeySpider(scrapy.Spider):
 
         # Get all products on page
         prods = response.css(self.exp["product_links"]["css"])
-        prods = [prods[0]]  # TODO: REMOVE
+        # prods = [prods[0]]  # TODO: REMOVE
         cb_kwargs = dict(
             args={
                 "brand": response.css(self.exp["product_info"]["brand"]["css"]).get(),
