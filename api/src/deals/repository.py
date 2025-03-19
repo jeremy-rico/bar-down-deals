@@ -18,7 +18,8 @@ class DealRepository:
 
     async def get_all(
         self,
-        sort_by: str,
+        sort: str,
+        order: str,
         page: int,
         limit: int,
         added_since: str,
@@ -52,10 +53,19 @@ class DealRepository:
             if added_since in timeframes:
                 stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
 
-        if sort_by == "date":
-            stmt = stmt.order_by(col(Deal.created_at))
-        elif sort_by == "discount":
+        # TODO: sort by best
+        if sort == "date" and order == "asc":
+            stmt = stmt.order_by(col(Deal.created_at).asc())
+        elif sort == "date" and order == "desc":
+            stmt = stmt.order_by(col(Deal.created_at).desc())
+        elif sort == "discount" or sort == "best":
             stmt = stmt.order_by(col(Deal.discount).desc())
+        elif sort == "price" and order == "asc":
+            stmt = stmt.order_by(col(Deal.price).asc())
+        elif sort == "price" and order == "desc":
+            stmt = stmt.order_by(col(Deal.price).desc())
+        elif sort == "alphabetical":
+            stmt = stmt.order_by(col(Deal.Product.name).desc())
 
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)

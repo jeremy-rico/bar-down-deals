@@ -1,12 +1,12 @@
 export const navigation = [
   // New Section
   {
-    title: "New",
+    title: "Deals",
     href: "#",
     children: [
       {
-        title: "Deals Of The Day",
-        href: "/deals/today",
+        title: "Hottest Deals",
+        href: "/deals",
         children: [
           { title: "Popular Deals", href: "/deals/popular" },
           { title: "Biggest Discounts", href: "/deals" },
@@ -208,4 +208,14 @@ export const headerLinks = [
   { id: 3, title: "Sign In", href: "/signin" },
 ];
 
-export const api = "http://13.52.178.97:8000/";
+export const sort_options = [
+  { id: 1, title: "Popular", sort: "best", order: "desc" },
+  { id: 2, title: "Alphabetical", sort: "alphabetical", order: "asc" },
+  { id: 3, title: "Price, highest", sort: "price", order: "desc" },
+  { id: 4, title: "Price, lowest", sort: "price", order: "asc" },
+  { id: 5, title: "Discount", sort: "discount", order: "desc" },
+  { id: 6, title: "Newest", sort: "date" },
+  { id: 7, title: "Oldest", sort: "date", order: "asc" },
+];
+
+export const api = "http://13.52.178.97:8000";

@@ -33,7 +33,8 @@ async def get_deals(
     logger.debug("Fetching all deals")
     try:
         deals = await service.get_deals(
-            filter_query.sort_by,
+            filter_query.sort,
+            filter_query.order,
             filter_query.page,
             filter_query.limit,
             filter_query.added_since,
