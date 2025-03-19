@@ -214,7 +214,7 @@ export const sort_options = [
   { id: 3, title: "Price, highest", sort: "price", order: "desc" },
   { id: 4, title: "Price, lowest", sort: "price", order: "asc" },
   { id: 5, title: "Discount", sort: "discount", order: "desc" },
-  { id: 6, title: "Newest", sort: "date" },
+  { id: 6, title: "Newest", sort: "date", order: "desc" },
   { id: 7, title: "Oldest", sort: "date", order: "asc" },
 ];
 

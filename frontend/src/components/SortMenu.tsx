@@ -19,7 +19,7 @@ export default function SortMenu({ sort, onSortChange }) {
           {sort_options.map((option) => (
             <MenuItem key={option.id}>
               <button
-                onClick={() => onSortChange(option.title)}
+                onClick={() => onSortChange(option)}
                 className="text-left px-2 py-1 rounded data-[focus]:bg-gray-300"
               >
                 {option.title}

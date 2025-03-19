@@ -12,18 +12,17 @@ export default function DealsPage({ title, sort }) {
 
   useEffect(() => {
     fetchDeals();
-  });
+  }, [sortOption]);
 
   async function fetchDeals() {
     const query = new URLSearchParams(); // TODO: let instead of const?
-    if (sortOption.sort) query.append("sort_by", sortOption.sort);
+    if (sortOption.sort) query.append("sort", sortOption.sort);
     if (sortOption.order) query.append("order", sortOption.order);
     Object.entries(filters).forEach(([key, value]) => {
       if (value) query.append(key, value);
     });
 
-    //const response = await fetch(api + `/deals/?${query.toString()}`);
-    const response = await fetch(api + "/deals/?sort_by=discount");
+    const response = await fetch(api + `/deals/?${query.toString()}`);
     const data = await response.json();
     setDeals(data);
   }
