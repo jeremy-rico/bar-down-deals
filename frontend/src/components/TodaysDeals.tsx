@@ -4,7 +4,7 @@ import Carousel from "@/components/Carousel.tsx";
 
 export default async function TodaysDeal() {
   const data = await fetch(
-    api + "/deals/?sort_by=discount&added_since=month&page=1&limit=20",
+    api + "/deals/?sort=discount&added_since=month&page=1&limit=20",
   );
   const deals = await data.json();
 

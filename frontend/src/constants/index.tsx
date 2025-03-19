@@ -6,13 +6,14 @@ export const navigation = [
     children: [
       {
         title: "Hottest Deals",
-        href: "/deals",
+        href: "/deals/?sort=best",
         children: [
-          { title: "Popular Deals", href: "/deals/popular" },
-          { title: "Biggest Discounts", href: "/deals" },
-          { title: "Lowest Prices", href: "/deals" },
+          { title: "Popular Deals", href: "/deals/?sort=best" },
+          { title: "Biggest Discounts", href: "/deals/?sort=discount" },
+          { title: "Lowest Prices", href: "/deals/?sort=price&order=asc" },
         ],
       },
+      { title: "Shop All Deals", href: "/deals" },
       {
         title: "Shop By New",
         href: "/deals/new",
