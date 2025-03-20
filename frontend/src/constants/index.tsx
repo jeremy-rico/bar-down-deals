@@ -210,7 +210,7 @@ export const headerLinks = [
 ];
 
 export const sort_options = [
-  { id: 1, title: "Popular", sort: "best", order: "desc" },
+  { id: 1, title: "Best Selling", sort: "best", order: "desc" },
   { id: 2, title: "Alphabetical", sort: "alphabetical", order: "asc" },
   { id: 3, title: "Price, highest", sort: "price", order: "desc" },
   { id: 4, title: "Price, lowest", sort: "price", order: "asc" },
