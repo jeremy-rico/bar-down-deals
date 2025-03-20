@@ -7,7 +7,7 @@ export default function DealCard({ deal }) {
         src={deal.product.image_url}
         width={200}
         height={200}
-        alt="product image"
+        alt={deal.product.name}
         placeholder="empty" // "empty" | "blur" | "data:image/..."
         className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 "
       />

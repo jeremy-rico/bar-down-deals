@@ -34,7 +34,7 @@ export default function FilterList({ onFilterChange }) {
   }, [selectedFilters, onFilterChange]);
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow max-w-56">
       {filters.map((filter) => (
         <div key={filter.id} className="">
           <div>

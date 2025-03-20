@@ -1,3 +1,8 @@
-export default function Pagination({ onPageChange }) {
-  return <div>Next page here</div>;
+export default function Pagination({ onPageChange, currentPage, totalPages }) {
+  return (
+    <div>
+      <p>Current Page: {currentPage}</p>
+      <p>Total Pages: {totalPages}</p>
+    </div>
+  );
 }
