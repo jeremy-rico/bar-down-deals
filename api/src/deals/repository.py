@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import delete, select, update
@@ -7,7 +8,7 @@ from sqlmodel import col, func
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.deals.models import Deal
-from src.products.models import Category, CategoryProductLink, Product
+from src.products.models import CategoryProductLink, Product
 
 
 class DealRepository:
@@ -24,7 +25,7 @@ class DealRepository:
         limit: int,
         added_since: str,
         categories: list[int] | None,
-    ) -> list[Deal]:
+    ) -> tuple[dict[str, int], list[Deal]]:
         """Get filtered deals.
 
         Returns:
@@ -34,13 +35,13 @@ class DealRepository:
             select(Deal)
             .join(Product)
             .join(CategoryProductLink)
-            .group_by(Deal.id, Product.name)
+            .group_by(col(Deal.id), Product.name)
         )
 
         if categories:
             stmt = (
                 stmt.where(col(CategoryProductLink.category_id).in_(categories))
-                .group_by(col(Deal.id))
+                .group_by(col(Deal.id))  # TODO: Is this necessary still?
                 .having(
                     func.count(col(CategoryProductLink.category_id).distinct())
                     >= len(categories)
@@ -71,10 +72,20 @@ class DealRepository:
         elif sort == "alphabetical":
             stmt = stmt.order_by(col(Product.name).asc())
 
+        # Generate response headers
+        count_stmt = select(func.count()).select_from(stmt.subquery())
+        total_count = await self.session.scalar(count_stmt) or 0
+        headers = {
+            "X-total-count": total_count,
+            "X-items-per-page": limit,
+            "X-total-page-count": math.ceil(total_count / limit),
+        }
+
+        # Paginate and return objects
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)
         result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+        return headers, list(result.scalars().all())
 
     # async def create(self, deal_data: DealCreate) -> Deal:
     #     """Create a new deal.

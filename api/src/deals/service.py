@@ -42,17 +42,17 @@ class DealService:
         limit: int,
         added_since: str,
         categories: list[int] | None,
-    ) -> list[DealResponse]:
+    ) -> tuple[dict[str, int], list[DealResponse]]:
         """
         Get all deals.
 
         Returns:
             List[DealResponse]: List of all deals
         """
-        deals = await self.repository.get_all(
+        headers, deals = await self.repository.get_all(
             sort, order, page, limit, added_since, categories
         )
-        return [DealResponse.model_validate(deal) for deal in deals]
+        return headers, [DealResponse.model_validate(deal) for deal in deals]
 
     # async def update_deal(self, deal_id: int, deal_data: DealUpdate) -> DealResponse:
     #     """Update deal by ID.

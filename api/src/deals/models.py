@@ -65,7 +65,7 @@ class DealResponse(DealBase):
 
 
 # =============================== Filter Query Model ==========================
-class FilterParams(BaseModel):
+class QueryParams(BaseModel):
     sort: Literal["best", "alphabetical", "date", "discount", "price"] = "date"
     order: Literal["asc", "desc"] = "desc"
     page: int = Field(1, ge=1)

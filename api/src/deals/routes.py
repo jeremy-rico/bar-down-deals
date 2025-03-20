@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_session
 from src.core.logging import get_logger
-from src.deals.models import DealResponse, FilterParams, WebsiteResponse
+from src.deals.models import DealResponse, QueryParams, WebsiteResponse
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
 from src.products.models import CategoryResponse, ProductResponse
@@ -15,6 +15,7 @@ logger = get_logger(__name__)
 
 router = APIRouter(prefix="/deals", tags=["deals"])
 
+# Rebuild model with late added dependencies
 DealResponse.model_rebuild()
 
 
@@ -26,22 +27,25 @@ def get_deal_service(session: AsyncSession = Depends(get_session)) -> DealServic
 
 @router.get("/", response_model=list[DealResponse])
 async def get_deals(
-    filter_query: Annotated[FilterParams, Query()],
+    response: Response,
+    query_params: Annotated[QueryParams, Query()],
     service: DealService = Depends(get_deal_service),
 ) -> list[DealResponse]:
-    """Get paginated deals."""
+    """Get sorted, filtered, paginated deals."""
     logger.debug("Fetching all deals")
     try:
         deals = await service.get_deals(
-            filter_query.sort,
-            filter_query.order,
-            filter_query.page,
-            filter_query.limit,
-            filter_query.added_since,
-            filter_query.categories,
+            query_params.sort,
+            query_params.order,
+            query_params.page,
+            query_params.limit,
+            query_params.added_since,
+            query_params.categories,
         )
         logger.info(f"Retrieved {len(deals)} deals")
-        return deals
+        for k, i in deals[0].items():
+            response.headers[k] = str(i)
+        return deals[1]
     except Exception as e:
         logger.error(f"Failed to fetch deals: {str(e)}")
         raise
