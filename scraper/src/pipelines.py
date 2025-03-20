@@ -90,9 +90,9 @@ class PostgresPipeline:
         if product:
             return product
 
-        image_url = item.get("images")[0]
+        image_url = item.get("images")
         if image_url:
-            image_url = urljoin(self.s3_host, image_url.get("path"))
+            image_url = urljoin(self.s3_host, image_url[0].get("path"))
 
         product = Product(
             name=item.get("name"),
@@ -152,6 +152,7 @@ class PostgresPipeline:
         """
         # TODO: Exception handling
         self.validate(item)
+        print(item.get("image_urls"))
 
         # Insert product details
         product = self.upsert_product(item)

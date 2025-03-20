@@ -5,6 +5,9 @@
   "next_links": {
     "css": "div.pages a.action.next"
   },
+  "products": {
+    "css": "div.product-item-info"
+  },
   "product_info": {
     "brand": {
       "css": "strong.brand-name::text"
@@ -23,10 +26,10 @@
     },
     "description": {
       "css": "div#description p::text"
+    },
+    "link": {
+      "css": "a.product-item-link"
     }
-  },
-  "product_links": {
-    "css": "div.product-item-info a"
   },
   "subcategory_links": {
     "css": "div.shop-by-category a"
@@ -62,4 +65,3 @@
     "clearance-accessories.html": ["Accessories"]
   }
 }
-

@@ -44,18 +44,23 @@ class HockeyMonkeySpider(scrapy.Spider):
         categories = self.get_categories(response.url)
 
         # Get all products on page
-        prods = response.css(self.exp["product_links"]["css"])
+        prods = response.css(self.exp["products"]["css"])
         # prods = [prods[0]]  # TODO: REMOVE
-        cb_kwargs = dict(
-            args={
-                "brand": response.css(self.exp["product_info"]["brand"]["css"]).get(),
-                "image_urls": response.css(
-                    self.exp["product_info"]["image_urls"]["css"]
-                ).get(),
-                "categories": categories,
-            }
-        )
-        yield from response.follow_all(prods, self.parse_product, cb_kwargs=cb_kwargs)
+
+        for prod in prods:
+            cb_kwargs = dict(
+                args={
+                    "brand": prod.css(self.exp["product_info"]["brand"]["css"]).get(),
+                    "image_urls": prod.css(
+                        self.exp["product_info"]["image_urls"]["css"]
+                    ).get(),
+                    "categories": categories,
+                }
+            )
+            prod_link = prod.css(self.exp["product_info"]["link"]["css"])
+            yield from response.follow_all(
+                prod_link, self.parse_product, cb_kwargs=cb_kwargs
+            )
 
         # Follow all next links
         next_links = response.css(self.exp["next_links"]["css"])
@@ -63,7 +68,7 @@ class HockeyMonkeySpider(scrapy.Spider):
 
     def parse_product(self, response, args):
         """
-        Scrape product details, following all next links
+        Scrape and load product details
         """
         l = ProductLoader(item=Product(), selector=response)
         for field_name in l.item.fields.keys():
