@@ -76,9 +76,9 @@ class DealRepository:
         count_stmt = select(func.count()).select_from(stmt.subquery())
         total_count = await self.session.scalar(count_stmt) or 0
         headers = {
-            "X-total-count": total_count,
-            "X-items-per-page": limit,
-            "X-total-page-count": math.ceil(total_count / limit),
+            "x-total-item-count": total_count,
+            "x-items-per-page": limit,
+            "x-total-page-count": math.ceil(total_count / limit),
         }
 
         # Paginate and return objects
