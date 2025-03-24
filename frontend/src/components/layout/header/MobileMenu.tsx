@@ -1,4 +1,3 @@
-import { navigation } from "@/constants/index.tsx";
 import HeaderLinks from "@/components/layout/header/HeaderLinks.tsx";
 import {
   Disclosure,
@@ -7,7 +6,7 @@ import {
 } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-export default function MobileMenu() {
+export default function MobileMenu({ navigation }) {
   return (
     <DisclosurePanel
       transition
