@@ -23,13 +23,17 @@ class DealRepository:
         order: str,
         page: int,
         limit: int,
-        added_since: str,
-        categories: list[int] | None,
+        # added_since: str,
+        min_price: int | None,
+        max_price: int | None,
+        brands: list[str] | None,
+        tags: list[int] | None,
     ) -> tuple[dict[str, int], list[Deal]]:
-        """Get filtered deals.
+        """
+        Get filtered deals.
 
         Returns:
-            List[Deal]: List of all deals
+            tuple(headers, List[Deal]): Custom headers, list of all deals
         """
         stmt = (
             select(Deal)
@@ -38,25 +42,36 @@ class DealRepository:
             .group_by(col(Deal.id), Product.name)
         )
 
-        if categories:
+        # Filter by tags
+        if tags:
             stmt = (
-                stmt.where(col(CategoryProductLink.category_id).in_(categories))
-                .group_by(col(Deal.id))  # TODO: Is this necessary still?
+                stmt.where(col(CategoryProductLink.category_id).in_(tags))
+                # .group_by(col(Deal.id))  # TODO: Is this necessary still?
                 .having(
                     func.count(col(CategoryProductLink.category_id).distinct())
-                    >= len(categories)
+                    >= len(tags)
                 )
             )
 
-        if added_since:
-            timeframes = {
-                "today": datetime.now(timezone.utc) - timedelta(days=1),
-                "week": datetime.now(timezone.utc) - timedelta(weeks=1),
-                "month": datetime.now(timezone.utc) - timedelta(weeks=4),
-                "year": datetime.now(timezone.utc) - timedelta(days=365),
-            }
-            if added_since in timeframes:
-                stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
+        # Filter by price range
+        if min_price != None:
+            stmt = stmt.where(col(Deal.price) >= min_price)
+        if max_price:
+            stmt = stmt.where(col(Deal.price) <= max_price)
+
+        # Filter by brands
+        if brands:
+            stmt = stmt.where(col(Product.brand).in_(brands))
+
+        # if added_since:
+        #     timeframes = {
+        #         "today": datetime.now(timezone.utc) - timedelta(days=1),
+        #         "week": datetime.now(timezone.utc) - timedelta(weeks=1),
+        #         "month": datetime.now(timezone.utc) - timedelta(weeks=4),
+        #         "year": datetime.now(timezone.utc) - timedelta(days=365),
+        #     }
+        #     if added_since in timeframes:
+        #         stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
 
         # TODO: sort by best
         if sort == "date" and order == "asc":

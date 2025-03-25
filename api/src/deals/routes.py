@@ -39,10 +39,12 @@ async def get_deals(
             query_params.order,
             query_params.page,
             query_params.limit,
-            query_params.added_since,
-            query_params.categories,
+            query_params.min_price,
+            query_params.max_price,
+            query_params.brands,
+            query_params.tags,
         )
-        logger.info(f"Retrieved {len(deals)} deals")
+        logger.info(f"Retrieved {len(deals[1])} deals")
         for k, i in deals[0].items():
             response.headers[k] = str(i)
         return deals[1]

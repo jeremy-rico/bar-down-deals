@@ -40,8 +40,11 @@ class DealService:
         order: str,
         page: int,
         limit: int,
-        added_since: str,
-        categories: list[int] | None,
+        # added_since: str,
+        min_price: int,
+        max_price: int | None,
+        brands: list[str] | None,
+        tags: list[int] | None,
     ) -> tuple[dict[str, int], list[DealResponse]]:
         """
         Get all deals.
@@ -50,7 +53,7 @@ class DealService:
             List[DealResponse]: List of all deals
         """
         headers, deals = await self.repository.get_all(
-            sort, order, page, limit, added_since, categories
+            sort, order, page, limit, min_price, max_price, brands, tags
         )
         return headers, [DealResponse.model_validate(deal) for deal in deals]
 
