@@ -44,7 +44,7 @@ class DealService:
         min_price: int,
         max_price: int | None,
         brands: list[str] | None,
-        tags: list[int] | None,
+        tags: list[str] | None,
     ) -> tuple[dict[str, int], list[DealResponse]]:
         """
         Get all deals.

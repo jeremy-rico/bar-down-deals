@@ -32,7 +32,15 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["x-total-page-count", "x-items-per-page", "x-total-item-count"],
+    expose_headers=[
+        "x-total-page-count",
+        "x-items-per-page",
+        "x-total-item-count",
+        "x-avail-brands",
+        "x-avail-tags",
+        "x-avail-stores",
+        "x-max-price",
+    ],
 )
 
 # Include routers

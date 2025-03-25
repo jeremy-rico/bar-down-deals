@@ -27,7 +27,7 @@ class DealRepository:
         min_price: int | None,
         max_price: int | None,
         brands: list[str] | None,
-        tags: list[int] | None,
+        tags: list[str] | None,
     ) -> tuple[dict[str, int], list[Deal]]:
         """
         Get filtered deals.
@@ -88,12 +88,32 @@ class DealRepository:
             stmt = stmt.order_by(col(Product.name).asc())
 
         # Generate response headers
-        count_stmt = select(func.count()).select_from(stmt.subquery())
-        total_count = await self.session.scalar(count_stmt) or 0
+        # count_stmt = select(func.count()).select_from(stmt.subquery())
+        # total_count = await self.session.scalar(count_stmt) or 0
+
+        result = await self.session.execute(stmt)
+        data = list(result.scalars().all())
+        avail_brands = set()
+        avail_tags = set()
+        avail_stores = set()
+        ret_max_price = 0.0
+        for row in data:
+            if row.product.brand:
+                avail_brands.add(row.product.brand)
+            if row.product.categories:
+                avail_tags.update([cat.name for cat in row.product.categories])
+            if row.website.name:
+                avail_stores.add(row.website.name)
+            ret_max_price = max(ret_max_price, row.price)
+
         headers = {
-            "x-total-item-count": total_count,
+            "x-total-item-count": len(data),
             "x-items-per-page": limit,
             "x-total-page-count": math.ceil(total_count / limit),
+            "x-avail-brands": avail_brands,
+            "x-avail-tags": avail_tags,
+            "x-avail-stores": avail_stores,
+            "x-max-price": ret_max_price,
         }
 
         # Paginate and return objects
