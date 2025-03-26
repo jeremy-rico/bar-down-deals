@@ -1,4 +1,9 @@
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
+import {
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+  CloseButton,
+} from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
@@ -24,21 +29,23 @@ export default function NavBar({ navigation }) {
                 {item.children &&
                   item.children.map((child) => (
                     <div key={child.title} className="flex flex-col">
-                      <Link
+                      <CloseButton
+                        as={Link}
                         href={child.href}
                         className="text-gray-700 text-lg mb-2 font-bold hover:underline"
                       >
                         {child.title}
-                      </Link>
+                      </CloseButton>
                       {child.children &&
                         child.children.map((gchild) => (
                           <div key={gchild.title}>
-                            <Link
+                            <CloseButton
+                              as={Link}
                               href={gchild.href}
                               className="text-gray-600 text-md hover:underline"
                             >
                               {gchild.title}
-                            </Link>
+                            </CloseButton>
                           </div>
                         ))}
                     </div>

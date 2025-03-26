@@ -22,7 +22,7 @@ export default async function TodaysDeal() {
           <DealCard key={deal.id} deal={deal} as="div" />
         ))}
       </div>
-      <div className="flex items-center text-gray-500">
+      <div className="flex items-center text-gray-500 mt-5">
         <p className="font-thin text-md">Browse All Deals</p>
         <ChevronDoubleRightIcon className="size-5 mx-1" />
       </div>

@@ -3,26 +3,32 @@ import DealCard from "@/components/DealCard.tsx";
 import SortMenu from "@/components/SortMenu.tsx";
 import FilterOptions from "@/components/FilterOptions.tsx";
 import Pagination from "@/components/Pagination.tsx";
-import {} from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
+import { api } from "@/constants/index.tsx";
 
-export default function DealsPage({ baseQuery, title, sort }) {
+export default function DealsPage({ title, queryParams }) {
+  // Pagination variables
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
-  const [totalItems, setTotalItems] = useState(0);
-  const [sortOption, setSortOption] = useState(sort);
+  const [totalItems, setTotalItems] = useState();
 
+  // Sort and order variables
+  const [sortOption, setSortOption] = useState(queryParams.sort || null);
+
+  // Filter variables
   const [filterOptions, setFilterOptions] = useState([]);
   const [selectedFilters, setSelectedFilters] = useState({
-    tags: [],
-    brands: [],
-    stores: [],
+    tags: queryParams.tags || [],
+    brands: queryParams.brands || [],
+    stores: queryParams.stores || [],
   });
+
+  // Price range variables
   const [maxAvailPrice, setMaxAvailPrice] = useState();
-
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState();
+  const [maxPrice, setMaxPrice] = useState(queryParams.maxPrice || null);
 
+  // Deals holder
   const [deals, setDeals] = useState([]);
 
   useEffect(() => {
@@ -30,8 +36,7 @@ export default function DealsPage({ baseQuery, title, sort }) {
       // Create query params
       const query = new URLSearchParams();
       query.append("page", currentPage);
-      if (sortOption.sort) query.append("sort", sortOption.sort);
-      if (sortOption.order) query.append("order", sortOption.order);
+      if (sortOption) query.append("sort", sortOption);
       if (minPrice) query.append("min_price", minPrice);
       if (maxPrice) query.append("max_price", maxPrice);
 
@@ -43,7 +48,7 @@ export default function DealsPage({ baseQuery, title, sort }) {
       });
 
       // Get pagination and filtering info from headers
-      const response = await fetch(baseQuery + `${query.toString()}`);
+      const response = await fetch(api + `/deals/?${query.toString()}`);
       setTotalPages(response.headers.get("x-total-page-count"));
       setTotalItems(response.headers.get("x-total-item-count"));
       setMaxAvailPrice(response.headers.get("x-max-price"));
@@ -84,12 +89,12 @@ export default function DealsPage({ baseQuery, title, sort }) {
       setDeals(data);
     }
     fetchDeals();
-  }, [baseQuery, sortOption, selectedFilters, currentPage, minPrice, maxPrice]);
+  }, [sortOption, selectedFilters, currentPage, minPrice, maxPrice]);
 
   return (
     <div className="my-4">
       <h1 className="text-3xl font-bold my-7"> {title} </h1>
-      <SortMenu sort={sortOption} onSortChange={setSortOption} />
+      <SortMenu sortOption={sortOption} onSortChange={setSortOption} />
       <div className="flex justify-between gap-x-4">
         <FilterOptions
           filterOptions={filterOptions}

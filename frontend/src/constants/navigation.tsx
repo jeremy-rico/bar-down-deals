@@ -1,41 +1,44 @@
 export const navigation = [
-  // New Section
+  // Deals Section
   {
     title: "Deals",
     href: "#",
     children: [
       {
         title: "Hottest Deals",
-        href: "/deals/?sort=best",
+        href: "/deals/hot",
         children: [
-          { title: "Popular Deals", href: "/deals/?sort=best" },
-          { title: "Biggest Discounts", href: "/deals/?sort=discount" },
-          { title: "Lowest Prices", href: "/deals/?sort=price&order=asc" },
+          { title: "Biggest Discounts", href: "/deals/discount" },
+          { title: "Lowest Prices", href: "/deals/lowest" },
         ],
+      },
+      {
+        title: "Under $5",
+        href: "/deals/under-5",
       },
       { title: "Shop All Deals", href: "/deals" },
       {
         title: "Shop By New",
-        href: "/deals/new",
+        href: "/deals?sort=Newest",
         children: [
-          { title: "Sticks", href: "/deals" },
-          { title: "Skates", href: "/deals" },
-          { title: "Protective", href: "/deals" },
-          { title: "Accessories", href: "/deals" },
-          { title: "Apparel", href: "/deals" },
-          { title: "Gamewear", href: "/deals" },
-          { title: "Goalie", href: "/deals" },
-          { title: "Roller", href: "/deals" },
+          { title: "Sticks", href: "/deals?sort=Newest&tags=Sticks" },
+          { title: "Skates", href: "/deals?sort=Newest&tags=Skates" },
+          { title: "Protective", href: "/deals?sort=Newest&tags=Protective" },
+          { title: "Accessories", href: "/deals?sort=Newest&tags=Accessories" },
+          { title: "Apparel", href: "/deals?sort=Newest&tags=Apparel" },
+          { title: "Gamewear", href: "/deals?sort=Newest&tags=Gamewear" },
+          { title: "Goalie", href: "/deals?sort=Newest&tags=Goalie" },
+          { title: "Roller", href: "/deals?sort=Newest&tags=Roller" },
         ],
       },
       {
         title: "Shop By Size",
         href: "#",
         children: [
-          { title: "Senior", href: "/deals/senior" },
-          { title: "Intermediate", href: "/deals/intermediate" },
-          { title: "Junior", href: "/deals/junior" },
-          { title: "Youth", href: "/deals/youth" },
+          { title: "Senior", href: "/deals?tags=Senior" },
+          { title: "Intermediate", href: "/deals?tags=Intermediate" },
+          { title: "Junior", href: "/deals?tags=Junior" },
+          { title: "Youth", href: "/deals?tags=Youth" },
         ],
       },
     ],
