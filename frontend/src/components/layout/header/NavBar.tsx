@@ -1,9 +1,4 @@
-import {
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-  PopoverBackdrop,
-} from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
