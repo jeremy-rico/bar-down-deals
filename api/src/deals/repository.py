@@ -1,3 +1,4 @@
+import json
 import math
 from datetime import datetime, timedelta, timezone
 
@@ -7,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, func
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
-from src.deals.models import Deal
-from src.products.models import CategoryProductLink, Product
+from src.deals.models import Deal, Website
+from src.products.models import Category, CategoryProductLink, Product
 
 
 class DealRepository:
@@ -26,6 +27,7 @@ class DealRepository:
         # added_since: str,
         min_price: int | None,
         max_price: int | None,
+        stores: list[str] | None,
         brands: list[str] | None,
         tags: list[str] | None,
     ) -> tuple[dict[str, int], list[Deal]]:
@@ -37,21 +39,12 @@ class DealRepository:
         """
         stmt = (
             select(Deal)
+            .join(Website)
             .join(Product)
             .join(CategoryProductLink)
+            .join(Category)
             .group_by(col(Deal.id), Product.name)
         )
-
-        # Filter by tags
-        if tags:
-            stmt = (
-                stmt.where(col(CategoryProductLink.category_id).in_(tags))
-                # .group_by(col(Deal.id))  # TODO: Is this necessary still?
-                .having(
-                    func.count(col(CategoryProductLink.category_id).distinct())
-                    >= len(tags)
-                )
-            )
 
         # Filter by price range
         if min_price != None:
@@ -59,9 +52,19 @@ class DealRepository:
         if max_price:
             stmt = stmt.where(col(Deal.price) <= max_price)
 
+        # Filter by stores:
+        if stores:
+            stmt = stmt.where(col(Website.name).in_(stores))
+
         # Filter by brands
         if brands:
             stmt = stmt.where(col(Product.brand).in_(brands))
+
+        # Filter by tags
+        if tags:
+            stmt = stmt.where(col(Category.name).in_(tags)).having(
+                func.count(col(Category.name).distinct()) >= len(tags)
+            )
 
         # if added_since:
         #     timeframes = {
@@ -88,20 +91,23 @@ class DealRepository:
             stmt = stmt.order_by(col(Product.name).asc())
 
         # Generate response headers
-        # count_stmt = select(func.count()).select_from(stmt.subquery())
-        # total_count = await self.session.scalar(count_stmt) or 0
-
         result = await self.session.execute(stmt)
         data = list(result.scalars().all())
         avail_brands = set()
         avail_tags = set()
         avail_stores = set()
+        avail_sizes = set()
         ret_max_price = 0.0
+        sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
         for row in data:
             if row.product.brand:
                 avail_brands.add(row.product.brand)
             if row.product.categories:
-                avail_tags.update([cat.name for cat in row.product.categories])
+                for cat in row.product.categories:
+                    if cat.name in sizes:
+                        avail_sizes.add(cat.name)
+                    else:
+                        avail_tags.add(cat.name)
             if row.website.name:
                 avail_stores.add(row.website.name)
             ret_max_price = max(ret_max_price, row.price)
@@ -109,10 +115,11 @@ class DealRepository:
         headers = {
             "x-total-item-count": len(data),
             "x-items-per-page": limit,
-            "x-total-page-count": math.ceil(total_count / limit),
-            "x-avail-brands": avail_brands,
-            "x-avail-tags": avail_tags,
-            "x-avail-stores": avail_stores,
+            "x-total-page-count": math.ceil(len(data) / limit),
+            "x-avail-sizes": json.dumps(list(avail_sizes)),
+            "x-avail-brands": json.dumps(list(avail_brands)),
+            "x-avail-tags": json.dumps(list(avail_tags)),
+            "x-avail-stores": json.dumps(list(avail_stores)),
             "x-max-price": ret_max_price,
         }
 
@@ -208,107 +215,3 @@ class DealRepository:
     #     if result.rowcount == 0:
     #         raise NotFoundException(f"Deal with id {deal_id} not found")
     #
-
-
-# class HeroRepository:
-#     """Repository for handling Hero database operations."""
-#
-#     def __init__(self, session: AsyncSession):
-#         self.session = session
-#
-#     async def create(self, hero_data: HeroCreate) -> Hero:
-#         """Create a new hero.
-#
-#         Args:
-#             hero_data: Hero creation data
-#
-#         Returns:
-#             Hero: Created hero
-#
-#         Raises:
-#             AlreadyExistsException: If hero with same alias already exists
-#         """
-#         hero = Hero(**hero_data.model_dump())
-#         try:
-#             self.session.add(hero)
-#             await self.session.commit()
-#             await self.session.refresh(hero)
-#             return hero
-#         except IntegrityError:
-#             await self.session.rollback()
-#             raise AlreadyExistsException(
-#                 f"Hero with alias {hero_data.alias} already exists"
-#             )
-#
-#     async def get_by_id(self, hero_id: int) -> Hero:
-#         """Get hero by ID.
-#
-#         Args:
-#             hero_id: Hero ID
-#
-#         Returns:
-#             Hero: Found hero
-#
-#         Raises:
-#             NotFoundException: If hero not found
-#         """
-#         query = select(Hero).where(Hero.id == hero_id)
-#         result = await self.session.execute(query)
-#         hero = result.scalar_one_or_none()
-#
-#         if not hero:
-#             raise NotFoundException(f"Hero with id {hero_id} not found")
-#         return hero
-#
-#     async def get_all(self) -> list[Hero]:
-#         """Get all heroes.
-#
-#         Returns:
-#             List[Hero]: List of all heroes
-#         """
-#         query = select(Hero)
-#         result = await self.session.execute(query)
-#         return list(result.scalars().all())
-#
-#     async def update(self, hero_id: int, hero_data: HeroUpdate) -> Hero:
-#         """Update hero by ID.
-#
-#         Args:
-#             hero_id: Hero ID
-#             hero_data: Hero update data
-#
-#         Returns:
-#             Hero: Updated hero
-#
-#         Raises:
-#             NotFoundException: If hero not found
-#         """
-#         update_data = hero_data.model_dump(exclude_unset=True)
-#         if not update_data:
-#             raise ValueError("No fields to update")
-#
-#         query = update(Hero).where(Hero.id == hero_id).values(**update_data)
-#         result = await self.session.execute(query)
-#
-#         if result.rowcount == 0:
-#             raise NotFoundException(f"Hero with id {hero_id} not found")
-#
-#         await self.session.commit()
-#         return await self.get_by_id(hero_id)
-#
-#     async def delete(self, hero_id: int) -> None:
-#         """Delete hero by ID.
-#
-#         Args:
-#             hero_id: Hero ID
-#
-#         Raises:
-#             NotFoundException: If hero not found
-#         """
-#         query = delete(Hero).where(Hero.id == hero_id)
-#         result = await self.session.execute(query)
-#
-#         if result.rowcount == 0:
-#             raise NotFoundException(f"Hero with id {hero_id} not found")
-#
-#         await self.session.commit()
