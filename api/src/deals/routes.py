@@ -36,9 +36,9 @@ async def get_deals(
     try:
         deals = await service.get_deals(
             query_params.sort,
-            query_params.order,
             query_params.page,
             query_params.limit,
+            query_params.added_since,
             query_params.min_price,
             query_params.max_price,
             query_params.stores,

@@ -66,11 +66,18 @@ class DealResponse(DealBase):
 
 # =============================== Filter Query Model ==========================
 class QueryParams(BaseModel):
-    sort: Literal["best", "alphabetical", "date", "discount", "price"] = "date"
-    order: Literal["asc", "desc"] = "desc"
+    sort: Literal[
+        "Best Selling",
+        "Alphabetical",
+        "Newest",
+        "Oldest",
+        "Discount",
+        "Price High",
+        "Price Low",
+    ] = "Best Selling"
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
-    # added_since: Literal["today", "week", "month", "year", "all"] = "all"
+    added_since: Literal["today", "week", "month", "year", "all"] = "all"
     min_price: int = Field(0, ge=0)
     max_price: int | None = Field(default=None, ge=1)
     stores: list[str] | None = Field(default=None)

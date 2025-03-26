@@ -37,10 +37,9 @@ class DealService:
     async def get_deals(
         self,
         sort: str,
-        order: str,
         page: int,
         limit: int,
-        # added_since: str,
+        added_since: str,
         min_price: int,
         max_price: int | None,
         stores: list[str] | None,
@@ -54,7 +53,15 @@ class DealService:
             List[DealResponse]: List of all deals
         """
         headers, deals = await self.repository.get_all(
-            sort, order, page, limit, min_price, max_price, stores, brands, tags
+            sort,
+            page,
+            limit,
+            added_since,
+            min_price,
+            max_price,
+            stores,
+            brands,
+            tags,
         )
         return headers, [DealResponse.model_validate(deal) for deal in deals]
 

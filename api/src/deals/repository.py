@@ -21,10 +21,9 @@ class DealRepository:
     async def get_all(
         self,
         sort: str,
-        order: str,
         page: int,
         limit: int,
-        # added_since: str,
+        added_since: str,
         min_price: int | None,
         max_price: int | None,
         stores: list[str] | None,
@@ -66,28 +65,28 @@ class DealRepository:
                 func.count(col(Category.name).distinct()) >= len(tags)
             )
 
-        # if added_since:
-        #     timeframes = {
-        #         "today": datetime.now(timezone.utc) - timedelta(days=1),
-        #         "week": datetime.now(timezone.utc) - timedelta(weeks=1),
-        #         "month": datetime.now(timezone.utc) - timedelta(weeks=4),
-        #         "year": datetime.now(timezone.utc) - timedelta(days=365),
-        #     }
-        #     if added_since in timeframes:
-        #         stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
+        if added_since:
+            timeframes = {
+                "today": datetime.now(timezone.utc) - timedelta(days=1),
+                "week": datetime.now(timezone.utc) - timedelta(weeks=1),
+                "month": datetime.now(timezone.utc) - timedelta(weeks=4),
+                "year": datetime.now(timezone.utc) - timedelta(days=365),
+            }
+            if added_since in timeframes:
+                stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
 
         # TODO: sort by best
-        if sort == "date" and order == "asc":
+        if sort == "Oldest":
             stmt = stmt.order_by(col(Deal.created_at).asc())
-        elif sort == "date" and order == "desc":
+        elif sort == "Newest":
             stmt = stmt.order_by(col(Deal.created_at).desc())
-        elif sort == "discount" or sort == "best":
+        elif sort == "Discount" or sort == "Best Selling":
             stmt = stmt.order_by(col(Deal.discount).desc())
-        elif sort == "price" and order == "asc":
+        elif sort == "Price Low":
             stmt = stmt.order_by(col(Deal.price).asc())
-        elif sort == "price" and order == "desc":
+        elif sort == "Price High":
             stmt = stmt.order_by(col(Deal.price).desc())
-        elif sort == "alphabetical":
+        elif sort == "Alphabetical":
             stmt = stmt.order_by(col(Product.name).asc())
 
         # Generate response headers
