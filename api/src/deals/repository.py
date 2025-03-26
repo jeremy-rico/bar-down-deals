@@ -23,13 +23,17 @@ class DealRepository:
         order: str,
         page: int,
         limit: int,
-        added_since: str,
-        categories: list[int] | None,
+        # added_since: str,
+        min_price: int | None,
+        max_price: int | None,
+        brands: list[str] | None,
+        tags: list[str] | None,
     ) -> tuple[dict[str, int], list[Deal]]:
-        """Get filtered deals.
+        """
+        Get filtered deals.
 
         Returns:
-            List[Deal]: List of all deals
+            tuple(headers, List[Deal]): Custom headers, list of all deals
         """
         stmt = (
             select(Deal)
@@ -38,25 +42,36 @@ class DealRepository:
             .group_by(col(Deal.id), Product.name)
         )
 
-        if categories:
+        # Filter by tags
+        if tags:
             stmt = (
-                stmt.where(col(CategoryProductLink.category_id).in_(categories))
-                .group_by(col(Deal.id))  # TODO: Is this necessary still?
+                stmt.where(col(CategoryProductLink.category_id).in_(tags))
+                # .group_by(col(Deal.id))  # TODO: Is this necessary still?
                 .having(
                     func.count(col(CategoryProductLink.category_id).distinct())
-                    >= len(categories)
+                    >= len(tags)
                 )
             )
 
-        if added_since:
-            timeframes = {
-                "today": datetime.now(timezone.utc) - timedelta(days=1),
-                "week": datetime.now(timezone.utc) - timedelta(weeks=1),
-                "month": datetime.now(timezone.utc) - timedelta(weeks=4),
-                "year": datetime.now(timezone.utc) - timedelta(days=365),
-            }
-            if added_since in timeframes:
-                stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
+        # Filter by price range
+        if min_price != None:
+            stmt = stmt.where(col(Deal.price) >= min_price)
+        if max_price:
+            stmt = stmt.where(col(Deal.price) <= max_price)
+
+        # Filter by brands
+        if brands:
+            stmt = stmt.where(col(Product.brand).in_(brands))
+
+        # if added_since:
+        #     timeframes = {
+        #         "today": datetime.now(timezone.utc) - timedelta(days=1),
+        #         "week": datetime.now(timezone.utc) - timedelta(weeks=1),
+        #         "month": datetime.now(timezone.utc) - timedelta(weeks=4),
+        #         "year": datetime.now(timezone.utc) - timedelta(days=365),
+        #     }
+        #     if added_since in timeframes:
+        #         stmt = stmt.filter(col(Deal.created_at) >= timeframes[added_since])
 
         # TODO: sort by best
         if sort == "date" and order == "asc":
@@ -73,12 +88,32 @@ class DealRepository:
             stmt = stmt.order_by(col(Product.name).asc())
 
         # Generate response headers
-        count_stmt = select(func.count()).select_from(stmt.subquery())
-        total_count = await self.session.scalar(count_stmt) or 0
+        # count_stmt = select(func.count()).select_from(stmt.subquery())
+        # total_count = await self.session.scalar(count_stmt) or 0
+
+        result = await self.session.execute(stmt)
+        data = list(result.scalars().all())
+        avail_brands = set()
+        avail_tags = set()
+        avail_stores = set()
+        ret_max_price = 0.0
+        for row in data:
+            if row.product.brand:
+                avail_brands.add(row.product.brand)
+            if row.product.categories:
+                avail_tags.update([cat.name for cat in row.product.categories])
+            if row.website.name:
+                avail_stores.add(row.website.name)
+            ret_max_price = max(ret_max_price, row.price)
+
         headers = {
-            "x-total-item-count": total_count,
+            "x-total-item-count": len(data),
             "x-items-per-page": limit,
             "x-total-page-count": math.ceil(total_count / limit),
+            "x-avail-brands": avail_brands,
+            "x-avail-tags": avail_tags,
+            "x-avail-stores": avail_stores,
+            "x-max-price": ret_max_price,
         }
 
         # Paginate and return objects
