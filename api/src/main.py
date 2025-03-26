@@ -36,6 +36,7 @@ app.add_middleware(
         "x-total-page-count",
         "x-items-per-page",
         "x-total-item-count",
+        "x-avail-sizes",
         "x-avail-brands",
         "x-avail-tags",
         "x-avail-stores",

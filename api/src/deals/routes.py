@@ -41,6 +41,7 @@ async def get_deals(
             query_params.limit,
             query_params.min_price,
             query_params.max_price,
+            query_params.stores,
             query_params.brands,
             query_params.tags,
         )
