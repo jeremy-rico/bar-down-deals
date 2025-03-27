@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import col
 
 from src.core.exceptions import NotFoundException
 from src.products.models import Category, Product
@@ -33,10 +34,10 @@ class ProductRepository:
                 "year": datetime.now(timezone.utc) - timedelta(days=365),
             }
             if added_since in timeframes:
-                stmt = stmt.filter(Product.created_at >= timeframes[added_since])
+                stmt = stmt.filter(col(Product.created_at) >= timeframes[added_since])
 
         if sort_by == "date":
-            stmt = stmt.order_by(Product.created_at)
+            stmt = stmt.order_by(col(Product.created_at))
 
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)
@@ -60,7 +61,7 @@ class ProductRepository:
         Raises:
             NotFoundException: If product not found
         """
-        stmt = select(Product).where(Product.id == product_id)
+        stmt = select(Product).where(col(Product.id) == product_id)
         result = await self.session.execute(stmt)
         product = result.scalar_one_or_none()
 
