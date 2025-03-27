@@ -54,7 +54,7 @@ class Settings(BaseSettings):
         "Wooden",
         # Protective
         "Helmets",
-        "Cages & Sheilds",
+        "Cages & Shields",
         "Gloves",
         "Shoulder Pads",
         "Shin Guards",

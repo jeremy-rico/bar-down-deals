@@ -53,12 +53,12 @@ export const navigation = [
         children: [
           {
             title: "Player Sticks",
-            href: "/deals/sticks/player",
+            href: "/deals/sticks/player", //TODO:
             children: [],
           },
           { title: "Goalie Sticks", href: "/deals/goalie/sticks" },
-          { title: "Street Hockey Sticks", href: "/deals/sticks/street" },
-          { title: "Wood Hockey Sticks", href: "/deals/sticks/wood" },
+          { title: "Street Hockey Sticks", href: "/deals/sticks/street" }, //TODO:
+          { title: "Wood Hockey Sticks", href: "/deals/sticks/wood" }, //TODO:
         ],
       },
       {
@@ -95,7 +95,7 @@ export const navigation = [
           },
           {
             title: "Cages & Shields",
-            href: "/deals/protective/cages_and_shields",
+            href: "/deals/protective/cages-and-shields",
             children: [],
           },
           {
@@ -105,17 +105,17 @@ export const navigation = [
           },
           {
             title: "Shoulder Pads",
-            href: "/deals/protective/shoulder_pads",
+            href: "/deals/protective/shoulder-pads",
             children: [],
           },
           {
             title: "Shin Guards",
-            href: "/deals/protective/shin_guards",
+            href: "/deals/protective/shin-guards",
             children: [],
           },
           {
             title: "Elbow Pads",
-            href: "/deals/protective/elbow_pads",
+            href: "/deals/protective/elbow-pads",
             children: [],
           },
           {
@@ -125,7 +125,7 @@ export const navigation = [
           },
           {
             title: "Pant Shells",
-            href: "/deals/protective/pant_shells",
+            href: "/deals/protective/pant-shells",
             children: [],
           },
         ],
@@ -144,11 +144,11 @@ export const navigation = [
         title: "Goalie",
         href: "/deals/goalie",
         children: [
-          { title: "Leg Pads", href: "/deals/goalie/leg_pads" },
+          { title: "Leg Pads", href: "/deals/goalie/leg-pads" },
           { title: "Masks", href: "/deals/goalie/masks" },
           { title: "Blockers", href: "/deals/goalie/blockers" },
-          { title: "Chest & Arm", href: "/deals/goalie/chest_and_arm" },
-          { title: "Knee Protectors", href: "/deals/goalie/knee_protectors" },
+          { title: "Chest & Arm", href: "/deals/goalie/chest-and-arm" },
+          { title: "Knee Protectors", href: "/deals/goalie/knee-protectors" },
           { title: "Catchers", href: "/deals/goalie/catchers" },
           { title: "Goalie Sticks", href: "/deals/goalie/sticks" },
           { title: "Goalie Skates", href: "/deals/goalie/skates" },
@@ -159,7 +159,7 @@ export const navigation = [
   // Accessories Section
   {
     title: "Accessories",
-    href: "/deals/accessories",
+    href: "#",
     children: [
       {
         title: "Gamewear",
@@ -188,22 +188,39 @@ export const navigation = [
     href: "#",
     children: [
       {
-        title: "Shop By Site",
+        title: "Shop By Store",
         href: "#",
         children: [
-          { title: "Hockey Monkey", href: "deals/sites/hockey-monkey" },
-          { title: "Pure Hockey", href: "deals/sites/pure-hockey" },
-          { title: "Ice Warehouse", href: "deals/sites/ice-warehouse" },
-          { title: "CCM", href: "deals/sites/ccm" },
-          { title: "Bauer", href: "deals/sites/bauer" },
-          { title: "True", href: "deals/sites/true" },
-          { title: "Sherwood", href: "deals/sites/sherwood" },
+          { title: "Hockey Monkey", href: "deals/hockey-monkey" },
+          { title: "Pure Hockey", href: "deals/pure-hockey" },
+          { title: "Ice Warehouse", href: "deals/ice-warehouse" },
+          { title: "CCM", href: "deals/ccm" },
+          { title: "Bauer", href: "deals/bauer" },
+          { title: "True", href: "deals/true" },
+          { title: "Sherwood", href: "deals/sherwood" },
         ],
       },
     ],
   },
-  { title: "Coupons", href: "/coupons", children: [] },
-  { title: "Promos", hred: "/promos", children: [] },
+  {
+    title: "Coupons",
+    href: "#",
+    children: [
+      { title: "Hockey Monkey", href: "deals/coupons/hockey-monkey" },
+      { title: "Pure Hockey", href: "deals/coupons/pure-hockey" },
+      { title: "Ice Warehouse", href: "deals/coupons/ice-warehouse" },
+      { title: "CCM", href: "deals/coupons/ccm" },
+      { title: "Bauer", href: "deals/coupons/bauer" },
+      { title: "True", href: "deals/coupons/true" },
+      { title: "Sherwood", href: "deals/coupons/sherwood" },
+      { title: "View All Coupons", href: "deals/coupons" },
+    ],
+  },
+  {
+    title: "Promos",
+    hred: "#",
+    children: [{ title: "View All Promos", href: "deals/promos" }],
+  },
 ];
 
 export const headerLinks = [
