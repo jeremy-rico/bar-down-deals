@@ -1,5 +1,3 @@
-import json
-import math
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import delete, select, update
@@ -8,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, func
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
+from src.core.utils import get_headers
 from src.deals.models import Deal, Website
 from src.products.models import Category, CategoryProductLink, Product
 
@@ -29,7 +28,7 @@ class DealRepository:
         stores: list[str] | None,
         brands: list[str] | None,
         tags: list[str] | None,
-    ) -> tuple[dict[str, int], list[Deal]]:
+    ) -> tuple[dict[str, str], list[Deal]]:
         """
         Get filtered deals.
 
@@ -92,35 +91,7 @@ class DealRepository:
         # Generate response headers
         result = await self.session.execute(stmt)
         data = list(result.scalars().all())
-        avail_brands = set()
-        avail_tags = set()
-        avail_stores = set()
-        avail_sizes = set()
-        ret_max_price = 0.0
-        sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
-        for row in data:
-            if row.product.brand:
-                avail_brands.add(row.product.brand)
-            if row.product.categories:
-                for cat in row.product.categories:
-                    if cat.name in sizes:
-                        avail_sizes.add(cat.name)
-                    else:
-                        avail_tags.add(cat.name)
-            if row.website.name:
-                avail_stores.add(row.website.name)
-            ret_max_price = max(ret_max_price, row.price)
-
-        headers = {
-            "x-total-item-count": len(data),
-            "x-items-per-page": limit,
-            "x-total-page-count": math.ceil(len(data) / limit),
-            "x-avail-sizes": json.dumps(list(avail_sizes)),
-            "x-avail-brands": json.dumps(list(avail_brands)),
-            "x-avail-tags": json.dumps(list(avail_tags)),
-            "x-avail-stores": json.dumps(list(avail_stores)),
-            "x-max-price": ret_max_price,
-        }
+        headers = get_headers(data, limit)
 
         # Paginate and return objects
         offset = (page - 1) * limit

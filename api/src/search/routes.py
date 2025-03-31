@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_session
@@ -24,6 +24,7 @@ def get_search_service(session: AsyncSession = Depends(get_session)) -> SearchSe
 
 @router.get("/", response_model=list[DealResponse])
 async def search(
+    response: Response,
     search_params: Annotated[SearchParams, Query()],
     service: SearchService = Depends(get_search_service),
 ) -> list[DealResponse]:
@@ -40,8 +41,10 @@ async def search(
             search_params.limit,
             search_params.q,
         )
-        logger.info(f"Retrieved {len(deals)} deals")
-        return deals
+        logger.info(f"Retrieved {len(deals[1])} deals")
+        for k, i in deals[0].items():
+            response.headers[k] = str(i)
+        return deals[1]
     except Exception as e:
         logger.error(f"Failed to fetch deals: {str(e)}")
         raise

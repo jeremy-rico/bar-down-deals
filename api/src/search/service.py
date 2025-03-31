@@ -13,12 +13,12 @@ class SearchService:
         page: int,
         limit: int,
         query: str,
-    ) -> list[DealResponse]:
+    ) -> tuple[dict[str, str], list[DealResponse]]:
         """
         Get deals according to search.
 
         Returns:
             List[deal]: List of products
         """
-        deals = await self.repository.search(page, limit, query)
-        return [DealResponse.model_validate(deal) for deal in deals]
+        headers, deals = await self.repository.search(page, limit, query)
+        return headers, [DealResponse.model_validate(deal) for deal in deals]
