@@ -14,9 +14,9 @@ export default function HeaderLinks() {
         className="flex items-center gap-x-2 whitespace-nowrap"
       >
         {item.title}
-        {item.title == "About" && <QuestionMarkCircleIcon className="size-7" />}
+        {item.title == "About" && <QuestionMarkCircleIcon className="size-6" />}
         {item.title == "Contact" && <PhoneIcon className="size-6" />}
-        {item.title == "Sign In" && <UserCircleIcon className="size-7" />}
+        {item.title == "Sign In" && <UserCircleIcon className="size-6" />}
       </Link>
     </li>
   ));

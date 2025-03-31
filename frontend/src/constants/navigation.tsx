@@ -5,8 +5,8 @@ export const navigation = [
     href: "#",
     children: [
       {
-        title: "Hottest Deals",
-        href: "/deals/hot",
+        title: "Popular Deals",
+        href: "/deals/popular",
         children: [
           { title: "Biggest Discounts", href: "/deals/discount" },
           { title: "Lowest Prices", href: "/deals/lowest" },
@@ -206,37 +206,23 @@ export const navigation = [
     title: "Coupons",
     href: "#",
     children: [
-      { title: "Hockey Monkey", href: "deals/coupons/hockey-monkey" },
-      { title: "Pure Hockey", href: "deals/coupons/pure-hockey" },
-      { title: "Ice Warehouse", href: "deals/coupons/ice-warehouse" },
-      { title: "CCM", href: "deals/coupons/ccm" },
-      { title: "Bauer", href: "deals/coupons/bauer" },
-      { title: "True", href: "deals/coupons/true" },
-      { title: "Sherwood", href: "deals/coupons/sherwood" },
-      { title: "View All Coupons", href: "deals/coupons" },
+      { title: "COMING SOON!", href: "#" },
+      //{ title: "Hockey Monkey", href: "deals/coupons/hockey-monkey" },
+      //{ title: "Pure Hockey", href: "deals/coupons/pure-hockey" },
+      //{ title: "Ice Warehouse", href: "deals/coupons/ice-warehouse" },
+      //{ title: "CCM", href: "deals/coupons/ccm" },
+      //{ title: "Bauer", href: "deals/coupons/bauer" },
+      //{ title: "True", href: "deals/coupons/true" },
+      //{ title: "Sherwood", href: "deals/coupons/sherwood" },
+      //{ title: "View All Coupons", href: "deals/coupons" },
     ],
   },
   {
     title: "Promos",
     hred: "#",
-    children: [{ title: "View All Promos", href: "deals/promos" }],
+    children: [
+      { title: "COMING SOON!", href: "#" },
+      //{ title: "View All Promos", href: "deals/promos" },
+    ],
   },
 ];
-
-export const headerLinks = [
-  { id: 1, title: "About", href: "/about" },
-  { id: 2, title: "Contact", href: "/contact" },
-  { id: 3, title: "Sign In", href: "/signin" },
-];
-
-export const sort_options = [
-  { id: 1, title: "Best Selling", sort: "best", order: "desc" },
-  { id: 2, title: "Alphabetical", sort: "alphabetical", order: "asc" },
-  { id: 3, title: "Price, highest", sort: "price", order: "desc" },
-  { id: 4, title: "Price, lowest", sort: "price", order: "asc" },
-  { id: 5, title: "Discount", sort: "discount", order: "desc" },
-  { id: 6, title: "Newest", sort: "date", order: "desc" },
-  { id: 7, title: "Oldest", sort: "date", order: "asc" },
-];
-
-export const api = "http://13.52.178.97:8000";

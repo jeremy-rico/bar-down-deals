@@ -1,11 +1,11 @@
 export const headerLinks = [
   { id: 1, title: "About", href: "/about" },
   { id: 2, title: "Contact", href: "/contact" },
-  { id: 3, title: "Sign In", href: "/signin" },
+  //{ id: 3, title: "Sign In", href: "/signin" },
 ];
 
 export const sort_options = [
-  "Best Selling",
+  "Popular",
   "Alphabetical",
   "Price High",
   "Price Low",

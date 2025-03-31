@@ -1,10 +1,9 @@
 "use client";
-import DealCard from "@/components/DealCard.tsx";
+import SearchResultCard from "@/components/SearchResultCard.tsx";
 import SortMenu from "@/components/SortMenu.tsx";
 import FilterOptions from "@/components/FilterOptions.tsx";
 import Pagination from "@/components/Pagination.tsx";
 import { useState, useEffect } from "react";
-import { notFound } from "next/navigation";
 import { api } from "@/constants/index.tsx";
 
 export default function SearchResults({ title, q }) {
@@ -14,7 +13,7 @@ export default function SearchResults({ title, q }) {
   const [totalItems, setTotalItems] = useState();
 
   // Sort and order variables
-  const [sortOption, setSortOption] = useState("Best Selling" || null);
+  const [sortOption, setSortOption] = useState("Newest" || null);
 
   // Filter variables
   const [filterOptions, setFilterOptions] = useState([]);
@@ -38,6 +37,7 @@ export default function SearchResults({ title, q }) {
       const query = new URLSearchParams();
       query.append("page", currentPage);
       query.append("q", q);
+      if (sortOption) query.append("sort", sortOption);
       if (minPrice) query.append("min_price", minPrice);
       if (maxPrice) query.append("max_price", maxPrice);
 
@@ -109,17 +109,26 @@ export default function SearchResults({ title, q }) {
           maxAvailPrice={maxAvailPrice}
           onMaxPriceChange={setMaxPrice}
         />
-        <div className="grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
+        <div className="flex flex-col w-full gap-y-2">
+          <div className="flex justify-between text-gray-500">
+            <p> Title</p>
+            <div className="flex justify-between max-w-72 w-full mr-5">
+              <p>Price</p>
+              <p>Discount</p>
+            </div>
+          </div>
           {deals.length == 0 ? (
             <p className="text-md">No deals found. Try again.</p>
           ) : (
-            deals.map((deal) => <DealCard key={deal.id} deal={deal} as="div" />)
+            deals.map((deal) => (
+              <SearchResultCard key={deal.id} deal={deal} as="div" />
+            ))
           )}
         </div>
       </div>
       <div className="flex justify-between items-center">
         <p className="block text-sm text-gray-500 ml-4">
-          {deals.length} deals found
+          {totalItems} deals found
         </p>
         <Pagination
           onPageChange={setCurrentPage}
