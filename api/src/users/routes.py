@@ -20,7 +20,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 )
 async def register(
     user_data: UserCreate, session: AsyncSession = Depends(get_session)
-) -> UserResponse:
+) -> User:
     """Register a new user."""
     logger.debug(f"Registering user: {user_data.email}")
     return await UserService(session).create_user(user_data)
@@ -38,6 +38,6 @@ async def login(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(user: User = Depends(get_current_user)) -> UserResponse:
+async def get_me(user: User = Depends(get_current_user)) -> User:
     """Get current authenticated user."""
     return user
