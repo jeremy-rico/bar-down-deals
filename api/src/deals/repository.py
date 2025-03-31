@@ -79,7 +79,7 @@ class DealRepository:
             stmt = stmt.order_by(col(Deal.created_at).asc())
         elif sort == "Newest":
             stmt = stmt.order_by(col(Deal.created_at).desc())
-        elif sort == "Discount" or sort == "Best Selling":
+        elif sort == "Discount" or sort == "Popular":
             stmt = stmt.order_by(col(Deal.discount).desc())
         elif sort == "Price Low":
             stmt = stmt.order_by(col(Deal.price).asc())
