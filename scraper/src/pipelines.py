@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 from urllib.parse import urljoin
 
 # shared model definitions
@@ -15,7 +16,7 @@ from sqlmodel import col
 
 # database connection
 from scraper.src.database import get_session
-from scraper.src.utils import get_discount
+from scraper.src.utils import get_discount, read_json
 
 
 class PostgresPipeline:
@@ -82,18 +83,25 @@ class PostgresPipeline:
            Product
         """
 
-        stmt = select(Category).where(col(Category.name).in_(item.get("categories")))
+        # Get categories and extra tags
+        categories_list = get_extra_tags(item.get("name"), item.get("categories"))
+
+        # Grab all category rows from db
+        stmt = select(Category).where(col(Category.name).in_(categories_list))
         categories = list(self.session.scalars(stmt).all())
 
+        # Check if product exists
         stmt = select(Product).where(Product.name == item.get("name"))
         product = self.session.scalar(stmt)
         if product:
             return product
 
+        # Create image url
         image_url = item.get("images")
         if image_url:
             image_url = urljoin(self.s3_host, image_url[0].get("path"))
 
+        # Create Product instance and write to db
         product = Product(
             name=item.get("name"),
             brand=item.get("brand", None),
@@ -152,7 +160,6 @@ class PostgresPipeline:
         """
         # TODO: Exception handling
         self.validate(item)
-        print(item.get("image_urls"))
 
         # Insert product details
         product = self.upsert_product(item)
@@ -160,3 +167,28 @@ class PostgresPipeline:
         # Insert deal details
         deal = self.upsert_deal(item, product)
         return deal
+
+
+def get_extra_tags(title: str, start_categories: list[str] | None) -> list[str]:
+    """
+    Helper function to get extra tags in product title that can't be inferred from url
+
+    Args:
+      title: Product title
+      start_categories: Product categories pulled from url
+
+    Returns:
+      List[str]: list of all tags
+    """
+    all_categories = set(start_categories) if start_categories else set()
+
+    # Get keyword --> tag map
+    json_path = Path(__file__).parent.parent / "expressions" / "tags.json"
+    keywords = read_json(json_path)
+    title = title.lower()
+
+    for kw in keywords.keys():
+        if kw in title:
+            all_categories.add(keywords[kw].title())
+
+    return list(all_categories)

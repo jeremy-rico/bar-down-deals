@@ -22,7 +22,6 @@ class HockeyMonkeySpider(scrapy.Spider):
         Starting from the clearance categories page, explore each category link.
         """
         category_links = response.css(self.exp["category_links"]["css"])
-        # category_links = [category_links[0]]  # TODO: REMOVE
         yield from response.follow_all(category_links, self.parse_category)
 
     def parse_category(self, response):
@@ -44,8 +43,8 @@ class HockeyMonkeySpider(scrapy.Spider):
         categories = self.get_categories(response.url)
 
         # Get all products on page
-        prods = response.css(self.exp["products"]["css"])
-        # prods = [prods[0]]  # TODO: REMOVE
+        prods = response.css(self.exp["product_links"]["css"])
+        prods = prods[:5]  # TODO: REMOVE
 
         for prod in prods:
             cb_kwargs = dict(
@@ -82,7 +81,8 @@ class HockeyMonkeySpider(scrapy.Spider):
 
     def get_categories(self, url: str) -> list[str]:
         """
-        Get product categories based on url
+        Get product categories based on url. More tags are added based on the
+        item title in the item pipeline.
 
         Args:
             url: response url
@@ -90,11 +90,9 @@ class HockeyMonkeySpider(scrapy.Spider):
         Returns:
             list[str]: list of categories
         """
-        url_path = urlparse(url).path.split("/")
-        categories = []
         try:
-            for p in url_path[2:]:
-                categories += self.exp["categories"][p]
+            url_page = urlparse(url).path.split("/")[-1]
+            categories = self.exp["categories"].get(url_page) or []
         except Exception as e:
             print(f"Unable to infer categories from url {url}. Error: {e}")
 

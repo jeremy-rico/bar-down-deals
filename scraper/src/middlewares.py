@@ -114,5 +114,5 @@ class ScraperApiProxyMiddleware:
 
     def process_request(self, request, spider):
         request.meta["proxy"] = (
-            f"http://scraperapi:{self.API_KEY}@proxy-server.scraperapi.com:8001"
+            f"http://scraperapi.render=true:{self.API_KEY}@proxy-server.scraperapi.com:8001"
         )

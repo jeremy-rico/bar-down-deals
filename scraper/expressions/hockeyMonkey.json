@@ -5,7 +5,7 @@
   "next_links": {
     "css": "div.pages a.action.next"
   },
-  "products": {
+  "product_links": {
     "css": "div.product-item-info"
   },
   "product_info": {
@@ -35,11 +35,10 @@
     "css": "div.shop-by-category a"
   },
   "categories": {
-    "clearance-hockey-sticks": ["Sticks", "Composite"],
-    "senior-clearance-hockey-sticks.html": ["Senior"],
-    "intermediate-clearance-hockey-sticks.html": ["Intermediate"],
-    "junior-clearance-hockey-sticks.html": ["Junior"],
-    "clearance-hockey-sticks-yth.html": ["Youth"],
+    "senior-clearance-hockey-sticks.html": ["Sticks"],
+    "intermediate-clearance-hockey-sticks.html": ["Sticks"],
+    "junior-clearance-hockey-sticks.html": ["Sticks"],
+    "clearance-hockey-sticks-yth.html": ["Sticks"],
     "closeout-iceskates.html": ["Skates"],
     "closeoutinline.html": ["Roller", "Inline Skates"],
     "closeouthelmets.html": ["Protective", "Helmets"],
@@ -54,11 +53,10 @@
     "wheels-clearance.html": ["Roller", "Inline Wheels"],
     "closproteq-rhp.html": ["Roller", "Inline Pants"],
     "closeout-undergarments.html": ["Protective", "Base Layer", "Jocks"],
-    "closeout-apparel": ["Apparel"],
-    "clearance-adult-hockey-apparel.html": ["Adult"],
-    "clearance-youth-hockey-apparel.html": ["Youth"],
-    "clearance-womens-hockey-apparel.html": ["Womens"],
-    "clearance-hockey-headwear.html": ["Headwear"],
+    "clearance-adult-hockey-apparel.html": ["Apparel", "Adult"],
+    "clearance-youth-hockey-apparel.html": ["Apparel", "Youth"],
+    "clearance-womens-hockey-apparel.html": ["Apparel", "Womens"],
+    "clearance-hockey-headwear.html": ["Apparel", "Headwear"],
     "clearance-gamewear.html": ["Gamewear", "Jerseys"],
     "clearance-hockey-socks.html": ["Gamewear", "Socks"],
     "clearance-footwear.html": ["Apparel", "Footwear"],
