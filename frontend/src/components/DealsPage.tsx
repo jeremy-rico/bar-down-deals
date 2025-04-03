@@ -11,9 +11,11 @@ export default function DealsPage({ title, queryParams }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [totalItems, setTotalItems] = useState();
-
-  // Sort and order variables
   const [sortOption, setSortOption] = useState(queryParams.sort || null);
+  const [maxAvailPrice, setMaxAvailPrice] = useState();
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(queryParams.maxPrice || null);
+  const [deals, setDeals] = useState([]);
 
   // Filter variables
   const [filterOptions, setFilterOptions] = useState([]);
@@ -22,14 +24,6 @@ export default function DealsPage({ title, queryParams }) {
     brands: queryParams.brands || [],
     stores: queryParams.stores || [],
   });
-
-  // Price range variables
-  const [maxAvailPrice, setMaxAvailPrice] = useState();
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(queryParams.maxPrice || null);
-
-  // Deals holder
-  const [deals, setDeals] = useState([]);
 
   useEffect(() => {
     async function fetchDeals() {

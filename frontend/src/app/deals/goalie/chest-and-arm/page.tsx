@@ -3,7 +3,7 @@ import DealsPage from "@/components/DealsPage.tsx";
 
 export default function Home() {
   const queryParams = {
-    sort: "Best Selling",
+    sort: "Popular",
     tags: ["Goalie", "Chest And Arm"],
   };
 

@@ -1,7 +1,7 @@
 //import Image from "next/image";
 import DealsPage from "@/components/DealsPage.tsx";
 
-export default function Home() {
+export default function Deals() {
   const queryParams = {
     sort: "Newest",
   };

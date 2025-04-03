@@ -193,6 +193,7 @@ export const navigation = [
         children: [
           { title: "Hockey Monkey", href: "deals/hockey-monkey" },
           { title: "Pure Hockey", href: "deals/pure-hockey" },
+          { title: "Discount Hockey", href: "deals/discount-hockey" },
           { title: "Ice Warehouse", href: "deals/ice-warehouse" },
           { title: "CCM", href: "deals/ccm" },
           { title: "Bauer", href: "deals/bauer" },
