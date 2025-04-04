@@ -97,6 +97,7 @@ export default function DealsPage({ title, queryParams }) {
           onMinPriceChange={setMinPrice}
           maxAvailPrice={maxAvailPrice}
           onMaxPriceChange={setMaxPrice}
+          setCurrentPage={setCurrentPage}
         />
         <div className="grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
           {deals.map((deal) => (

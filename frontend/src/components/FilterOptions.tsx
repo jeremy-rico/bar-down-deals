@@ -10,8 +10,10 @@ export default function FilterOptions({
   onMinPriceChange,
   maxAvailPrice,
   onMaxPriceChange,
+  setCurrentPage,
 }) {
   const toggleFilter = (query, option) => {
+    setCurrentPage(1);
     onFilterChange((prev) => ({
       ...prev, // Keep the rest of the filters
       [query]: prev[query]?.includes(option)
