@@ -5,6 +5,9 @@
   "next_links": {
     "css": "div.pager a.pg.pg-arrow.fwd-pg"
   },
+  "product_links": {
+    "css": "div.item"
+  },
   "product_info": {
     "brand": {
       "css": "None"
@@ -24,9 +27,6 @@
     "url": {
       "css": "div.item div.details a::attr(href)"
     }
-  },
-  "product_links": {
-    "css": "div.item"
   },
   "categories": {
     "hockey-sticks-sale": ["Sticks"],

@@ -90,6 +90,10 @@ class PostgresPipeline:
         stmt = select(Category).where(col(Category.name).in_(categories_list))
         categories = list(self.session.scalars(stmt).all())
 
+        # Get brand if it wasn't scraped
+        if item.get("brand") == None:
+            item["brand"] = get_brand(item.get("name"))
+
         # Check if product exists
         stmt = select(Product).where(Product.name == item.get("name"))
         product = self.session.scalar(stmt)
@@ -192,3 +196,24 @@ def get_extra_tags(title: str, start_categories: list[str] | None) -> list[str]:
             all_categories.add(keywords[kw].title())
 
     return list(all_categories)
+
+
+def get_brand(title: str) -> str | None:
+    """
+    Helper function to get brand from title if it can't be scraped
+
+    Args:
+      title: Product title
+      start_categories: Product categories pulled from url
+
+    Returns:
+      List[str]: list of all tags
+    """
+    # Get keyword --> tag map
+    json_path = Path(__file__).parent.parent / "expressions" / "brands.json"
+    keywords = read_json(json_path)
+    title = title.lower()
+
+    for kw in keywords.keys():
+        if kw in title:
+            return keywords[kw]
