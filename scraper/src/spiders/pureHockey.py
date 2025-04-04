@@ -43,6 +43,7 @@ class PureHockeySpider(scrapy.Spider):
                     l.add_value("categories", categories)
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
+            yield l.load_item()
 
         # Follow all next links
         next_links = response.css(self.exp["next_links"]["css"])
