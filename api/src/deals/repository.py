@@ -87,6 +87,8 @@ class DealRepository:
             stmt = stmt.order_by(col(Deal.price).desc())
         elif sort == "Alphabetical":
             stmt = stmt.order_by(col(Product.name).asc())
+        elif sort == "Random":
+            stmt = stmt.order_by(func.random())
 
         # Generate response headers
         result = await self.session.execute(stmt)

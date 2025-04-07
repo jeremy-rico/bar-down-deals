@@ -74,6 +74,7 @@ class QueryParams(BaseModel):
         "Discount",
         "Price High",
         "Price Low",
+        "Random",
     ] = "Popular"
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
