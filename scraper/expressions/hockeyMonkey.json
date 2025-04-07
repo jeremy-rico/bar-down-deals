@@ -9,26 +9,23 @@
     "css": "div.product-item-info"
   },
   "product_info": {
+    "name": {
+      "css": "a.product-item-link::text"
+    },
     "brand": {
       "css": "strong.brand-name::text"
+    },
+    "url": {
+      "css": "a.product-item-link::attr(href)"
     },
     "image_urls": {
       "css": "img.product-image-photo::attr(data-src)"
     },
-    "name": {
-      "css": "div.page-title-wrapper.product h1 span::text"
+    "price": {
+      "css": "span.normal-price.is-clearance span.price::text"
     },
     "original_price": {
-      "css": "div.price-box.price-final_price span#oldprice-configurable span.price::text"
-    },
-    "price": {
-      "css": "div.price-box.price-final_price span.normal-price.is-clearance span.price::text"
-    },
-    "description": {
-      "css": "div#description p::text"
-    },
-    "link": {
-      "css": "a.product-item-link"
+      "css": "span.old-price span.price::text"
     }
   },
   "subcategory_links": {

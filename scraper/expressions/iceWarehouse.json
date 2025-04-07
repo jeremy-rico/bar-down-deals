@@ -1,0 +1,61 @@
+{
+  "category_links": {
+    "css": "div.shop_type-wrap a"
+  },
+  "subcategory_links": {
+    "css": "section.multi_blk.category_section.no-header a"
+  },
+  "next_links": {
+    "css": "div.pages a.action.next"
+  },
+  "product_links": {
+    "css": "div.cattable-wrap-cell.gtm_impression"
+  },
+  "product_info": {
+    "name": {
+      "css": "div.cattable-wrap-cell-info-name::text"
+    },
+    "brand": {
+      "css": "None"
+    },
+    "url": {
+      "css": "a.cattable-wrap-cell-imgwrap-inner::attr(href)"
+    },
+    "image_urls": {
+      "css": "img.cattable-wrap-cell-imgwrap-inner-img::attr(src)"
+    },
+    "price_range": {
+      "css": "div.cattable-wrap-cell-info-price.is-sale.has-pricerange::attr(data-price_array)"
+    },
+    "original_price_range": {
+      "css": "div.cattable-wrap-cell-info-price.is-sale.has-pricerange::attr(data-list_price_array)"
+    },
+    "price": {
+      "css": "div.cattable-wrap-cell-info-price.is-sale span mark::text"
+    },
+    "original_price": {
+      "css": "div.cattable-wrap-cell-info-price.is-sale script::text"
+    },
+    "comment": "^^^ gotta do some crazy shit in iceWarehouse spider for this one"
+  },
+  "categories": {
+    "catpage-SALEICESR.html": ["Skates", "Senior", "Junior"],
+    "catpage-SALEICEJR.html": ["Skates", "Youth"],
+    "catpage-SALERHSKTS.html": ["Roller"],
+    "catpage-SALESTICKS.html": ["Sticks"],
+    "catpage-SALEHELMETS.html": ["Protective", "Helmets"],
+    "catpage-SALEGLOVES.html": ["Protective", "Gloves"],
+    "catpage-SALESPEPSG.html": ["Protective"],
+    "catpage-SALEICEPANT.html": ["Protective", "Pants"],
+    "catpage-SALEPROAPP.html": ["Protective", "Accessories"],
+    "catpage-SALEBAGS.html": ["Bags"],
+    "catpage-SALEWHEELS.html": ["Roller", "Wheels"],
+    "catpage-GOALSALE.html": ["Goalie"],
+    "catpage-SALEJERSX.html": ["Gamewear", "Jerseys"],
+    "catpage-CSHALFTEAM.html": ["Apparel"],
+    "catpage-CSHALPERBAS.html": ["Base Layer"],
+    "catpage-SWOMHOAP.html": ["Apparel", "Womens"],
+    "catpage-CSAPPSR.html": ["Apparel", "Accessories"],
+    "catpage-SALEACC.html": ["Accessories"]
+  }
+}

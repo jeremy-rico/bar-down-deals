@@ -125,6 +125,25 @@ def get_retry_request(
     return None
 
 
+class ScraperAPIRetryMiddleware:
+    def __init__(self, settings: BaseSettings):
+        self.API_KEY = settings.get("SCRAPERAPI_KEY")
+
+    @classmethod
+    def from_crawler(cls, crawler: Crawler) -> Self:
+        return cls(crawler.settings)
+
+    def process_request(self, request: Request, spider: Spider):
+        if request.meta.get("retry_times", 0) > 0:
+            logging.info(f"Using ScraperAPI proxy for: {request.url}")
+            # request.meta["playwright"] = False  # use scraperapi to render instead
+            request.meta["proxy"] = (
+                f"http://scraperapi.render=true:{self.API_KEY}@proxy-server.scraperapi.com:8001"
+            )
+        # else:
+        #     request.meta["playwright"] = True
+
+
 class RetryScraperApiProxyMiddleware(RetryMiddleware):
     def __init__(self, settings: BaseSettings):
         if not settings.getbool("RETRY_ENABLED"):

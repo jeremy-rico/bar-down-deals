@@ -42,7 +42,11 @@ class PostgresPipeline:
         """
         Close db connection
         """
-        self.session.commit()
+        try:
+            self.session.commit()
+        except Exception as e:
+            print(f"DB Erorr in close_spider: {e}")
+            self.session.rollback()
         self.session.close()
 
     def validate(self, item):
@@ -71,7 +75,11 @@ class PostgresPipeline:
         )
 
         website = self.session.execute(stmt)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except Exception as e:
+            print(f"DB Erorr in upsert_website: {e}")
+            self.session.rollback()
 
         return website.scalars().one()
 
@@ -115,8 +123,12 @@ class PostgresPipeline:
             created_at=datetime.now(timezone.utc),
         )
         self.session.add(product)
-        self.session.commit()
-        self.session.refresh(product)
+        try:
+            self.session.commit()
+            self.session.refresh(product)
+        except Exception as e:
+            print(f"DB Erorr in upsert_product: {e}")
+            self.session.rollback()
 
         return product
 
@@ -154,7 +166,11 @@ class PostgresPipeline:
         )
 
         deal = self.session.execute(stmt)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except Exception as e:
+            print(f"DB Erorr in upsert_deal: {e}")
+            self.session.rollback()
 
         return deal.scalars().one()
 

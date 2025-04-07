@@ -41,13 +41,14 @@ SCRAPERAPI_KEY = get_ssm_param("SCRAPERAPI_KEY", "", secure=True)
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
+    # "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
     # "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
     # "scraper.src.middlewares.ProxyRotationMiddleware": 350,
     # "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
     # "scrapy.downloadermiddlewares.retry.RetryMiddleware": 500,
     # "scraper.src.middlewares.WebScraperDownloaderMiddleware": 543,
-    "scraper.src.middlewares.RetryScraperApiProxyMiddleware": 350,
+    # "scraper.src.middlewares.RetryScraperApiProxyMiddleware": 350,
+    "scraper.src.middlewares.ScraperAPIRetryMiddleware": 350,
     # "scraper.src.middlewares.ScraperApiProxyMiddleware": 350,
     # "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 400,
 }
