@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 import boto3
@@ -39,22 +40,34 @@ def clean_bucket(
     Returns:
         None
     """
-    s3 = boto3.client("s3")
-    threshold_date = datetime.now(timezone.utc) - timedelta(days=days_inactive)
+    logging.getLogger().setLevel(logging.INFO)
+    logging.info(
+        f"Deleting objects older than {days_inactive} days from bucket {bucket_name}"
+    )
+    count = 0
+    try:
+        s3 = boto3.client("s3")
+        threshold_date = datetime.now(timezone.utc) - timedelta(days=2)
 
-    paginator = s3.get_paginator("list_objects_v2")
-    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+        paginator = s3.get_paginator("list_objects_v2")
+        page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
 
-    for page in page_iterator:
-        if "Contents" in page:
-            for obj in page["Contents"]:
-                last_modified = obj["LastModified"]
+        for page in page_iterator:
+            if "Contents" in page:
+                for obj in page["Contents"]:
+                    last_modified = obj["LastModified"]
 
-                if last_modified < threshold_date:
-                    print(f"Deleting {obj['Key']} last modified on {last_modified}")
-                    s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
+                    if last_modified > threshold_date:
+                        count += 1
+                        logging.debug(
+                            f"Deleting {obj['Key']} last modified on {last_modified}"
+                        )
+                        s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
 
-    print("Cleanup complete")
+        logging.info("Successfully cleaned bucket!")
+        logging.info(f"Deleted {count} objects")
+    except Exception as e:
+        logging.critical(f"Failed to clean s3 bucket: {e}")
 
 
 if __name__ == "__main__":

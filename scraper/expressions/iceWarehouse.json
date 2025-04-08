@@ -27,11 +27,17 @@
     "price_range": {
       "css": "div.cattable-wrap-cell-info-price.is-sale.has-pricerange::attr(data-price_array)"
     },
+    "price_range_bak": {
+      "css": "div.cattable-wrap-cell-info-price.has-pricerange::attr(data-price_array)"
+    },
     "original_price_range": {
       "css": "div.cattable-wrap-cell-info-price.is-sale.has-pricerange::attr(data-list_price_array)"
     },
     "price": {
       "css": "div.cattable-wrap-cell-info-price.is-sale span mark::text"
+    },
+    "price_bak": {
+      "css": "div.cattable-wrap-cell-info-price span mark::text"
     },
     "original_price": {
       "css": "div.cattable-wrap-cell-info-price.is-sale script::text"

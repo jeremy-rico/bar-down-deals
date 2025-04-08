@@ -51,8 +51,14 @@ class PostgresPipeline:
 
     def validate(self, item):
         adapter = ItemAdapter(item)
+        # Missing final price
         if not adapter.get("price"):
             raise DropItem("Missing Price")
+
+        # Sale price not less than original price (No sale)
+        if adapter.get("price") and adapter.get("original_price"):
+            if float(adapter["price"]) >= float(adapter["original_price"]):
+                raise DropItem("No Sale")
 
     def upsert_website(self, spider) -> Website:
         """
@@ -91,6 +97,12 @@ class PostgresPipeline:
            Product
         """
 
+        # If products exist, return
+        stmt = select(Product).where(Product.name == item.get("name"))
+        product = self.session.scalar(stmt)
+        if product:
+            return product
+
         # Get categories and extra tags
         categories_list = get_extra_tags(item.get("name"), item.get("categories"))
 
@@ -101,12 +113,6 @@ class PostgresPipeline:
         # Get brand if it wasn't scraped
         if item.get("brand") == None:
             item["brand"] = get_brand(item.get("name"))
-
-        # Check if product exists
-        stmt = select(Product).where(Product.name == item.get("name"))
-        product = self.session.scalar(stmt)
-        if product:
-            return product
 
         # Create image url
         image_url = item.get("images")

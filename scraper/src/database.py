@@ -5,7 +5,7 @@ from api.src.deals.models import Deal
 from api.src.products.models import Product
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
-from sqlmodel import col, delete, select
+from sqlmodel import col, delete
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -35,7 +35,7 @@ def clean_database(database_url: URL) -> None:
     session = get_session(database_url)
     expiration = datetime.now(timezone.utc) - timedelta(days=2)
 
-    stmt = delete(Deal).filter(col(Deal.updated_at) >= expiration)
+    stmt = delete(Deal).filter(col(Deal.updated_at) <= expiration)
 
     try:
         session.execute(stmt)

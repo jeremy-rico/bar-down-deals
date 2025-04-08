@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import scrapy
+from scrapy.selector.unified import Selector
 
 from scraper.src.items import Product, ProductLoader
 from scraper.src.utils import read_json
@@ -47,26 +48,9 @@ class IceWarehouseSpider(scrapy.Spider):
         # Get all products on page
         prods = response.css(self.exp["product_links"]["css"])
 
-        # Price data needs to be scraped manually
-        price_range = response.css(self.exp["product_info"]["price_range"]["css"]).get()
-        original_price_range = response.css(
-            self.exp["product_info"]["original_price_range"]["css"]
-        ).get()
-        price = response.css(self.exp["product_info"]["price"]["css"]).get()
-        original_price = response.css(
-            self.exp["product_info"]["original_price"]["css"]
-        ).getall()
-        if price_range:
-            price_data = json.loads(price_range)
-            price = str(price_data[len(price_data) // 2])
-        if original_price_range:
-            print(original_price_range)
-            original_price_data = json.loads(original_price_range)
-            original_price = str(original_price_data[len(original_price_data) // 2])
-        elif original_price:
-            original_price = re.findall(r"\d+\.\d+", original_price[0])[1]
-
         for prod in prods:
+            price, original_price = self.get_pricing(prod)
+            image_urls = self.get_image_urls(prod)
             l = ProductLoader(item=Product(), selector=prod)
             for field_name in l.item.fields.keys():
                 if field_name == "categories":
@@ -75,6 +59,8 @@ class IceWarehouseSpider(scrapy.Spider):
                     l.add_value("price", price)
                 elif field_name == "original_price":
                     l.add_value("original_price", original_price)
+                elif field_name == "image_urls":
+                    l.add_value("image_urls", image_urls)
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
             yield l.load_item()
@@ -84,6 +70,75 @@ class IceWarehouseSpider(scrapy.Spider):
         # to leave this in for now. It doesn't do any harm
         next_links = response.css(self.exp["next_links"]["css"])
         yield from response.follow_all(next_links, self.parse_products)
+
+    def get_pricing(self, product: Selector) -> tuple[str | None, str | None]:
+        """
+        Extract price data manually. If price is given as a range, take the
+        median. Sometimes, sale product div doesn't have the proper .is-sale
+        class so we check using a back up selector if the first can't be found
+
+        Args:
+            product: a selector of one individual product card
+
+        Returns:
+            tuple: (price: str, original_price: str)
+        """
+        price_range = product.css(self.exp["product_info"]["price_range"]["css"]).get()
+        if not price_range:
+            # try back up selector
+            price_range = product.css(
+                self.exp["product_info"]["price_range_bak"]["css"]
+            ).get()
+
+        original_price_range = product.css(
+            self.exp["product_info"]["original_price_range"]["css"]
+        ).get()
+
+        # Sale price given as range
+        if price_range:
+            price_data = json.loads(price_range)
+            price = str(price_data[len(price_data) // 2])
+        else:
+            price = product.css(self.exp["product_info"]["price"]["css"]).get()
+            if not price:
+                # Try backup selector
+                price = product.css(self.exp["product_info"]["price_back"]["css"]).get()
+
+        # Original price given as range
+        if original_price_range:
+            original_price_data = json.loads(original_price_range)
+            original_price = str(original_price_data[len(original_price_data) // 2])
+        else:
+            original_price = product.css(
+                self.exp["product_info"]["original_price"]["css"]
+            ).getall()
+            if original_price:
+                # Extract from <script>
+                original_price = str(re.findall(r"\d+\.\d+", original_price[0])[1])
+            else:
+                original_price = None
+
+        return (price, original_price)
+
+    def get_image_urls(self, product: Selector) -> str:
+        """
+        Manually extract image urls. Some products have multiple image urls, one
+        being a blank placeholder. In this case, grab the true image src which
+        is the last value in the extracted array.
+
+        Args:
+            product: a selector of an individual product
+
+        Returns:
+            str: image download url
+        """
+        image_urls = product.css(
+            "img.cattable-wrap-cell-imgwrap-inner-img::attr(src)"
+        ).getall()
+
+        if len(image_urls) > 0:
+            return image_urls[-1]
+        return ""
 
     def get_categories(self, url: str) -> list[str]:
         """

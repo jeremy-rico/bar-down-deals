@@ -1,3 +1,4 @@
+from api.src.aws.utils import clean_bucket
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -19,3 +20,4 @@ process.start()
 
 # Delete all deals that haven't been updated in over 48hrs
 clean_database(DATABASE_URL)
+clean_bucket()
