@@ -78,7 +78,7 @@ class PostgresPipeline:
         try:
             self.session.commit()
         except Exception as e:
-            print(f"DB Erorr in upsert_website: {e}")
+            logging.warning(f"Failed to upsert website: {e}")
             self.session.rollback()
 
         return website.scalars().one()
@@ -127,7 +127,7 @@ class PostgresPipeline:
             self.session.commit()
             self.session.refresh(product)
         except Exception as e:
-            print(f"DB Erorr in upsert_product: {e}")
+            logging.warning(f"Failed to upsert product: {e}")
             self.session.rollback()
 
         return product
@@ -169,7 +169,7 @@ class PostgresPipeline:
         try:
             self.session.commit()
         except Exception as e:
-            print(f"DB Erorr in upsert_deal: {e}")
+            print(f"Failed to upsert deal: {e}")
             self.session.rollback()
 
         return deal.scalars().one()
