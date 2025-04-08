@@ -9,7 +9,7 @@ export default function DealCard({ deal }) {
         height={200}
         alt={deal.product.name}
         placeholder="empty" // "empty" | "blur" | "data:image/..."
-        className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 "
+        className="aspect-square w-full rounded-md bg-gray-200 object-contain group-hover:opacity-75 "
       />
 
       {/* Product Info */}
