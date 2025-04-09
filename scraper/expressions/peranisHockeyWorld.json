@@ -1,0 +1,53 @@
+{
+  "category_links": {
+    "css": "div#subCategories h6.subcat-title a"
+  },
+  "product_links": {
+    "css": "div#product-results div#search_results div.row div.column ul li"
+  },
+  "product_info": {
+    "name": {
+      "css": "div.row div.column a::text"
+    },
+    "brand": {
+      "css": "None"
+    },
+    "url": {
+      "css": "div.row div.column a::attr(href)"
+    },
+    "image_urls": {
+      "css": "img::attr(src)"
+    },
+    "price": {
+      "css": "p span.price.sale-price::text"
+    },
+    "original_price": {
+      "css": "p s::text"
+    }
+  },
+  "next_links": {
+    "css": "span.red_links a.pl-pagination-next"
+  },
+  "categories": {
+    "Clearance-Jerseys": ["Gamewear", "Jerseys"],
+    "Clearance-Accessories": ["Accessories"],
+    "Goalie-Blockers": ["Goalie", "Blockers"],
+    "Goalie-Catch-Gloves": ["Goalie", "Catchers"],
+    "Goalie-Chest-Arm": ["Goalie", "Chest & Arm"],
+    "Goalie-Knee-Thigh": ["Goalie", "Knee Protectors"],
+    "Goalie-Leg-Pads": ["Goalie", "Leg Pads"],
+    "Goalie-Pants": ["Goalie", "Pants"],
+    "Goalie-Skates": ["Goalie", "Goalie Skates"],
+    "Goalie-Sticks": ["Goalie", "Goalie Sticks"],
+    "Clearance-Apparel": ["Apparel"],
+    "Clearance-Elbow": ["Protective", "Elbow Pads"],
+    "Clearance-Gloves": ["Protective", "Gloves"],
+    "Clearance-Helmets": ["Protective", "Helmets"],
+    "Clearance-Inline-Gear": ["Roller"],
+    "Clearance-Pants": ["Protective", "Pants"],
+    "Clearance-Shin": ["Protective", "Shin Guards"],
+    "Clearance-Shoulder": ["Protective", "Shoulder Pads"],
+    "Clearance-Skates": ["Skates"],
+    "Clearance-Sticks": ["Sticks"]
+  }
+}

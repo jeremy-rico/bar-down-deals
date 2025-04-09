@@ -8,6 +8,7 @@ from scraper.src.spiders.discountHockey import DiscountHockeySpider
 from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
 from scraper.src.spiders.pureHockey import PureHockeySpider
+from src.spiders.peranisHockeyWorld import PeranisHockeyWorldSpider
 
 # Crawl all spiders
 settings = get_project_settings()
@@ -16,6 +17,7 @@ process.crawl(DiscountHockeySpider)
 process.crawl(HockeyMonkeySpider)
 process.crawl(PureHockeySpider)
 process.crawl(IceWarehouseSpider)
+process.crawl(PeranisHockeyWorldSpider)
 process.start()
 
 # Delete all deals that haven't been updated in over 48hrs

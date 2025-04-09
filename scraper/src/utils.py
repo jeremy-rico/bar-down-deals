@@ -1,14 +1,23 @@
 import json
+import re
 from pathlib import Path
 
 
-def clean_price(s: str):
+def clean_price(s: str) -> str | None:
     """
-    Remove dollar symbol from string
+    Uses regular expression to find the first match of a floating point in the
+    string
+
+    Args:
+        s: price string as scraped by spider
+
+    Returns:
+        str: re match
     """
-    if s.startswith("$"):
-        return s[1 : len(s)]
-    return s
+
+    match = re.search(r"\d+.\d\d", s)
+    if match:
+        return match.group(0)
 
 
 def clean_brand(s: str):

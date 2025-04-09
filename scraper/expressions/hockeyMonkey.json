@@ -2,8 +2,8 @@
   "category_links": {
     "css": "div.shop-by-category a.sub-category-image"
   },
-  "next_links": {
-    "css": "div.pages a.action.next"
+  "subcategory_links": {
+    "css": "div.shop-by-category a"
   },
   "product_links": {
     "css": "div.product-item-info"
@@ -28,8 +28,8 @@
       "css": "span.old-price span.price::text"
     }
   },
-  "subcategory_links": {
-    "css": "div.shop-by-category a"
+  "next_links": {
+    "css": "div.pages a.action.next"
   },
   "categories": {
     "senior-clearance-hockey-sticks.html": ["Sticks"],
