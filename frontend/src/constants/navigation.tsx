@@ -180,11 +180,16 @@ export const navigation = [
           { title: "Headwear", href: "/deals/apparel/headwear" },
         ],
       },
+      {
+        title: "Training",
+        href: "#",
+        children: [{ title: "Synthetic Ice", href: "#" }],
+      },
       { title: "Shop All Accessories", href: "/deals/accessories" },
     ],
   },
   {
-    title: "Websites",
+    title: "Stores",
     href: "#",
     children: [
       {
@@ -195,6 +200,10 @@ export const navigation = [
           { title: "Pure Hockey", href: "deals/pure-hockey" },
           { title: "Discount Hockey", href: "deals/discount-hockey" },
           { title: "Ice Warehouse", href: "deals/ice-warehouse" },
+          {
+            title: "Perani's Hockey World",
+            href: "deals/peranis-hockey-world",
+          },
           { title: "CCM", href: "deals/ccm" },
           { title: "Bauer", href: "deals/bauer" },
           { title: "True", href: "deals/true" },
