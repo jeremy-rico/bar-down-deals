@@ -29,7 +29,6 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     debug=settings.DEBUG,
     lifespan=lifespan,
-    root_path="/api",
 )
 
 app.add_middleware(
