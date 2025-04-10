@@ -25,7 +25,12 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=settings.PROJECT_NAME, debug=settings.DEBUG, lifespan=lifespan)
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    debug=settings.DEBUG,
+    lifespan=lifespan,
+    root_path="/api",
+)
 
 app.add_middleware(
     CORSMiddleware,
