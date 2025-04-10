@@ -1,3 +1,7 @@
+# Global
+*/certbot/conf
+nginx/ssl
+
 ### /api ###
 __pycache__/
 
