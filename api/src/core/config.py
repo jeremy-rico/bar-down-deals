@@ -17,7 +17,11 @@ class Settings(BaseSettings):
         database=get_ssm_param("DB_NAME", "postgres"),
     )
     DEBUG: bool = False
-    ORIGINS: list[str] = ["http://localhost:3000"]
+    ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "https://bardowndeals.com",
+        "https://www.bardowndeals.com",
+    ]
 
     # JWT Settings
     JWT_SECRET: str = "test"  # TODO: Change in production
