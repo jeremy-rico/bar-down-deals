@@ -12,7 +12,7 @@ export default async function TodaysDeal() {
     <div id="todays deals">
       <a href="/deals/today" className="flex items-center mb-6">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900 hover:underline">
-          Today's Deals
+          {"Today's Deals"}
         </h2>
         <ChevronRightIcon className="size-6 mx-2" />
       </a>

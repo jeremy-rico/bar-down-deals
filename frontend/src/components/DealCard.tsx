@@ -1,5 +1,8 @@
 import Image from "next/image";
-export default function DealCard({ deal }) {
+type Props = {
+  deal: any;
+};
+export default function DealCard({ deal }: Props) {
   return (
     <div className="group relative flex-shrink-0 w-52 lg:w-[238px]">
       {/* Product Image */}

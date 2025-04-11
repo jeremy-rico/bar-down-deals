@@ -6,14 +6,23 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
-export default function Pagination({ onPageChange, currentPage, totalPages }) {
+type Props = {
+  onPageChange: React.Dispatch<React.SetStateAction<number>>;
+  currentPage: number;
+  totalPages: number;
+};
+export default function Pagination({
+  onPageChange,
+  currentPage,
+  totalPages,
+}: Props) {
   //const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
   const pages = [];
   if (totalPages <= 7) {
     pages.push(...Array.from({ length: totalPages }, (_, i) => i + 1));
   } else {
     pages.push(1);
-    if (currentPage > 3) pages.push("...");
+    if (currentPage > 3) pages.push(-1);
 
     const start = Math.max(2, currentPage - 2);
     const end = Math.min(totalPages - 1, currentPage + 2);
@@ -22,7 +31,7 @@ export default function Pagination({ onPageChange, currentPage, totalPages }) {
       pages.push(i);
     }
 
-    if (currentPage < totalPages - 2) pages.push("...");
+    if (currentPage < totalPages - 2) pages.push(-1);
     pages.push(totalPages);
   }
   return (
@@ -48,7 +57,7 @@ export default function Pagination({ onPageChange, currentPage, totalPages }) {
       <div className="flex gap-x-1 mx-1">
         {pages.map((pageNumber, index) => (
           <div key={index}>
-            {pageNumber == "..." ? (
+            {pageNumber == -1 ? (
               <p className="text-gray-400 pt-2">...</p>
             ) : (
               <Button

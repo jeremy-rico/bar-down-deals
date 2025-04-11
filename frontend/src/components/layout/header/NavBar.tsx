@@ -7,16 +7,30 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
-export default function NavBar({ navigation }) {
+interface Gchild {
+  title: string;
+  href: string;
+}
+interface Child {
+  title: string;
+  href: string;
+  children?: Gchild[];
+}
+interface Navigation {
+  title: string;
+  href: string;
+  children?: Child[];
+}
+type Props = {
+  navigation: Navigation[];
+};
+export default function NavBar({ navigation }: Props) {
   return (
     <nav className="hidden lg:block max-w-screen-2xl mx-auto py-1">
       <ul className="flex justify-evenly w-full">
         {navigation.map((item) => (
           <Popover key={item.title} className="relative">
-            <PopoverButton
-              href={item.href}
-              className="flex items-center text-white text-md gap-x-1 px-4 py-2 rounded hover:outline outline-1 outline-gray-200"
-            >
+            <PopoverButton className="flex items-center text-white text-md gap-x-1 px-4 py-2 rounded hover:outline outline-1 outline-gray-200">
               {item.title}
               <ChevronDownIcon className="size-4 text-gray-200" />
             </PopoverButton>

@@ -1,5 +1,8 @@
 import Image from "next/image";
-export default function DealCard({ deal }) {
+type Props = {
+  deal: any;
+};
+export default function DealCard({ deal }: Props) {
   return (
     <div className="group relative w-full h-24 px-2 py-2 bg-white rounded shadow">
       <div className="flex justify-between">

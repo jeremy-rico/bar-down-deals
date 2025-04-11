@@ -6,27 +6,41 @@ import Pagination from "@/components/Pagination.tsx";
 import { useState, useEffect } from "react";
 import { api } from "@/constants/index.tsx";
 
-export default function SearchResults({ title, q }) {
+type FilterOption = {
+  title: string;
+  query: string;
+  options: string[];
+};
+type SelectedFilters = {
+  tags: string[];
+  brands: string[];
+  stores: string[];
+};
+type Props = {
+  title: string;
+  q?: string;
+};
+export default function SearchResults({ title, q }: Props) {
   // Pagination variables
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState();
-  const [totalItems, setTotalItems] = useState();
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
 
   // Sort and order variables
-  const [sortOption, setSortOption] = useState("Newest" || null);
+  const [sortOption, setSortOption] = useState("Newest");
 
   // Filter variables
-  const [filterOptions, setFilterOptions] = useState([]);
-  const [selectedFilters, setSelectedFilters] = useState({
+  const [filterOptions, setFilterOptions] = useState<FilterOption[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
     tags: [],
     brands: [],
     stores: [],
   });
 
   // Price range variables
-  const [maxAvailPrice, setMaxAvailPrice] = useState();
+  const [maxAvailPrice, setMaxAvailPrice] = useState<number>();
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState();
+  const [maxPrice, setMaxPrice] = useState<number>();
 
   // Deals holder
   const [deals, setDeals] = useState([]);
@@ -35,11 +49,11 @@ export default function SearchResults({ title, q }) {
     async function fetchDeals() {
       // Create query params
       const query = new URLSearchParams();
-      query.append("page", currentPage);
-      query.append("q", q);
+      query.append("page", currentPage.toString());
+      query.append("q", q || "");
       if (sortOption) query.append("sort", sortOption);
-      if (minPrice) query.append("min_price", minPrice);
-      if (maxPrice) query.append("max_price", maxPrice);
+      if (minPrice) query.append("min_price", minPrice.toString());
+      if (maxPrice) query.append("max_price", maxPrice.toString());
 
       // Iterate through selected filters
       Object.entries(selectedFilters).forEach(([key, value]) => {
@@ -50,37 +64,37 @@ export default function SearchResults({ title, q }) {
 
       // Get pagination and filtering info from headers
       const res = await fetch(api + `/search/?${query.toString()}`);
-      setTotalPages(res.headers.get("x-total-page-count"));
-      setTotalItems(res.headers.get("x-total-item-count"));
-      setMaxAvailPrice(res.headers.get("x-max-price"));
+      setTotalPages(Number(res.headers.get("x-total-page-count")));
+      setTotalItems(Number(res.headers.get("x-total-item-count")));
+      setMaxAvailPrice(Number(res.headers.get("x-max-price")));
 
       const filters = [];
       if (res.headers.get("x-avail-sizes")) {
         filters.push({
           title: "Size",
           query: "tags",
-          options: JSON.parse(res.headers.get("x-avail-sizes")),
+          options: JSON.parse(res.headers.get("x-avail-sizes") || ""),
         });
       }
       if (res.headers.get("x-avail-brands")) {
         filters.push({
           title: "Brand",
           query: "brands",
-          options: JSON.parse(res.headers.get("x-avail-brands")),
+          options: JSON.parse(res.headers.get("x-avail-brands") || ""),
         });
       }
       if (res.headers.get("x-avail-stores")) {
         filters.push({
           title: "Store",
           query: "stores",
-          options: JSON.parse(res.headers.get("x-avail-stores")),
+          options: JSON.parse(res.headers.get("x-avail-stores") || ""),
         });
       }
       if (res.headers.get("x-avail-tags")) {
         filters.push({
           title: "Tags",
           query: "tags",
-          options: JSON.parse(res.headers.get("x-avail-tags")),
+          options: JSON.parse(res.headers.get("x-avail-tags") || ""),
         });
       }
       setFilterOptions(filters);
@@ -108,6 +122,7 @@ export default function SearchResults({ title, q }) {
           onMinPriceChange={setMinPrice}
           maxAvailPrice={maxAvailPrice}
           onMaxPriceChange={setMaxPrice}
+          setCurrentPage={setCurrentPage}
         />
         <div className="flex flex-col w-full gap-y-2">
           <div className="flex justify-between text-gray-500">
@@ -120,8 +135,8 @@ export default function SearchResults({ title, q }) {
           {deals.length == 0 ? (
             <p className="text-md">No deals found. Try again.</p>
           ) : (
-            deals.map((deal) => (
-              <SearchResultCard key={deal.id} deal={deal} as="div" />
+            deals.map((deal: any) => (
+              <SearchResultCard key={deal.id} deal={deal} />
             ))
           )}
         </div>

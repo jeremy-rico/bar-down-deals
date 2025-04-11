@@ -5,7 +5,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { api } from "@/constants/index.tsx";
 
-export default async function TodaysDeal() {
+export default async function AllDeal() {
   const data = await fetch(api + "/deals/?page=1&limit=20");
   const deals = await data.json();
 
@@ -18,8 +18,8 @@ export default async function TodaysDeal() {
         <ChevronRightIcon className="size-6 mx-2" />
       </a>
       <div className="grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-8">
-        {deals.map((deal) => (
-          <DealCard key={deal.id} deal={deal} as="div" />
+        {deals.map((deal: any) => (
+          <DealCard key={deal.id} deal={deal} />
         ))}
       </div>
       <div className="flex items-center text-gray-500 mt-5">

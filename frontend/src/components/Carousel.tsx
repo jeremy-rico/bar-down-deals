@@ -7,7 +7,10 @@ import {
   ChevronDoubleLeftIcon,
 } from "@heroicons/react/24/outline";
 
-const Carousel = ({ deals }) => {
+type Props = {
+  deals: any[];
+};
+const Carousel = ({ deals }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const dealsPerPage = 5;
   const totalSlides = Math.ceil(deals.length / dealsPerPage);

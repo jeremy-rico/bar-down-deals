@@ -6,7 +6,11 @@ import {
 import { sort_options } from "@/constants/index.tsx";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
-export default function SortMenu({ sortOption, onSortChange }) {
+type Props = {
+  sortOption?: string;
+  onSortChange: React.Dispatch<React.SetStateAction<string>>;
+};
+export default function SortMenu({ sortOption, onSortChange }: Props) {
   return (
     <div className="flex justify-between border-t border-t-black border-b border-b-black py-2 mb-5">
       <div className="flex items-center gap-x-3">

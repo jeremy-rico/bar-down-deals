@@ -229,7 +229,7 @@ export const navigation = [
   },
   {
     title: "Promos",
-    hred: "#",
+    href: "#",
     children: [
       { title: "COMING SOON!", href: "#" },
       //{ title: "View All Promos", href: "deals/promos" },

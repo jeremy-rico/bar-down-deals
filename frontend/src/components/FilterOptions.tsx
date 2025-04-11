@@ -2,7 +2,32 @@
 
 import PriceRange from "@/components/PriceRange.tsx";
 import Accordian from "@/components/Accordian.tsx";
+import React from "react";
 
+type FilterOption = {
+  title: string;
+  query: string;
+  options: string[];
+};
+interface SelectedFilters {
+  [key: string]: string[];
+}
+type Props = {
+  filterOptions: FilterOption[];
+  selectedFilters: SelectedFilters;
+  onFilterChange: React.Dispatch<
+    React.SetStateAction<{
+      tags: string[];
+      brands: string[];
+      stores: string[];
+      [key: string]: string[];
+    }>
+  >;
+  onMinPriceChange: React.Dispatch<React.SetStateAction<number>>;
+  maxAvailPrice?: number;
+  onMaxPriceChange: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+};
 export default function FilterOptions({
   filterOptions,
   selectedFilters,
@@ -11,8 +36,8 @@ export default function FilterOptions({
   maxAvailPrice,
   onMaxPriceChange,
   setCurrentPage,
-}) {
-  const toggleFilter = (query, option) => {
+}: Props) {
+  const toggleFilter = (query: string, option: string): void => {
     setCurrentPage(1);
     onFilterChange((prev) => ({
       ...prev, // Keep the rest of the filters
@@ -35,7 +60,7 @@ export default function FilterOptions({
       ))}
       <PriceRange
         onMinPriceChange={onMinPriceChange}
-        maxPrice={maxAvailPrice}
+        maxAvailPrice={maxAvailPrice}
         onMaxPriceChange={onMaxPriceChange}
       />
     </div>

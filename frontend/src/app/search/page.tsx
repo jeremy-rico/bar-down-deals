@@ -1,14 +1,11 @@
-//import Image from "next/image";
-"use client";
-import SearchResults from "@/components/SearchResults.tsx";
-import { useSearchParams } from "next/navigation";
+// app/search/page.tsx (Server Component by default)
+import { Suspense } from "react";
+import SearchClient from "@/app/search/SearchClient";
 
-export default function Search() {
-  const searchParams = useSearchParams();
-  const q = searchParams.get("q");
+export default function SearchPage() {
   return (
-    <div className="mx-auto max-w-2xl pt-2 md:max-w-7xl px-2 2xl:px-0">
-      <SearchResults title={`Results for "${q}"`} q={q} />
-    </div>
+    <Suspense fallback={<div>Loading search results...</div>}>
+      <SearchClient />
+    </Suspense>
   );
 }

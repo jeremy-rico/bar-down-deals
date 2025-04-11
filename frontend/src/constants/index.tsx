@@ -14,4 +14,4 @@ export const sort_options = [
   "Oldest",
 ];
 
-export const api = "http://13.52.178.97:8000";
+export const api = "https://api.bardowndeals.com";

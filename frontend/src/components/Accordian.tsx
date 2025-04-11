@@ -10,7 +10,24 @@ import {
 } from "@headlessui/react";
 import { PlusIcon, MinusIcon, CheckIcon } from "@heroicons/react/24/outline";
 
-export default function Accordian({ filter, selectedFilters, toggleFilter }) {
+type SelectedFilters = {
+  [key: string]: string[];
+};
+type Filter = {
+  title: string;
+  query: string;
+  options: string[];
+};
+type Props = {
+  filter: Filter;
+  selectedFilters: SelectedFilters;
+  toggleFilter: (query: string, option: string) => void;
+};
+export default function Accordian({
+  filter,
+  selectedFilters,
+  toggleFilter,
+}: Props) {
   return (
     <Disclosure>
       <DisclosureButton className="group flex justify-between items-center text-white bg-black w-full py-2 px-2 my-1 rounded">

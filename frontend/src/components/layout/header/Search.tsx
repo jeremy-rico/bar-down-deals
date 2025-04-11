@@ -19,14 +19,11 @@ export default function Search() {
     }
   };
   return (
-    <Field
-      className="flex w-full h-9 mx-5 justify-end size-full rounded bg-white"
-      method="get"
-    >
+    <Field className="flex w-full h-9 mx-5 justify-end size-full rounded bg-white">
       <Input
         className="size-full mx-3 focus:outline-none"
-        minLength="3"
-        maxLength="128"
+        minLength={3}
+        maxLength={128}
         type="search"
         placeholder="Search deals..."
         onKeyDown={handleKeyDown}

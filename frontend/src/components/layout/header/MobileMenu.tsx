@@ -6,7 +6,24 @@ import {
 } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-export default function MobileMenu({ navigation }) {
+interface Gchild {
+  title: string;
+  href: string;
+}
+interface Child {
+  title: string;
+  href: string;
+  children?: Gchild[];
+}
+interface Navigation {
+  title: string;
+  href: string;
+  children?: Child[];
+}
+type Props = {
+  navigation: Navigation[];
+};
+export default function MobileMenu({ navigation }: Props) {
   return (
     <DisclosurePanel
       transition
@@ -20,10 +37,7 @@ export default function MobileMenu({ navigation }) {
         <div className="flex-col px-4 text-white">
           {navigation.map((item) => (
             <Disclosure key={item.title}>
-              <DisclosureButton
-                href={item.href}
-                className="flex w-full justify-between items-center py-4 "
-              >
+              <DisclosureButton className="flex w-full justify-between items-center py-4 ">
                 {item.title}
                 <ChevronRightIcon className="text-white size-9" />
               </DisclosureButton>
@@ -31,30 +45,31 @@ export default function MobileMenu({ navigation }) {
                 transition
                 className="bg-gray-200 transition duration-100 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
               >
-                {item.children.map((child) => (
-                  <Disclosure key={child.title}>
-                    <DisclosureButton className="flex w-full justify-between items-center px-4 py-2 text-gray-700 border border-b-black">
-                      {child.title}
-                      <ChevronRightIcon className="size-6" />
-                    </DisclosureButton>
-                    <DisclosurePanel
-                      transition
-                      className="bg-gray-100 transition duration-100 ease-in data-[closed]:-translate-y-6 data-[closed]:opacity-0"
-                    >
-                      {child.children &&
-                        child.children.map((gchild) => (
-                          <a
-                            key={gchild.title + gchild.href}
-                            className="flex justify-between w-full text-gray-700 px-4 py-2"
-                            href={gchild.href}
-                          >
-                            {gchild.title}
-                            <ChevronRightIcon className="size-6" />
-                          </a>
-                        ))}
-                    </DisclosurePanel>
-                  </Disclosure>
-                ))}
+                {item.children &&
+                  item.children.map((child) => (
+                    <Disclosure key={child.title}>
+                      <DisclosureButton className="flex w-full justify-between items-center px-4 py-2 text-gray-700 border border-b-black">
+                        {child.title}
+                        <ChevronRightIcon className="size-6" />
+                      </DisclosureButton>
+                      <DisclosurePanel
+                        transition
+                        className="bg-gray-100 transition duration-100 ease-in data-[closed]:-translate-y-6 data-[closed]:opacity-0"
+                      >
+                        {child.children &&
+                          child.children.map((gchild) => (
+                            <a
+                              key={gchild.title + gchild.href}
+                              className="flex justify-between w-full text-gray-700 px-4 py-2"
+                              href={gchild.href}
+                            >
+                              {gchild.title}
+                              <ChevronRightIcon className="size-6" />
+                            </a>
+                          ))}
+                      </DisclosurePanel>
+                    </Disclosure>
+                  ))}
               </DisclosurePanel>
             </Disclosure>
           ))}

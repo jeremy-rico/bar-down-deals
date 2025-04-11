@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { Input, Field, Button } from "@headlessui/react";
 
+type Props = {
+  onMinPriceChange: React.Dispatch<React.SetStateAction<number>>;
+  maxAvailPrice?: number;
+  onMaxPriceChange: React.Dispatch<React.SetStateAction<number | undefined>>;
+};
 export default function PriceRange({
   onMinPriceChange,
   maxAvailPrice,
   onMaxPriceChange,
-}) {
+}: Props) {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(maxAvailPrice);
   const submitPriceRange = () => {
@@ -32,7 +37,7 @@ export default function PriceRange({
             max={maxAvailPrice}
             placeholder="Min"
             onKeyDown={handleKeyDown}
-            onChange={(e) => setMinPrice(e.target.value)}
+            onChange={(e) => setMinPrice(Number(e.target.value))}
             className="w-24 rounded-sm py-1 px-1"
           />
           -<p className="text-sm">$</p>
@@ -43,7 +48,7 @@ export default function PriceRange({
             max={maxAvailPrice}
             placeholder="Max"
             onKeyDown={handleKeyDown}
-            onChange={(e) => setMaxPrice(e.target.value)}
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
             className="w-24 rounded-sm py-1 px-1"
           />
         </div>

@@ -6,19 +6,34 @@ import Pagination from "@/components/Pagination.tsx";
 import { useState, useEffect } from "react";
 import { api } from "@/constants/index.tsx";
 
-export default function DealsPage({ title, queryParams }) {
+type FilterOption = {
+  title: string;
+  query: string;
+  options: string[];
+};
+type Props = {
+  title: string;
+  queryParams: {
+    sort?: string;
+    maxPrice?: number;
+    tags?: string[];
+    brands?: string[];
+    stores?: string[];
+  };
+};
+export default function DealsPage({ title, queryParams }: Props) {
   // Pagination variables
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState();
-  const [totalItems, setTotalItems] = useState();
-  const [sortOption, setSortOption] = useState(queryParams.sort || null);
-  const [maxAvailPrice, setMaxAvailPrice] = useState();
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [sortOption, setSortOption] = useState(queryParams.sort || "Popular");
+  const [maxAvailPrice, setMaxAvailPrice] = useState<number>();
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(queryParams.maxPrice || null);
+  const [maxPrice, setMaxPrice] = useState(queryParams.maxPrice || undefined);
   const [deals, setDeals] = useState([]);
 
   // Filter variables
-  const [filterOptions, setFilterOptions] = useState([]);
+  const [filterOptions, setFilterOptions] = useState<FilterOption[]>([]);
   const [selectedFilters, setSelectedFilters] = useState({
     tags: queryParams.tags || [],
     brands: queryParams.brands || [],
@@ -29,10 +44,10 @@ export default function DealsPage({ title, queryParams }) {
     async function fetchDeals() {
       // Create query params
       const query = new URLSearchParams();
-      query.append("page", currentPage);
+      query.append("page", currentPage.toString());
       if (sortOption) query.append("sort", sortOption);
-      if (minPrice) query.append("min_price", minPrice);
-      if (maxPrice) query.append("max_price", maxPrice);
+      if (minPrice) query.append("min_price", minPrice.toString());
+      if (maxPrice) query.append("max_price", maxPrice.toString());
 
       // Iterate through selected filters
       Object.entries(selectedFilters).forEach(([key, value]) => {
@@ -43,40 +58,40 @@ export default function DealsPage({ title, queryParams }) {
 
       // Get pagination and filtering info from headers
       const response = await fetch(api + `/deals/?${query.toString()}`);
-      setTotalPages(response.headers.get("x-total-page-count"));
-      setTotalItems(response.headers.get("x-total-item-count"));
-      setMaxAvailPrice(response.headers.get("x-max-price"));
+      setTotalPages(Number(response.headers.get("x-total-page-count")));
+      setTotalItems(Number(response.headers.get("x-total-item-count")));
+      setMaxAvailPrice(Number(response.headers.get("x-max-price")));
 
-      const filters = [];
+      const filterOptions = [];
       if (response.headers.get("x-avail-sizes")) {
-        filters.push({
+        filterOptions.push({
           title: "Size",
           query: "tags",
-          options: JSON.parse(response.headers.get("x-avail-sizes")),
+          options: JSON.parse(response.headers.get("x-avail-sizes") || ""),
         });
       }
       if (response.headers.get("x-avail-brands")) {
-        filters.push({
+        filterOptions.push({
           title: "Brand",
           query: "brands",
-          options: JSON.parse(response.headers.get("x-avail-brands")),
+          options: JSON.parse(response.headers.get("x-avail-brands") || ""),
         });
       }
       if (response.headers.get("x-avail-stores")) {
-        filters.push({
+        filterOptions.push({
           title: "Store",
           query: "stores",
-          options: JSON.parse(response.headers.get("x-avail-stores")),
+          options: JSON.parse(response.headers.get("x-avail-stores") || ""),
         });
       }
       if (response.headers.get("x-avail-tags")) {
-        filters.push({
+        filterOptions.push({
           title: "Tags",
           query: "tags",
-          options: JSON.parse(response.headers.get("x-avail-tags")),
+          options: JSON.parse(response.headers.get("x-avail-tags") || ""),
         });
       }
-      setFilterOptions(filters);
+      setFilterOptions(filterOptions);
 
       // Get deals from response content
       const data = await response.json();
@@ -100,8 +115,8 @@ export default function DealsPage({ title, queryParams }) {
           setCurrentPage={setCurrentPage}
         />
         <div className="grid grid-rows-1 grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-          {deals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} as="div" />
+          {deals.map((deal: any) => (
+            <DealCard key={deal.id} deal={deal} />
           ))}
         </div>
       </div>
