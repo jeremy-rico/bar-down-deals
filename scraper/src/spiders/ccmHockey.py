@@ -1,0 +1,58 @@
+from pathlib import Path
+from urllib.parse import urljoin, urlparse
+
+import scrapy
+
+from scraper.src.items import Product, ProductLoader
+from scraper.src.utils import read_json
+
+
+class CCMHockeySpider(scrapy.Spider):
+    name = "ccmHockey"
+    website_name = "CCM Hockey"
+    base_url = "https://us.ccmhockey.com/"
+    start_urls = [
+        base_url + "Sale",
+    ]
+    jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
+    exp = read_json(jsonPath)
+
+    def parse(self, response):
+        """
+        Parse all items from the All Clearance Items page.
+        """
+        # Holder for manually added values
+        manual_vals = {}
+        manual_vals["brand"] = "CCM"
+
+        # Get all products on page
+        prods = response.css(self.exp["products"]["css"])
+
+        # Extract product details
+        for prod in prods:
+            # Manually extract original price
+            original_price = prod.css(
+                self.exp["product_info"]["original_price"]["css"]
+            ).getall()
+            manual_vals["original_price"] = "".join(original_price)
+
+            # Manually extract url
+            manual_vals["url"] = urljoin(
+                self.base_url, prod.css(self.exp["product_info"]["url"]["css"]).get()
+            )
+
+            # Load item
+            l = ProductLoader(item=Product(), selector=prod)
+            for field_name in l.item.fields.keys():
+                if field_name in manual_vals:
+                    l.add_value(field_name, manual_vals[field_name])
+                elif field_name in self.exp["product_info"]:
+                    l.add_css(field_name, self.exp["product_info"][field_name]["css"])
+
+            yield l.load_item()
+
+        # Follow all next links
+        # NOTE: CCM doesn't use next links, but keeping this doesnt hurt in case
+        # they change one day
+        next_links = response.css(self.exp["next_links"]["css"])
+        yield from response.follow_all(next_links, self.parse)

@@ -15,9 +15,14 @@ def clean_price(s: str) -> str | None:
         str: re match
     """
 
-    match = re.search(r"\d+.\d\d", s)
+    # re explanation:
+    # \d: any number of digits
+    # (,\d{3})?: optional comma and exactly three digits
+    # .\d{2}: exactly decimal and two digits
+    match = re.search(r"\d+(,\d{3})?\.\d{2}", s)
     if match:
-        return match.group(0)
+        s = match.group(0)
+        return "".join(s.split(",")) if "," in s else s
 
 
 def clean_brand(s: str):
