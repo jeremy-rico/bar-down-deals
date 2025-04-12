@@ -24,7 +24,5 @@
     "url": {
       "css": "a.title::attr(href)"
     }
-  },
-  "comment": "All categories for discounthockey.com are inferred from the title",
-  "categories": {}
+  }
 }

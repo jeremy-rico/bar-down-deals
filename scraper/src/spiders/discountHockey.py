@@ -23,7 +23,6 @@ class DiscountHockeySpider(scrapy.Spider):
         """
         # Holder for manually added values
         manual_vals = {}
-        manual_vals["categories"] = self.get_categories(response.url)
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])
@@ -65,22 +64,3 @@ class DiscountHockeySpider(scrapy.Spider):
         # Follow all next links
         next_links = response.css(self.exp["next_links"]["css"])
         yield from response.follow_all(next_links, self.parse)
-
-    def get_categories(self, url: str) -> list[str]:
-        """
-        Get product categories based on url. More tags are added based on the
-        item title in the item pipeline.
-
-        Args:
-            url: response url
-
-        Returns:
-            list[str]: list of categories
-        """
-        try:
-            url_page = urlparse(url).path.split("/")[-1]
-            categories = self.exp["categories"].get(url_page) or []
-            return categories
-        except Exception as e:
-            print(f"Unable to infer categories from url {url}. Error: {e}")
-            return []

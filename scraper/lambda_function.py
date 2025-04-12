@@ -1,9 +1,10 @@
+from api.src.aws.utils import clean_bucket
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-from api.src.aws.utils import clean_bucket
 from scraper.src.database import clean_database
 from scraper.src.settings import DATABASE_URL
+from scraper.src.spiders.ccmHockey import CCMHockeySpider
 from scraper.src.spiders.discountHockey import DiscountHockeySpider
 from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
@@ -18,6 +19,7 @@ process.crawl(HockeyMonkeySpider)
 process.crawl(PureHockeySpider)
 process.crawl(IceWarehouseSpider)
 process.crawl(PeranisHockeyWorldSpider)
+process.crawl(CCMHockeySpider)
 process.start()
 
 # Delete all deals that haven't been updated in over 48hrs
