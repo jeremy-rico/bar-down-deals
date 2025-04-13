@@ -28,12 +28,26 @@ jobs:
           docker build -t $IMAGE_URI ./api
           docker push $IMAGE_URI
 
-      - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-update-service@v1
-        # uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      - name: Register ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          service: bdd-api-service
+          task-definition: ecs-task-def.json
+          container-name: bdd-api
+          image: ${{ steps.login-ecr.outputs.registry }}/bdd-api:latest
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
           cluster: bdd-api-cluster
-          force-new-deployment: true
-          # task-definition: bdd-api-task
-          # wait-for-service-stability: true
+          service: bdd-api-service
+          task-definition: ${{ steps.task-def.outputs.task-definition-arn }}
+      # - name: Deploy to ECS
+      #   uses: aws-actions/amazon-ecs-update-service@v1
+      #   # uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      #   with:
+      #     service: bdd-api-service
+      #     cluster: bdd-api-cluster
+      #     force-new-deployment: true
+      #     # task-definition: bdd-api-task
+      #     # wait-for-service-stability: true
