@@ -1,9 +1,9 @@
 [project]
 name = "scraper"
 version = "0.1.0"
-description = "Web scraper for bar down deals"
+description = "Web scraper for Bar Down Deals"
 authors = [
-{name= "Jeremy Rico", email="jeremy.rico35@gmail.com"}
+{name="Jeremy Rico", email="jeremy.rico35@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -18,7 +18,6 @@ dependencies = [
     "scrapy-user-agents>=0.1.1",
     "sqlalchemy>=2.0.38",
     "sqlmodel (>=0.0.22,<0.0.23)",
-    "swiftshadow (>=2.1.0,<3.0.0)",
 ]
 
 [tool.poetry]

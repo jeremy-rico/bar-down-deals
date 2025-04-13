@@ -1,13 +1,12 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
+import boto3
 from api.src.deals.models import Deal
 from api.src.products.models import Product
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete
-
-logging.getLogger().setLevel(logging.INFO)
 
 
 def get_session(database_url: URL) -> Session:
@@ -44,3 +43,48 @@ def clean_database(database_url: URL) -> None:
     except Exception as e:
         logging.critical(f"Failed to clean database: {e}")
         session.rollback()
+
+
+def clean_bucket(
+    bucket_name: str = "bar-down-deals-bucket",
+    prefix: str = "images/full/",
+    days_inactive: int = 7,
+):
+    """
+    Auto delete objects if not modified for seven days
+
+    Args:
+        bucket_name: name of bucket
+        prefix: path to directory to clean
+        days_inactive: days of inactivity
+
+    Returns:
+        None
+    """
+    logging.info(
+        f"Deleting objects older than {days_inactive} days from bucket {bucket_name}"
+    )
+    count = 0
+    try:
+        s3 = boto3.client("s3")
+        threshold_date = datetime.now(timezone.utc) - timedelta(days=2)
+
+        paginator = s3.get_paginator("list_objects_v2")
+        page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+
+        for page in page_iterator:
+            if "Contents" in page:
+                for obj in page["Contents"]:
+                    last_modified = obj["LastModified"]
+
+                    if last_modified > threshold_date:
+                        count += 1
+                        logging.debug(
+                            f"Deleting {obj['Key']} last modified on {last_modified}"
+                        )
+                        s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
+
+        logging.info("Successfully cleaned bucket!")
+        logging.info(f"Deleted {count} objects")
+    except Exception as e:
+        logging.critical(f"Failed to clean s3 bucket: {e}")
