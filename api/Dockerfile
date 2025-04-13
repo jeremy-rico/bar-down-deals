@@ -21,7 +21,7 @@ WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
 # TODO: poetry install --without dev to exclude dev dependencies!
 RUN --mount=type=cache,target=$POETRY_HOME/pypoetry/cache \
-	poetry install
+	poetry install --only main
 
 # Stage 3: production
 FROM base as production
