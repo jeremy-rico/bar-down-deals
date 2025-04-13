@@ -25,6 +25,7 @@ BOT_NAME = "scraper"
 
 SPIDER_MODULES = ["scraper.src.spiders"]
 NEWSPIDER_MODULE = "scraper.src.spiders"
+LOG_LEVEL = "INFO"
 
 # Database configuration
 DATABASE_URL = URL.create(

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 import boto3
 from api.src.deals.models import Deal
-from api.src.products.models import Product
+from api.src.products.models import Product  # Need this to resolve Deal model
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete
@@ -30,6 +30,7 @@ def clean_database(database_url: URL) -> None:
     site.
 
     """
+
     logging.info("Cleaning database...")
     session = get_session(database_url)
     expiration = datetime.now(timezone.utc) - timedelta(days=2)
