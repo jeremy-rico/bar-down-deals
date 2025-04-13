@@ -29,9 +29,11 @@ jobs:
           docker push $IMAGE_URI
 
       - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        uses: aws-actions/amazon-ecs-update-service@v1
+        # uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           service: bdd-api-service
           cluster: bdd-api-cluster
-          task-definition: bdd-api-task
-          wait-for-service-stability: true
+          force-new-deployment: true
+          # task-definition: bdd-api-task
+          # wait-for-service-stability: true
