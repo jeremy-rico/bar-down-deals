@@ -10,6 +10,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 
+from src.core.config import DATABASE_URL
+
 # Add the project root directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -39,7 +41,7 @@ if config.config_file_name is not None:
 # NOTE: must be a string literal NOT a URL object, thats why we render as string
 # and decrypt password
 config.set_main_option(
-    "sqlalchemy.url", settings.DATABASE_URL.render_as_string(hide_password=False)
+    "sqlalchemy.url", DATABASE_URL.render_as_string(hide_password=False)
 )
 
 # Add your model's MetaData object here for 'autogenerate' support

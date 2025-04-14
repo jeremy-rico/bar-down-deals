@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.core.config import settings
+from src.core.config import CATEGORIES, settings
 from src.core.logging import get_logger, setup_logging
 from src.core.utils import populate_categories, run_migrations
 from src.deals.routes import router as deals_router
@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    await populate_categories(settings.CATEGORIES)
+    await populate_categories(CATEGORIES)
     yield
 
 
@@ -51,9 +51,9 @@ app.add_middleware(
 
 # Include routers
 app.include_router(deals_router)
-app.include_router(products_router)
+# app.include_router(products_router)
 app.include_router(search_router)
-app.include_router(auth_router)
+# app.include_router(auth_router)
 
 
 @app.get("/health")

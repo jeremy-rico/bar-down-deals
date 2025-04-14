@@ -6,10 +6,8 @@ import sys
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql.expression import Executable
 
-from src.core.config import settings
-from src.core.database import get_session
+from src.core.config import DATABASE_URL
 from src.deals.models import Deal
 from src.products.models import Category
 
@@ -53,7 +51,7 @@ def run_migrations():
 async def populate_categories(
     categories: list[str],
 ) -> None:
-    engine = create_async_engine(settings.DATABASE_URL, echo=False, future=True)
+    engine = create_async_engine(DATABASE_URL, echo=False, future=True)
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:

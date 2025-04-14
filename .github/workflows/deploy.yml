@@ -15,6 +15,7 @@ on:
       - main
 
 env:
+  ENV: prod
   AWS_REGION: us-west-1
   ECR_REPOSITORY: bdd-api
   ECS_SERVICE: bdd-api-service
