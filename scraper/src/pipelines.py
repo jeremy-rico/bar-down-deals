@@ -100,7 +100,18 @@ class PostgresPipeline:
         # If products exist, return
         stmt = select(Product).where(Product.name == item.get("name"))
         product = self.session.scalar(stmt)
+
+        # Create image url
+        image_url = item.get("images")
+        if image_url:
+            image_url = urljoin(self.s3_host, image_url[0].get("path"))
+
         if product:
+            if product.image_url != image_url:
+                product.image_url = image_url
+            self.session.add(product)
+            self.session.commit()
+            self.session.refresh(product)
             return product
 
         # Get categories and extra tags
@@ -113,11 +124,6 @@ class PostgresPipeline:
         # Get brand if it wasn't scraped
         if item.get("brand") == None:
             item["brand"] = get_brand(item.get("name"))
-
-        # Create image url
-        image_url = item.get("images")
-        if image_url:
-            image_url = urljoin(self.s3_host, image_url[0].get("path"))
 
         # Create Product instance and write to db
         product = Product(

@@ -9,7 +9,6 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Bar Down Deals API"
     DB_DRIVERNAME: str = "postgresql+asyncpg"
-    ENV: str
     DB_USER: str
     DB_PASSWORD: str
     DB_HOST: str

@@ -36,7 +36,7 @@ logging.info(f"Start time: {start} UTC")
 process = CrawlerProcess(settings)
 for spider in spiders:
     process.crawl(spider)
-# process.start()
+process.start()
 time_elapsed = datetime.now(timezone.utc) - start
 logging.info(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
 

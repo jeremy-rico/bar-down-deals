@@ -35,6 +35,9 @@ def clean_brand(s: str):
 
 
 def get_discount(salePrice: float, originalPrice: float | None) -> float | None:
+    """
+    Calculate discount
+    """
     if not originalPrice:
         return None
     salePrice, originalPrice = float(salePrice), float(originalPrice)
