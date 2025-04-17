@@ -13,10 +13,15 @@ from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
 from scraper.src.spiders.peranisHockeyWorld import PeranisHockeyWorldSpider
 from scraper.src.spiders.pureHockey import PureHockeySpider
+from scraper.src.utils import get_logger, setup_logging
 
 settings = get_project_settings()
+
+setup_logging()
+logger = get_logger(__name__)
 configure_logging({"LOG_LEVEL": settings.get("LOG_LEVEL")})
-logging.info("Beginning crawl...")
+
+logger.info("Beginning crawl...")
 
 spiders = [
     DiscountHockeySpider,
@@ -27,27 +32,27 @@ spiders = [
     CCMHockeySpider,
 ]
 spider_names = [spider.name for spider in spiders]
-logging.info(f"Spiders scheduled to crawl: {spider_names}")
+logger.info(f"Spiders scheduled to crawl: {spider_names}")
 
 start = datetime.now(timezone.utc)
-logging.info(f"Start time: {start} UTC")
+logger.debug(f"Start time: {start} UTC")
 
 # Crawl all spiders
 process = CrawlerProcess(settings)
-for spider in spiders:
-    process.crawl(spider)
+# for spider in spiders:
+#     process.crawl(spider)
 # process.start()
 time_elapsed = datetime.now(timezone.utc) - start
-logging.info(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
+logger.debug(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
 
 
-logging.info(f"Cleaning database...")
+logger.info(f"Cleaning database...")
 # DATABASE_URL is not a native scrapy setting so it doesn't appear when using
 # get_project_settings()
-clean_database(DATABASE_URL)
+# clean_database(DATABASE_URL)
 
-logging.info(f"Cleaning bucket...")
-clean_bucket()
+logger.info(f"Cleaning bucket...")
+clean_bucket(DATABASE_URL)
 
 time_elapsed = datetime.now(timezone.utc) - start
-logging.info(f"All processes completed in {time_elapsed.total_seconds()} seconds")
+logger.info(f"All processes completed in {time_elapsed.total_seconds()} seconds")

@@ -28,7 +28,7 @@
       "css": "div.item div.details a::attr(href)"
     }
   },
-  "categories": {
+  "tags": {
     "hockey-sticks-sale": ["Sticks"],
     "hockey-skates-sale": ["Skates"],
     "hockey-clearance-gloves": ["Protective", "Gloves"],

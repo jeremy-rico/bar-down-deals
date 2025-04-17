@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.core.config import settings
+from src.core.config import TAGS, settings
 from src.core.logging import get_logger, setup_logging
-from src.core.utils import populate_categories, run_migrations
+from src.core.utils import populate_tags, run_migrations
 from src.deals.routes import router as deals_router
 from src.products.routes import router as products_router
 from src.search.routes import router as search_router
@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    await populate_categories(settings.CATEGORIES)
+    await populate_tags(TAGS)
     yield
 
 

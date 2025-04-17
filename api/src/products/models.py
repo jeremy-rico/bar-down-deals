@@ -8,30 +8,30 @@ if TYPE_CHECKING:
     from src.deals.models import Deal
 
 
-# ======================== Category Product Link Table =========================
-class CategoryProductLink(SQLModel, table=True):
-    category_id: int | None = Field(
-        default=None, foreign_key="category.id", primary_key=True, ondelete="CASCADE"
+# ======================== Tag Product Link Table =========================
+class TagProductLink(SQLModel, table=True):
+    tag_id: int | None = Field(
+        default=None, foreign_key="tag.id", primary_key=True, ondelete="CASCADE"
     )
     product_id: int | None = Field(
         default=None, foreign_key="product.id", primary_key=True, ondelete="CASCADE"
     )
 
 
-# ============================= Category Models =================================
-class CategoryBase(SQLModel):
+# ============================= Tag Models =================================
+class TagBase(SQLModel):
     name: str = Field(max_length=255, unique=True)
 
 
-class Category(CategoryBase, table=True):
+class Tag(TagBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
     products: list["Product"] = Relationship(
-        back_populates="categories", link_model=CategoryProductLink
+        back_populates="tags", link_model=TagProductLink
     )
 
 
-class CategoryResponse(CategoryBase):
+class TagResponse(TagBase):
     id: int
 
 
@@ -46,12 +46,11 @@ class ProductBase(SQLModel):
 class Product(ProductBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
-    description: str | None
 
     deals: list["Deal"] = Relationship(back_populates="product", cascade_delete=True)
-    categories: list["Category"] = Relationship(
+    tags: list["Tag"] = Relationship(
         back_populates="products",
-        link_model=CategoryProductLink,
+        link_model=TagProductLink,
         sa_relationship_kwargs={"lazy": "selectin"},
     )
 
@@ -59,13 +58,13 @@ class Product(ProductBase, table=True):
         return (
             f"Product(id={self.id}, name={self.name}, "
             f"brand={self.brand}, created_at={self.created_at}, "
-            f"deals={self.deals}, categories={self.categories})"
+            f"deals={self.deals}, tags={self.tags})"
         )
 
 
 class ProductResponse(ProductBase):
     id: int
-    categories: list["CategoryResponse"]
+    tags: list["TagResponse"]
 
 
 class ProductIDResponse(ProductBase):

@@ -44,7 +44,12 @@ DATABASE_URL = URL.create(
     database=settings.DB_NAME,
 )
 
-CATEGORIES: list[str] = [
+TAGS: list[str] = [
+    # Get Sizing
+    "Senior",
+    "Intermediate",
+    "Junior",
+    "Youth",
     # Major Categories
     "Sticks",
     "Skates",
@@ -55,11 +60,6 @@ CATEGORIES: list[str] = [
     "Goalie",
     "Apparel",
     "Accessories",
-    # Sizing
-    "Senior",
-    "Intermediate",
-    "Junior",
-    "Youth",
     # Stick Type
     "Composite",
     "Street",

@@ -14,7 +14,7 @@ from sqlmodel import SQLModel
 sys.path.append(str(Path(__file__).parent.parent))
 
 from alembic import context
-from src.core.config import settings
+from src.core.config import DATABASE_URL, settings
 
 # Automatically import all models
 src_path = Path(__file__).parent.parent / "src"
@@ -39,7 +39,7 @@ if config.config_file_name is not None:
 # NOTE: must be a string literal NOT a URL object, thats why we render as string
 # and decrypt password
 config.set_main_option(
-    "sqlalchemy.url", settings.DATABASE_URL.render_as_string(hide_password=False)
+    "sqlalchemy.url", DATABASE_URL.render_as_string(hide_password=False)
 )
 
 # Add your model's MetaData object here for 'autogenerate' support

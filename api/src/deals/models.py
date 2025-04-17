@@ -35,6 +35,7 @@ class DealBase(SQLModel):
     original_price: Decimal | None = Field(max_digits=10, decimal_places=2)
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
     url: str = Field(unique=True)
+    views: int = Field(default=0)
 
 
 class Deal(DealBase, table=True):

@@ -10,7 +10,7 @@ from sqlmodel import col, func
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.core.utils import get_headers
 from src.deals.models import Deal, Website
-from src.products.models import Category, CategoryProductLink, Product
+from src.products.models import Product, Tag, TagProductLink
 
 
 class DealRepository:
@@ -57,8 +57,8 @@ class DealRepository:
             filters.append(col(Product.brand).in_(brands))
 
         if tags:
-            filters.append(col(Category.name).in_(tags))
-            having_tag = func.count(col(Category.name).distinct()) >= len(tags)
+            filters.append(col(Tag.name).in_(tags))
+            having_tag = func.count(col(Tag.name).distinct()) >= len(tags)
         else:
             having_tag = None
 
@@ -69,8 +69,8 @@ class DealRepository:
             select(Deal)
             .join(Website)
             .join(Product)
-            .join(CategoryProductLink)
-            .join(Category)
+            .join(TagProductLink)
+            .join(Tag)
             .group_by(col(Deal.id), Product.name)
             .filter(*filters)
             .distinct()
@@ -79,15 +79,16 @@ class DealRepository:
             stmt = stmt.having(having_tag)
 
         result = await self.session.execute(stmt)
-        print(len(list(result.scalars().all())))
 
         # TODO: sort by Popular
         if sort == "Oldest":
             stmt = stmt.order_by(col(Deal.created_at).asc())
         elif sort == "Newest":
             stmt = stmt.order_by(col(Deal.created_at).desc())
-        elif sort == "Discount" or sort == "Popular":
+        elif sort == "Discount":
             stmt = stmt.order_by(col(Deal.discount).desc())
+        elif sort == "Popular":
+            stmt = stmt.order_by(col(Deal.views).desc())
         elif sort == "Price Low":
             stmt = stmt.order_by(col(Deal.price).asc())
         elif sort == "Price High":
@@ -145,13 +146,39 @@ class DealRepository:
             raise NotFoundException(f"Deal with id {deal_id} not found")
         return deal
 
+    async def increment_deal_by_id(self, deal_id: int) -> Deal:
+        """
+        Increment the amount of views a deal has by one.
+
+        Args:
+            deal_id: Deal ID
+
+        Returns:
+            Deal: incremented deal
+
+        Raises:
+            NotFoundException: If deal not found
+        """
+        stmt = select(Deal).where(col(Deal.id) == deal_id)
+        result = await self.session.execute(stmt)
+        deal = result.scalar_one_or_none()
+
+        if not deal:
+            raise NotFoundException(f"Deal with id {deal_id} not found")
+
+        deal.views += 1
+        self.session.add(deal)
+        await self.session.commit()
+        await self.session.refresh(deal)
+        return deal
+
     async def get_item_count(self, filters: list) -> int:
         count_stmt = (
             select(func.count(col(Deal.id).distinct()))
             .join(Website)
             .join(Product)
-            .join(CategoryProductLink)
-            .join(Category)
+            .join(TagProductLink)
+            .join(Tag)
             .filter(*filters)
         )
         result = await self.session.execute(count_stmt)
@@ -177,8 +204,8 @@ class DealRepository:
 
         if tags:
             filters.append(
-                col(Category.name).in_(tags)
-                # .having(func.count(col(Category.name).distinct()) >= len(tags))
+                col(Tag.name).in_(tags)
+                # .having(func.count(col(Tag.name).distinct()) >= len(tags))
             )
 
         if added_since in self.timeframes:
@@ -188,8 +215,8 @@ class DealRepository:
             select(func.max(col(Deal.price)))
             .join(Website)
             .join(Product)
-            .join(CategoryProductLink)
-            .join(Category)
+            .join(TagProductLink)
+            .join(Tag)
             .filter(*filters)
         )
         result = await self.session.execute(stmt)
@@ -201,8 +228,8 @@ class DealRepository:
             select(col(Product.brand))
             .join(Deal)
             .join(Website)
-            .join(CategoryProductLink)
-            .join(Category)
+            .join(TagProductLink)
+            .join(Tag)
             .filter(*filters)
             .distinct()
         )
@@ -216,8 +243,8 @@ class DealRepository:
         sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
 
         tag_stmt = (
-            select(col(Category.name))
-            .join(CategoryProductLink)
+            select(col(Tag.name))
+            .join(TagProductLink)
             .join(Product)
             .join(Deal)
             .join(Website)
@@ -238,8 +265,8 @@ class DealRepository:
             select(col(Website.name))
             .join(Deal)
             .join(Product)
-            .join(CategoryProductLink)
-            .join(Category)
+            .join(TagProductLink)
+            .join(Tag)
             .filter(*filters)
             .distinct()
         )

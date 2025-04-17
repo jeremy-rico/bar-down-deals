@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 
 from src.core.exceptions import NotFoundException
-from src.products.models import Category, Product
+from src.products.models import Product, Tag
 
 
 class ProductRepository:
@@ -44,8 +44,8 @@ class ProductRepository:
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_all_categories(self) -> list[Category]:
-        stmt = select(Category)
+    async def get_all_tags(self) -> list[Tag]:
+        stmt = select(Tag)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
