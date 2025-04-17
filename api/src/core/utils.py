@@ -83,6 +83,9 @@ def get_headers(data: list[Deal], limit: int) -> dict[str, str]:
     avail_sizes = set()
     ret_max_price = 0.0
     sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
+    import sys
+
+    print(sys.getsizeof(data))
     for row in data:
         if row.product.brand:
             avail_brands.add(row.product.brand)
