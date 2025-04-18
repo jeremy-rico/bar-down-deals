@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     DB_PORT: int
     DB_NAME: str
 
+    FRONTEND_KEY: str
+
     DEBUG: bool = False
     ORIGINS: list[str] = [
         "http://localhost:3000",

@@ -1,14 +1,16 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Query, Request, Response
+from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.config import settings
 from src.core.database import get_session
 from src.core.logging import get_logger
-from src.deals.models import DealResponse, QueryParams, WebsiteResponse
+from src.deals.models import DealResponse, QueryParams
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
-from src.products.models import ProductResponse, TagResponse
+from src.products.models import ProductResponse  # Needed for model_rebuild
 
 # Set up logger for this module
 logger = get_logger(__name__)
@@ -71,16 +73,24 @@ async def get_deal(
         raise
 
 
-@router.put("/{deal_id}", response_model=DealResponse)
+@router.put("/inc/{deal_id}", response_model=DealResponse)
 async def increment_deal(
+    request: Request,
     deal_id: int,
     service: DealService = Depends(get_deal_service),
 ) -> DealResponse:
-    """Increment deal.views by one using ID"""
+    """
+    Increment deal.views by one using ID. Requires frontend secret key to use.
+    """
+    frontend_key = request.headers.get("X-Frontend-Key")
+    print(frontend_key)
+    if frontend_key != settings.FRONTEND_KEY:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     logger.debug(f"Incrementing deal {deal_id} ")
     try:
         deal = await service.increment_deal(deal_id)
-        logger.info(f"Successfully incremented deal {deal_id}")
+        logger.info(f"Incremented deal {deal_id}")
         return deal
     except Exception as e:
         logger.error(f"Failed to increment deal {deal_id}: {str(e)}")

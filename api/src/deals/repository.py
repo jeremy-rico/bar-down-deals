@@ -121,8 +121,6 @@ class DealRepository:
             "x-avail-tags": json.dumps(avail_tags),
             "x-avail-stores": json.dumps(avail_stores),
         }
-        for k, v in headers.items():
-            print(f"{k}: {v}")
 
         return headers, list(result.scalars().all())
 
