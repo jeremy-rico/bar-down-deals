@@ -1,5 +1,3 @@
-import os
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -14,6 +12,7 @@ class Settings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_NAME: str
+
     DEBUG: bool = False
     ORIGINS: list[str] = [
         "http://localhost:3000",
@@ -26,11 +25,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION: int = 30  # minutes
 
-    # Load .env file.
-    # Production: pulls from AWM SSM Parameters
-    # Development: pulls from local .env file
     model_config = SettingsConfigDict(
-        env_file=f".env",
+        env_file=".env",
         env_file_encoding="utf-8",
     )
 
@@ -46,9 +42,12 @@ DATABASE_URL = URL.create(
     database=settings.DB_NAME,
 )
 
-print(f"DATABSE_URL: {DATABASE_URL}")
-
-CATEGORIES: list[str] = [
+TAGS: list[str] = [
+    # Get Sizing
+    "Senior",
+    "Intermediate",
+    "Junior",
+    "Youth",
     # Major Categories
     "Sticks",
     "Skates",
@@ -59,11 +58,6 @@ CATEGORIES: list[str] = [
     "Goalie",
     "Apparel",
     "Accessories",
-    # Sizing
-    "Senior",
-    "Intermediate",
-    "Junior",
-    "Youth",
     # Stick Type
     "Composite",
     "Street",

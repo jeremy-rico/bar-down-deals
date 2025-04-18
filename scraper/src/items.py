@@ -8,7 +8,7 @@ from scraper.src.utils import clean_brand, clean_price
 class Product(Item):
     name = Field()
     brand = Field()
-    categories = Field()
+    tags = Field()
     description = Field()
     url = Field()
     image_urls = Field()
@@ -27,7 +27,6 @@ class ProductLoader(ItemLoader):
 
     name_out = TakeFirst()
     brand_out = TakeFirst()
-    category_out = TakeFirst()
     description_out = Join()
     url_out = TakeFirst()
     price_out = TakeFirst()

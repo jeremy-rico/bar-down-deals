@@ -45,7 +45,7 @@ class DealService:
         stores: list[str] | None,
         brands: list[str] | None,
         tags: list[str] | None,
-    ) -> tuple[dict[str, int], list[DealResponse]]:
+    ) -> tuple[dict[str, str], list[DealResponse]]:
         """
         Get all deals.
 
@@ -64,6 +64,14 @@ class DealService:
             tags,
         )
         return headers, [DealResponse.model_validate(deal) for deal in deals]
+
+    async def increment_deal(self, deal_id: int) -> DealResponse:
+        """
+        Incrememnt deal views by one
+
+        """
+        deal = await self.repository.increment_deal_by_id(deal_id)
+        return DealResponse.model_validate(deal)
 
     # async def update_deal(self, deal_id: int, deal_data: DealUpdate) -> DealResponse:
     #     """Update deal by ID.

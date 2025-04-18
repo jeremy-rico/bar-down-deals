@@ -119,6 +119,7 @@ AWS_ACCESS_KEY_ID = None
 AWS_SECRET_ACCESS_KEY = None
 
 # Logger settings
+LOG_LEVEL = "DEBUG"
 BOTO_LOG_LEVEL = logging.CRITICAL  # logging.DEBUG
 
 # Enable and configure the AutoThrottle extension

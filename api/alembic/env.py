@@ -16,7 +16,7 @@ from src.core.config import DATABASE_URL
 sys.path.append(str(Path(__file__).parent.parent))
 
 from alembic import context
-from src.core.config import settings
+from src.core.config import DATABASE_URL, settings
 
 # Automatically import all models
 src_path = Path(__file__).parent.parent / "src"

@@ -7,9 +7,10 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.core.config import DATABASE_URL
+from src.core.config import settings
+from src.core.database import DATABASE_URL, get_session
 from src.deals.models import Deal
-from src.products.models import Category
+from src.products.models import Tag
 
 
 def run_migrations():
@@ -48,24 +49,24 @@ def run_migrations():
         raise
 
 
-async def populate_categories(
-    categories: list[str],
+async def populate_tags(
+    tags: list[str],
 ) -> None:
     engine = create_async_engine(DATABASE_URL, echo=False, future=True)
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:
         try:
-            for category in categories:
+            for tag in tags:
                 stmt = (
-                    insert(Category)
-                    .values(name=category)
+                    insert(Tag)
+                    .values(name=tag)
                     .on_conflict_do_nothing(index_elements=["name"])
-                    .returning(Category)
+                    .returning(Tag)
                 )
                 await session.execute(stmt)
                 await session.commit()
-            print("Categories populated.")
+            print("Tags populated.")
 
         except Exception as e:
             print(f"An error occurred while populating categories: {e}")
@@ -81,11 +82,14 @@ def get_headers(data: list[Deal], limit: int) -> dict[str, str]:
     avail_sizes = set()
     ret_max_price = 0.0
     sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
+    import sys
+
+    print(sys.getsizeof(data))
     for row in data:
         if row.product.brand:
             avail_brands.add(row.product.brand)
-        if row.product.categories:
-            for cat in row.product.categories:
+        if row.product.tags:
+            for cat in row.product.tags:
                 if cat.name in sizes:
                     avail_sizes.add(cat.name)
                 else:

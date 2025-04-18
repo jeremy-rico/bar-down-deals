@@ -6,7 +6,7 @@ from sqlmodel import col, func
 
 from src.core.utils import get_headers
 from src.deals.models import Deal, Website
-from src.products.models import Category, CategoryProductLink, Product
+from src.products.models import Product, Tag, TagProductLink
 
 
 class SearchRepository:
@@ -41,8 +41,8 @@ class SearchRepository:
             select(Deal)
             .join(Website)
             .join(Product)
-            .join(CategoryProductLink)
-            .join(Category)
+            .join(TagProductLink)
+            .join(Tag)
             .group_by(col(Deal.id), Product.name)
         )
         for kword in query.split():
@@ -64,8 +64,8 @@ class SearchRepository:
 
         # Filter by tags
         if tags:
-            stmt = stmt.where(col(Category.name).in_(tags)).having(
-                func.count(col(Category.name).distinct()) >= len(tags)
+            stmt = stmt.where(col(Tag.name).in_(tags)).having(
+                func.count(col(Tag.name).distinct()) >= len(tags)
             )
 
         if added_since:

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_session
 from src.core.logging import get_logger
-from src.products.models import CategoryResponse, FilterParams, ProductResponse
+from src.products.models import FilterParams, ProductResponse, TagResponse
 from src.products.repository import ProductRepository
 from src.products.service import ProductService
 
@@ -63,10 +63,10 @@ async def get_product(
         raise
 
 
-@router.get("/categories/", response_model=list[CategoryResponse])
+@router.get("/categories/", response_model=list[TagResponse])
 async def get_categories(
     service: ProductService = Depends(get_product_service),
-) -> list[CategoryResponse]:
+) -> list[TagResponse]:
     """
     Get all categories.
 

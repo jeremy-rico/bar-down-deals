@@ -1,4 +1,4 @@
-from src.products.models import CategoryResponse, ProductResponse
+from src.products.models import ProductResponse, TagResponse
 from src.products.repository import ProductRepository
 
 
@@ -22,15 +22,15 @@ class ProductService:
 
     async def get_categories(
         self,
-    ) -> list[CategoryResponse]:
+    ) -> list[TagResponse]:
         """
         Get all categories.
 
         Returns:
             List[ProductResponse]: List of all products
         """
-        categories = await self.repository.get_all_categories()
-        return [CategoryResponse.model_validate(category) for category in categories]
+        categories = await self.repository.get_all_tags()
+        return [TagResponse.model_validate(category) for category in categories]
 
     async def get_product(self, product_id: int) -> ProductResponse:
         """Get product by ID.

@@ -1,11 +1,10 @@
-import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin
 
 # shared model definitions
 from api.src.deals.models import Deal, Website
-from api.src.products.models import Category, Product
+from api.src.products.models import Product, Tag
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
@@ -16,7 +15,9 @@ from sqlmodel import col
 
 # database connection
 from scraper.src.database import get_session
-from scraper.src.utils import get_discount, read_json
+from scraper.src.utils import get_discount, get_logger, read_json
+
+logger = get_logger(__name__)
 
 
 class PostgresPipeline:
@@ -27,7 +28,6 @@ class PostgresPipeline:
     @classmethod
     def from_crawler(cls, crawler):
         database_url = crawler.settings.get("DATABASE_URL")
-        logging.getLogger("botocore").setLevel(crawler.settings.get("BOTO_LOG_LEVEL"))
         s3_host = crawler.settings.get("S3_HOST")
         return cls(database_url, s3_host)
 
@@ -84,7 +84,7 @@ class PostgresPipeline:
         try:
             self.session.commit()
         except Exception as e:
-            logging.warning(f"Failed to upsert website: {e}")
+            logger.warning(f"Failed to upsert website: {e}")
             self.session.rollback()
 
         return website.scalars().one()
@@ -97,29 +97,35 @@ class PostgresPipeline:
            Product
         """
 
-        # If products exist, return
-        stmt = select(Product).where(Product.name == item.get("name"))
-        product = self.session.scalar(stmt)
-
         # Create image url
         image_url = item.get("images")
         if image_url:
             image_url = urljoin(self.s3_host, image_url[0].get("path"))
 
+        # Create tags
+        tags_list = get_extra_tags(item.get("name"), item.get("tags"))
+        stmt = select(Tag).where(col(Tag.name).in_(tags_list))
+        tags = list(self.session.scalars(stmt).all())
+
+        # Check if products exist
+        stmt = select(Product).where(Product.name == item.get("name"))
+        product = self.session.scalar(stmt)
+
+        # Update some product info if necessary and return
         if product:
+            if product.tags != tags:
+                product.tags = tags
+                self.session.add(product)
             if product.image_url != image_url:
                 product.image_url = image_url
-            self.session.add(product)
-            self.session.commit()
-            self.session.refresh(product)
+                self.session.add(product)
+            try:
+                self.session.commit()
+                self.session.refresh(product)
+            except Exception as e:
+                logger.warning(f"Failed to update product: {e}")
+                self.session.rollback()
             return product
-
-        # Get categories and extra tags
-        categories_list = get_extra_tags(item.get("name"), item.get("categories"))
-
-        # Grab all category rows from db
-        stmt = select(Category).where(col(Category.name).in_(categories_list))
-        categories = list(self.session.scalars(stmt).all())
 
         # Get brand if it wasn't scraped
         if item.get("brand") == None:
@@ -129,9 +135,8 @@ class PostgresPipeline:
         product = Product(
             name=item.get("name"),
             brand=item.get("brand", None),
-            categories=categories,
+            tags=tags,
             image_url=image_url if image_url else self.s3_host,
-            description=item.get("description", None),
             created_at=datetime.now(timezone.utc),
         )
         self.session.add(product)
@@ -139,7 +144,7 @@ class PostgresPipeline:
             self.session.commit()
             self.session.refresh(product)
         except Exception as e:
-            logging.warning(f"Failed to upsert product: {e}")
+            logger.warning(f"Failed to insert product: {e}")
             self.session.rollback()
 
         return product
@@ -201,18 +206,18 @@ class PostgresPipeline:
         return deal
 
 
-def get_extra_tags(title: str, start_categories: list[str] | None) -> list[str]:
+def get_extra_tags(title: str, start_tags: list[str] | None) -> list[str]:
     """
     Helper function to get extra tags in product title that can't be inferred from url
 
     Args:
       title: Product title
-      start_categories: Product categories pulled from url
+      start_tags: Product tags pulled from url
 
     Returns:
       List[str]: list of all tags
     """
-    all_categories = set(start_categories) if start_categories else set()
+    all_tags = set(start_tags) if start_tags else set()
 
     # Get keyword --> tag map
     json_path = Path(__file__).parent.parent / "expressions" / "tags.json"
@@ -221,9 +226,9 @@ def get_extra_tags(title: str, start_categories: list[str] | None) -> list[str]:
 
     for kw in keywords.keys():
         if kw in title:
-            all_categories.add(keywords[kw].title())
+            all_tags.add(keywords[kw].title())
 
-    return list(all_categories)
+    return list(all_tags)
 
 
 def get_brand(title: str) -> str | None:
@@ -232,7 +237,7 @@ def get_brand(title: str) -> str | None:
 
     Args:
       title: Product title
-      start_categories: Product categories pulled from url
+      start_tags: Product tags pulled from url
 
     Returns:
       List[str]: list of all tags
