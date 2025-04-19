@@ -19,7 +19,6 @@ RUN --mount=type=cache,target=/root/.cache \
 	pip install "poetry==$POETRY_VERSION"
 WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
-# TODO: poetry install --without dev to exclude dev dependencies!
 RUN --mount=type=cache,target=$POETRY_HOME/pypoetry/cache \
 	poetry install --only main
 
