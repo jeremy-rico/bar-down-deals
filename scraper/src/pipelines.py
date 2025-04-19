@@ -5,7 +5,6 @@ from urllib.parse import urljoin
 # shared model definitions
 from api.src.deals.models import Deal, Website
 from api.src.products.models import Product, Tag
-
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
@@ -91,7 +90,7 @@ class PostgresPipeline:
 
     def upsert_product(self, item) -> Product:
         """
-        INSERT new product or do nothing
+        INSERT new product or UPDATE if needed
 
         Returns:
            Product
@@ -101,6 +100,8 @@ class PostgresPipeline:
         image_url = item.get("images")
         if image_url:
             image_url = urljoin(self.s3_host, image_url[0].get("path"))
+        else:
+            image_url = self.s3_host
 
         # Create tags
         tags_list = get_extra_tags(item.get("name"), item.get("tags"))
@@ -113,18 +114,22 @@ class PostgresPipeline:
 
         # Update some product info if necessary and return
         if product:
+            update = False
             if product.tags != tags:
+                update = True
                 product.tags = tags
-                self.session.add(product)
             if product.image_url != image_url:
+                update = True
                 product.image_url = image_url
-                self.session.add(product)
-            try:
-                self.session.commit()
-                self.session.refresh(product)
-            except Exception as e:
-                logger.warning(f"Failed to update product: {e}")
-                self.session.rollback()
+            if update:
+                try:
+                    self.session.add(product)
+                    self.session.commit()
+                    self.session.refresh(product)
+                    logger.info(f"Updated product id {product.id}")
+                except Exception as e:
+                    logger.warning(f"Failed to update product: {e}")
+                    self.session.rollback()
             return product
 
         # Get brand if it wasn't scraped
@@ -136,7 +141,7 @@ class PostgresPipeline:
             name=item.get("name"),
             brand=item.get("brand", None),
             tags=tags,
-            image_url=image_url if image_url else self.s3_host,
+            image_url=image_url,
             created_at=datetime.now(timezone.utc),
         )
         self.session.add(product)
@@ -226,7 +231,7 @@ def get_extra_tags(title: str, start_tags: list[str] | None) -> list[str]:
 
     for kw in keywords.keys():
         if kw in title:
-            all_tags.add(keywords[kw].title())
+            all_tags.update(keywords[kw])
 
     return list(all_tags)
 

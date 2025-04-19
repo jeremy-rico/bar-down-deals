@@ -41,9 +41,13 @@ class DealService:
         limit: int,
         added_since: str,
         min_price: int,
+        default_max_price: int | None,
         max_price: int | None,
+        default_stores: list[str] | None,
         stores: list[str] | None,
+        default_brands: list[str] | None,
         brands: list[str] | None,
+        default_tags: list[str] | None,
         tags: list[str] | None,
     ) -> tuple[dict[str, str], list[DealResponse]]:
         """
@@ -58,9 +62,13 @@ class DealService:
             limit,
             added_since,
             min_price,
+            default_max_price,
             max_price,
+            default_stores,
             stores,
+            default_brands,
             brands,
+            default_tags,
             tags,
         )
         return headers, [DealResponse.model_validate(deal) for deal in deals]

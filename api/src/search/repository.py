@@ -4,7 +4,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, func
 
-from src.core.utils import get_headers
 from src.deals.models import Deal, Website
 from src.products.models import Product, Tag, TagProductLink
 

@@ -81,7 +81,11 @@ class QueryParams(BaseModel):
     limit: int = Field(20, gt=0, le=100)
     added_since: Literal["today", "week", "month", "year", "all"] = "all"
     min_price: int = Field(0, ge=0)
+    default_max_price: int | None = Field(default=None, ge=1)
     max_price: int | None = Field(default=None, ge=1)
     stores: list[str] | None = Field(default=None)
+    default_stores: list[str] | None = Field(default=None)
     brands: list[str] | None = Field(default=None)
+    default_brands: list[str] | None = Field(default=None)
     tags: list[str] | None = Field(default=None)
+    default_tags: list[str] | None = Field(default=None)

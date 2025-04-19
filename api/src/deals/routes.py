@@ -42,9 +42,13 @@ async def get_deals(
             query_params.limit,
             query_params.added_since,
             query_params.min_price,
+            query_params.default_max_price,
             query_params.max_price,
+            query_params.default_stores,
             query_params.stores,
+            query_params.default_brands,
             query_params.brands,
+            query_params.default_tags,
             query_params.tags,
         )
         logger.info(f"Retrieved {len(deals[1])} deals")
@@ -73,7 +77,7 @@ async def get_deal(
         raise
 
 
-@router.put("/inc/{deal_id}", response_model=DealResponse)
+@router.put("/{deal_id}/inc", response_model=DealResponse)
 async def increment_deal(
     request: Request,
     deal_id: int,

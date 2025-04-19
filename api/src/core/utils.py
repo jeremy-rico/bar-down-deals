@@ -71,41 +71,5 @@ async def populate_tags(
         except Exception as e:
             print(f"An error occurred while populating categories: {e}")
 
-        await session.close()
-
-
-def get_headers(data: list[Deal], limit: int) -> dict[str, str]:
-    # Generate response headers
-    avail_brands = set()
-    avail_tags = set()
-    avail_stores = set()
-    avail_sizes = set()
-    ret_max_price = 0.0
-    sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
-    import sys
-
-    print(sys.getsizeof(data))
-    for row in data:
-        if row.product.brand:
-            avail_brands.add(row.product.brand)
-        if row.product.tags:
-            for cat in row.product.tags:
-                if cat.name in sizes:
-                    avail_sizes.add(cat.name)
-                else:
-                    avail_tags.add(cat.name)
-        if row.website.name:
-            avail_stores.add(row.website.name)
-        ret_max_price = max(ret_max_price, row.price)
-
-    headers = {
-        "x-total-item-count": len(data),
-        "x-items-per-page": limit,
-        "x-total-page-count": math.ceil(len(data) / limit),
-        "x-avail-sizes": json.dumps(list(avail_sizes)),
-        "x-avail-brands": json.dumps(list(avail_brands)),
-        "x-avail-tags": json.dumps(list(avail_tags)),
-        "x-avail-stores": json.dumps(list(avail_stores)),
-        "x-max-price": ret_max_price,
-    }
-    return headers
+        finally:
+            await session.close()
