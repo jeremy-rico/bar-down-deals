@@ -1,5 +1,9 @@
+import os
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
+
+print(os.environ)
 
 
 class Settings(BaseSettings):
