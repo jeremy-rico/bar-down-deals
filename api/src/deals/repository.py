@@ -89,9 +89,7 @@ class DealRepository:
         total_item_count = await self.get_item_count(stmt)
         max_avail_price = await self.get_max_avail_price(having_tag, **filter_kwargs)
         avail_brands = await self.get_avail_brands(having_tag, **filter_kwargs)
-        avail_sizes, avail_tags = await self.get_avail_sizes_and_tags(
-            **filter_kwargs
-        )
+        avail_sizes, avail_tags = await self.get_avail_sizes_and_tags(**filter_kwargs)
         avail_stores = await self.get_avail_stores(having_tag, **filter_kwargs)
 
         if sort == "Oldest":
@@ -308,7 +306,6 @@ class DealRepository:
             )
             result = await self.session.execute(stmt)
             avail_tags = list(result.scalars().all())
-            print(avail_tags)
 
         avail_sizes = []
         for size in sizes:
