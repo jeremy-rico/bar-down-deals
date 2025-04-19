@@ -1,11 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
-from src.core.config import DATABASE_URL, settings
+from src.core.config import DATABASE_URL
 
-# Create declarative base for models
-# Base = declarative_base()
-
+# Create DB session connection ONCE
+engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 async def get_session() -> AsyncSession:
     """
@@ -14,13 +14,6 @@ async def get_session() -> AsyncSession:
     Yields:
         AsyncSession: Async database session
     """
-    # Create async engine
-    engine = create_async_engine(DATABASE_URL, echo=False, future=True)
-
     # Create async session factory
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+        yield session

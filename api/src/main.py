@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import TAGS, settings
+from src.core.database import engine
 from src.core.logging import get_logger, setup_logging
 from src.core.utils import populate_tags, run_migrations
 from src.deals.routes import router as deals_router
@@ -55,6 +56,9 @@ app.include_router(deals_router)
 app.include_router(search_router)
 # app.include_router(auth_router)
 
+@app.on_event("shutdown")
+async def shutdown():
+    await engine.dispose()
 
 @app.get("/health")
 async def health_check():
