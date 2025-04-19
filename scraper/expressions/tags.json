@@ -1,5 +1,5 @@
 {
-  " stick ": ["Sticks"],
+  " hockey stick ": ["Sticks"],
   "skates": ["Skates"],
   "protective": ["Protective"],
   "gamewear": ["Gamewear"],
@@ -36,6 +36,9 @@
   "base layer": ["Base Layer"],
   " laces ": ["Skate", "Accessories"],
   "shirt": ["Shirts"],
+  " goalie stick ": ["Goalie", "Goalie Sticks"],
+  " goal stick ": ["Goalie", "Goalie Sticks"],
+  " goal pad ": ["Goalie", "Leg Pads"],
   "leg pad": ["Goalie", "Leg Pads"],
   "goalie mask": ["Goalie", "Masks"],
   "blocker": ["Goalie", "Blockers"],

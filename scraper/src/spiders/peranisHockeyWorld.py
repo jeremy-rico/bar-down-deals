@@ -44,7 +44,7 @@ class PeranisHockeyWorldSpider(scrapy.Spider):
                 if field_name == "tags":
                     l.add_value("tags", tags)
                 elif field_name == "url":
-                    # Manuall create and add url
+                    # Manually create and add url
                     endpoint = prod.css(self.exp["product_info"]["url"]["css"]).get()
                     url = urljoin(self.base_url, endpoint)
                     l.add_value("url", url)

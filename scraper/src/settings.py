@@ -107,7 +107,8 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "scrapy.pipelines.images.ImagesPipeline": 1,
+    # "scrapy.pipelines.images.ImagesPipeline": 1,
+    "scraper.src.pipelines.CustomImagePipeline": 1,
     "scraper.src.pipelines.PostgresPipeline": 300,
 }
 
