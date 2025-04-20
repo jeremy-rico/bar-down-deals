@@ -219,6 +219,10 @@ from scrapy.pipelines.images import ImagesPipeline
 
 
 class CustomImagePipeline(ImagesPipeline):
+    """
+    Defines custom headers for images downloads. Bypasses cloudflare image
+    blocking
+    """
 
     def get_media_requests(self, item, info):
         referer = item.get("url")
