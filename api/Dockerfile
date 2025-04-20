@@ -29,5 +29,6 @@ COPY --from=builder $VENV_PATH $VENV_PATH
 COPY . /app
 WORKDIR /app
 EXPOSE 8000
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000"]
+# One worker for ECS Fargate instance 0.25 vCPU 0.5 GB
+CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000"]
 # CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
