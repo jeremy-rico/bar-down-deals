@@ -48,12 +48,11 @@ def clean_database(database_url: URL) -> None:
         .filter(Deal.created_at <= expiration)
         .scalar()
     )
-    logger.info(f"Attmpting to delete {count} deals")
 
     try:
         session.execute(stmt)
         session.commit()
-        logger.info("Successfully cleaned database.")
+        logger.info(f"Successfully removed {count} deals.")
     except Exception as e:
         logger.critical(f"Failed to clean database: {e}")
         session.rollback()
@@ -93,7 +92,7 @@ def clean_bucket(
                     stmt = select(Product).where(Product.image_url == obj_url)
                     if session.scalar(stmt) is None:
                         count += 1
-                        # s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
+                        s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
                         logging.debug(f"Deleted {obj['Key']}")
 
         logging.info("Successfully cleaned bucket!")
