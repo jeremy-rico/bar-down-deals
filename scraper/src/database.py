@@ -7,7 +7,7 @@ from api.src.deals.models import Deal
 from api.src.products.models import Product  # Need this to resolve Deal model
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
-from sqlmodel import col, delete, select
+from sqlmodel import col, delete, func, select
 
 from scraper.src.settings import S3_HOST
 from scraper.src.utils import get_logger
@@ -42,6 +42,13 @@ def clean_database(database_url: URL) -> None:
     expiration = datetime.now(timezone.utc) - timedelta(days=2)
 
     stmt = delete(Deal).filter(col(Deal.updated_at) <= expiration)
+    count = (
+        session.query(func.count())
+        .select_from(Deal)
+        .filter(Deal.created_at <= expiration)
+        .scalar()
+    )
+    logger.info(f"Attmpting to delete {count} deals")
 
     try:
         session.execute(stmt)

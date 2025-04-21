@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 # shared model definitions
 from api.src.deals.models import Deal, Website
 from api.src.products.models import Product, Tag
+
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
@@ -209,6 +210,31 @@ class PostgresPipeline:
         # Insert deal details
         deal = self.upsert_deal(item, product)
         return deal
+
+
+# myproject/pipelines.py
+
+from scrapy import Request
+from scrapy.pipelines.images import ImagesPipeline
+
+
+class CustomImagePipeline(ImagesPipeline):
+    """
+    Defines custom headers for images downloads. Bypasses cloudflare image
+    blocking
+    """
+
+    def get_media_requests(self, item, info):
+        referer = item.get("url")
+        for image_url in item.get("image_urls", []):
+            yield Request(
+                image_url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+                    "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+                    "Referer": referer,  # Replace with actual page URL hosting the image
+                },
+            )
 
 
 def get_extra_tags(title: str, start_tags: list[str] | None) -> list[str]:

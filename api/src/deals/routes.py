@@ -87,8 +87,8 @@ async def increment_deal(
     Increment deal.views by one using ID. Requires frontend secret key to use.
     """
     frontend_key = request.headers.get("X-Frontend-Key")
-    print(frontend_key)
     if frontend_key != settings.FRONTEND_KEY:
+        logger.error(f"Failed to increment deal {deal_id}: No frontend key")
         raise HTTPException(status_code=403, detail="Forbidden")
 
     logger.debug(f"Incrementing deal {deal_id} ")

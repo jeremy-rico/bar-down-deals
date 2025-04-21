@@ -1,6 +1,9 @@
 # Global
 .env
 
+# Crawl logs
+logs/
+
 ### /api ###
 __pycache__/
 
