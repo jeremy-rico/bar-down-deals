@@ -67,6 +67,24 @@ class DealResponse(DealBase):
 
 # =============================== Filter Query Model ==========================
 class QueryParams(BaseModel):
+    """
+    Query parameter for deals endpoint
+
+    sort: option to sort results
+    page: page number
+    limit: limit items per request
+    added_since: time since item was first scraped
+    min_price: minimum price
+    default_max_price: max price determined by app page
+    max_price: max price determined by user
+    default_stores: stores filter defined by page
+    stores: list of stores defined by user
+    default_brands: brands filter defined by page
+    brand: brands filter defined by user
+    default_tags: tags defined by page
+    tags: tags filter defined by user
+    """
+
     sort: Literal[
         "Popular",
         "Alphabetical",
@@ -83,9 +101,9 @@ class QueryParams(BaseModel):
     min_price: int = Field(0, ge=0)
     default_max_price: int | None = Field(default=None, ge=1)
     max_price: int | None = Field(default=None, ge=1)
-    stores: list[str] | None = Field(default=None)
     default_stores: list[str] | None = Field(default=None)
-    brands: list[str] | None = Field(default=None)
+    stores: list[str] | None = Field(default=None)
     default_brands: list[str] | None = Field(default=None)
-    tags: list[str] | None = Field(default=None)
+    brands: list[str] | None = Field(default=None)
     default_tags: list[str] | None = Field(default=None)
+    tags: list[str] | None = Field(default=None)

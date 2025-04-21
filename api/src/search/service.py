@@ -13,13 +13,12 @@ class SearchService:
         sort: str,
         page: int,
         limit: int,
-        added_since: str,
         min_price: int | None,
         max_price: int | None,
         stores: list[str] | None,
         brands: list[str] | None,
         tags: list[str] | None,
-        query: str,
+        q: str,
     ) -> tuple[dict[str, str], list[DealResponse]]:
         """
         Get deals according to search.
@@ -31,12 +30,11 @@ class SearchService:
             sort=sort,
             page=page,
             limit=limit,
-            added_since=added_since,
             min_price=min_price,
             max_price=max_price,
             stores=stores,
             brands=brands,
             tags=tags,
-            query=query,
+            q=q,
         )
         return headers, [DealResponse.model_validate(deal) for deal in deals]

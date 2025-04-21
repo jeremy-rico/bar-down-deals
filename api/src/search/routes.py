@@ -40,13 +40,12 @@ async def search(
             sort=search_params.sort,
             page=search_params.page,
             limit=search_params.limit,
-            added_since=search_params.added_since,
             min_price=search_params.min_price,
             max_price=search_params.max_price,
             stores=search_params.stores,
             brands=search_params.brands,
             tags=search_params.tags,
-            query=search_params.q,
+            q=search_params.q,
         )
         logger.info(f"Retrieved {len(deals[1])} deals")
         for k, i in deals[0].items():

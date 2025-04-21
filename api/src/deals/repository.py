@@ -97,6 +97,7 @@ class DealRepository:
         elif sort == "Newest":
             stmt = stmt.order_by(col(Deal.created_at).desc())
         elif sort == "Discount":
+            stmt = stmt.where(col(Deal.discount) != None)
             stmt = stmt.order_by(col(Deal.discount).desc())
         elif sort == "Popular":
             stmt = stmt.order_by(col(Deal.views).desc())
