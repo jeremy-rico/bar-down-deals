@@ -25,7 +25,10 @@ BOT_NAME = "scraper"
 
 SPIDER_MODULES = ["scraper.src.spiders"]
 NEWSPIDER_MODULE = "scraper.src.spiders"
+
+# Logger settings
 LOG_LEVEL = "INFO"
+BOTO_LOG_LEVEL = logging.CRITICAL  # logging.DEBUG
 
 # Database configuration
 DATABASE_URL = URL.create(
@@ -119,9 +122,6 @@ AWS_REGION = "us-west-1"
 AWS_ACCESS_KEY_ID = None
 AWS_SECRET_ACCESS_KEY = None
 
-# Logger settings
-LOG_LEVEL = "DEBUG"
-BOTO_LOG_LEVEL = logging.CRITICAL  # logging.DEBUG
 
 # Enable and configure the AutoThrottle extension
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
