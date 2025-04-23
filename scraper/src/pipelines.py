@@ -203,7 +203,6 @@ class PostgresPipeline:
         """
         Validate item, upsert product and deal info to database
         """
-        # TODO: Exception handling
         self.validate(item)
 
         # Insert product details
@@ -212,9 +211,6 @@ class PostgresPipeline:
         # Insert deal details
         deal = self.upsert_deal(item, product)
         return deal
-
-
-# myproject/pipelines.py
 
 
 class CustomImagePipeline(ImagesPipeline):

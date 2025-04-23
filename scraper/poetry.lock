@@ -283,6 +283,57 @@ files = [
 ]
 
 [[package]]
+name = "chompjs"
+version = "1.3.1"
+description = "Parsing JavaScript objects into Python dictionaries"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "chompjs-1.3.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:26b91b5f15dff13515b253cc1710e324f01c859cc3bc41c3b5da0fc1a08f386c"},
+    {file = "chompjs-1.3.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:e663d825309654d6570c14b1d8505d44a397a3d4693acb1c57389b2288f9d30a"},
+    {file = "chompjs-1.3.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:88ffc687a10148481d101990be7304a0bcd6f18b6d6ae67ae1c90776774392d1"},
+    {file = "chompjs-1.3.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:538df7517accdd7c5dd89173a1d347b200b9ff7465941a30fc6621a083b079ce"},
+    {file = "chompjs-1.3.1-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:cbe2e4dc5dae69ccf9016135bf29ccc5d782927893dccfbbca4c462454edd91d"},
+    {file = "chompjs-1.3.1-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:0d5200e7a5db99f698544b606dfc79b1c9a659395ff3b51847e77136b283db94"},
+    {file = "chompjs-1.3.1-cp310-cp310-win32.whl", hash = "sha256:eba4e70c29c396a8931bfbd8a0499dbddf354a8afdd497d7657a249ebf606216"},
+    {file = "chompjs-1.3.1-cp310-cp310-win_amd64.whl", hash = "sha256:9d3c8843a4ffa0c0ae347bb2762ed5e97b26083ba0a2a30b0a8f19db0d3247ae"},
+    {file = "chompjs-1.3.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:cc2324f21be5a36bf9534e872d854d99eb7a7b8cebd3befbcce3cef014cd335d"},
+    {file = "chompjs-1.3.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:01d7b4c7e0c08513584ffa759d9757c37685609d5ee704d38056b1ffbce2ca49"},
+    {file = "chompjs-1.3.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:077c4b06e5ffcedd32f4326db1b788890b40ad07d90587bc019acf7fdfedf2df"},
+    {file = "chompjs-1.3.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fd1e6a328d6aa899d2e5b06ed01b47266144cc36575b450a498301e60c89d439"},
+    {file = "chompjs-1.3.1-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:e123414fd7a4b781500c32988ccc761402121df615cd3bed3d74f28b907ebb20"},
+    {file = "chompjs-1.3.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:01d5a4a269ea98ebe52ce69e0508c99db24e641a402d6e854f26c33d623ac881"},
+    {file = "chompjs-1.3.1-cp311-cp311-win32.whl", hash = "sha256:49a44b41cf95e598d691219e5bef620b4422452a971c0ae4d6ed84260c9b4702"},
+    {file = "chompjs-1.3.1-cp311-cp311-win_amd64.whl", hash = "sha256:1080a34f37abccc4c29fd31ec7a2bc043a7ec5cc051526f82e036701a5e8f6a3"},
+    {file = "chompjs-1.3.1-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:65bf207a3a71bb7d7c727766813dd1608b7b83a1b447cde99546250e172796dd"},
+    {file = "chompjs-1.3.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:cbc739db8037b4cb3389098abe02c33532150a1a5d1b40dbf586ed0db56d3141"},
+    {file = "chompjs-1.3.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:20176af4c9bdee6822435c63dbbd4cb93338509cff5608a894f80bda5add1a66"},
+    {file = "chompjs-1.3.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d27a2eae4cc1e5689151251864ae6bd1eab69d8130093164ff1aad9f20df8492"},
+    {file = "chompjs-1.3.1-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:2bdfa67ec11a99133b21e7b6fe0341a6ffaf669bf53e92c6548228681c7b7a6e"},
+    {file = "chompjs-1.3.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:af2645d9a148dd73e1e544d30ece2ee21f05ef42b3a0dc8c8acd7600e15d323a"},
+    {file = "chompjs-1.3.1-cp312-cp312-win32.whl", hash = "sha256:97d591de4877208ad7de3e8182f69059fcb8699c2c92bc1e8e77d7ab22539cad"},
+    {file = "chompjs-1.3.1-cp312-cp312-win_amd64.whl", hash = "sha256:c03cf57247e67ba439765d81e2ab482c875a93a3018d10c7fbd890023daab24d"},
+    {file = "chompjs-1.3.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:464e58c4a4079fcb977480272528beb8d29b51cfe1fe989d1f74539525c97b0a"},
+    {file = "chompjs-1.3.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:b7d4b6ad5d49c80a6b3e3ec4e17018292f6054e70d38e4769807f52b184e5b56"},
+    {file = "chompjs-1.3.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:72d936ce62a929dc0e95b560ac49653ca0b44dd05e7c4ab0b0ed908ed6d67af1"},
+    {file = "chompjs-1.3.1-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c702c97344c8096a5241a67b5f379e810deb457f38f4fa14cfb329c86f19c559"},
+    {file = "chompjs-1.3.1-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:829a50083fac34c3d9f674f10f08b967378167c73be6792b68530d4ebe183d99"},
+    {file = "chompjs-1.3.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:5ca3881f2c306d12b18a6dbf75fd04a1ed6720a93f8cfc9c459d6a0d67c85e8f"},
+    {file = "chompjs-1.3.1-cp313-cp313-win32.whl", hash = "sha256:d5547d19d0891c427adcc3a87110bc3e83ce50d86350ee1db6c64001b2e3da6e"},
+    {file = "chompjs-1.3.1-cp313-cp313-win_amd64.whl", hash = "sha256:a2e10a6eb67f52244ab51c6062f315622839fb94a0a0fe6c7bd0fce514bdee69"},
+    {file = "chompjs-1.3.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:a592ed1259e484e03543d035c120d92fe75cb83453b4fb1735be001b9f9d9d27"},
+    {file = "chompjs-1.3.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:2ed1059400c86208e4ce56a8b3097f8cae9af77f904ff4d2b0efff4e57e636f1"},
+    {file = "chompjs-1.3.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aa81b64755dc75a0c98a9b8b938b1a3b93aba380f2487889a0fa22162dc8c730"},
+    {file = "chompjs-1.3.1-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2ee99737140bffdfab1950f8871cbb45a67699691d751fb9f143ccc9d7f506d4"},
+    {file = "chompjs-1.3.1-cp39-cp39-musllinux_1_2_i686.whl", hash = "sha256:4a2da082bb27fe0f2f492f7d7aee3623098c9c503db9948d8dd07fdab4119ba5"},
+    {file = "chompjs-1.3.1-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:4286a05d480c58f57d2e59410821fca60f59a92a0ee6d85d706a3726c7f5f08a"},
+    {file = "chompjs-1.3.1-cp39-cp39-win32.whl", hash = "sha256:a92c83da5c616eb72432f469773a6d7bdd1fe3da4c7ae9332fe9adcc0b05acf5"},
+    {file = "chompjs-1.3.1-cp39-cp39-win_amd64.whl", hash = "sha256:da866e0f71c306d688a4cc440e76795bc0f7e6a506361dc09fcf381a3612b51f"},
+    {file = "chompjs-1.3.1.tar.gz", hash = "sha256:2cc5e4b266e9e58307e9a5235e6a033d4c4282d9fa56e8810e5057112e409363"},
+]
+
+[[package]]
 name = "constantly"
 version = "23.10.4"
 description = "Symbolic constants in Python"
@@ -1693,4 +1744,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "33773d5652bd658e274d8d7de285c29ff3e6226babc1ef130ecb59b47c1936a1"
+content-hash = "1532266914ab01b982d0f77799b6b3dbc69505811b82042b078e6d4eaa6564ea"

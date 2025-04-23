@@ -45,9 +45,12 @@ def clean_price(s: str) -> str | None:
     # \d: any number of digits
     # (,\d{3})?: optional comma and exactly three digits
     # .\d{2}: exactly decimal and two digits
-    match = re.search(r"\d+(,\d{3})?\.\d{2}", s)
+    match = re.search(r"\d+(,\d{3})?\.\d\d?", s)
     if match:
         s = match.group(0)
+        match = re.search(r"\.\d$", s)
+        if match:
+            s += "0"
         return "".join(s.split(",")) if "," in s else s
 
 
