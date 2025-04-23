@@ -13,6 +13,7 @@ from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
 from scraper.src.spiders.peranisHockeyWorld import PeranisHockeyWorldSpider
 from scraper.src.spiders.pureHockey import PureHockeySpider
+from scraper.src.spiders.pureGoalie import PureGoalieSpider
 from scraper.src.utils import get_logger, setup_logging
 
 settings = get_project_settings()

@@ -8,7 +8,9 @@ from api.src.products.models import Product, Tag
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+from scrapy import Request
 from scrapy.exceptions import DropItem
+from scrapy.pipelines.images import ImagesPipeline
 from sqlalchemy import URL, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import col
@@ -45,7 +47,7 @@ class PostgresPipeline:
         try:
             self.session.commit()
         except Exception as e:
-            print(f"DB Erorr in close_spider: {e}")
+            print(f"Failed to close spider: {e}")
             self.session.rollback()
         self.session.close()
 
@@ -213,9 +215,6 @@ class PostgresPipeline:
 
 
 # myproject/pipelines.py
-
-from scrapy import Request
-from scrapy.pipelines.images import ImagesPipeline
 
 
 class CustomImagePipeline(ImagesPipeline):

@@ -147,7 +147,7 @@ class SearchRepository:
             filters.append(col(Tag.name).in_(tags))
 
         for kword in q.split():
-            filters.append(col(Product.name).ilike(f"%{kword}%"))
+            filters.append(col(Product.name).ilike(f"% {kword} %"))
 
         return filters
 
