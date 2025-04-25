@@ -52,13 +52,15 @@ app.add_middleware(
 
 # Include routers
 app.include_router(deals_router)
-# app.include_router(products_router)
+app.include_router(products_router)
 app.include_router(search_router)
 # app.include_router(auth_router)
+
 
 @app.on_event("shutdown")
 async def shutdown():
     await engine.dispose()
+
 
 @app.get("/health")
 async def health_check():

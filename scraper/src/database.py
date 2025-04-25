@@ -93,7 +93,7 @@ def clean_bucket(
                     if session.scalar(stmt) is None:
                         count += 1
                         s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
-                        logging.debug(f"Deleted {obj['Key']}")
+                        # logging.debug(f"Deleted {obj['Key']}")
 
         logging.info("Successfully cleaned bucket!")
         logging.debug(f"Deleted {count} objects")

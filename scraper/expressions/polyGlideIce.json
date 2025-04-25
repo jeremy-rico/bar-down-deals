@@ -1,0 +1,25 @@
+{
+  "products": {
+    "css": "div.box.product"
+  },
+  "product_info": {
+    "name": {
+      "css": "div.product-title a.title::text"
+    },
+    "brand": {
+      "css": "None"
+    },
+    "image_urls": {
+      "css": "img.product_card__image::attr(src)"
+    },
+    "price": {
+      "css": "span.money::text"
+    },
+    "original_price": {
+      "css": "span.original-price.money::text"
+    },
+    "url": {
+      "css": "a.title::attr(href)"
+    }
+  }
+}

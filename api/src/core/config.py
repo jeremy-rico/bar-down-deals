@@ -95,4 +95,7 @@ TAGS: list[str] = [
     # Savings
     "Coupons",
     "Promos",
+    # Other
+    "Synthetic Ice",
+    "Training",
 ]

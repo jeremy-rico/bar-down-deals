@@ -10,10 +10,12 @@ from scraper.src.settings import DATABASE_URL
 from scraper.src.spiders.ccmHockey import CCMHockeySpider
 from scraper.src.spiders.discountHockey import DiscountHockeySpider
 from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
+from scraper.src.spiders.hockeyShot import HockeyShotSpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
 from scraper.src.spiders.peranisHockeyWorld import PeranisHockeyWorldSpider
-from scraper.src.spiders.pureHockey import PureHockeySpider
+from scraper.src.spiders.polyGlideIce import PolyGlideSpider
 from scraper.src.spiders.pureGoalie import PureGoalieSpider
+from scraper.src.spiders.pureHockey import PureHockeySpider
 from scraper.src.utils import get_logger, setup_logging
 
 settings = get_project_settings()
@@ -31,6 +33,9 @@ spiders = [
     IceWarehouseSpider,
     PeranisHockeyWorldSpider,
     CCMHockeySpider,
+    PureGoalieSpider,
+    PolyGlideSpider,
+    HockeyShotSpider,
 ]
 spider_names = [spider.name for spider in spiders]
 logger.info(f"Spiders scheduled to crawl: {spider_names}")
