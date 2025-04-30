@@ -10,13 +10,12 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 
-from src.core.config import DATABASE_URL
+from alembic import context
 
 # Add the project root directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from alembic import context
-from src.core.config import DATABASE_URL, settings
+from src.core.config import DATABASE_URL
 
 # Automatically import all models
 src_path = Path(__file__).parent.parent / "src"

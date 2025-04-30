@@ -4,7 +4,7 @@ from sqlmodel import select
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.core.logging import get_logger
 from src.core.security import get_password_hash
-from src.users.models import User, UserCreate
+from src.users.models import UserCreate, Users
 
 logger = get_logger(__name__)
 
@@ -15,7 +15,7 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, user_data: UserCreate) -> User:
+    async def create(self, user_data: UserCreate) -> Users:
         """Create a new user.
 
         Args:
@@ -35,8 +35,10 @@ class UserRepository:
             )
 
         # Create user
-        user = User(
-            email=user_data.email, hashed_password=get_password_hash(user_data.password)
+        user = Users(
+            email=user_data.email,
+            username=user_data.username,
+            hashed_password=get_password_hash(user_data.password),
         )
         self.session.add(user)
         await self.session.commit()
@@ -45,7 +47,7 @@ class UserRepository:
         logger.info(f"Created user: {user.email}")
         return user
 
-    async def get_by_id(self, user_id: int) -> User:
+    async def get_by_id(self, user_id: int) -> Users:
         """Get user by ID.
 
         Args:
@@ -57,7 +59,7 @@ class UserRepository:
         Raises:
             NotFoundException: If user not found
         """
-        stmt = select(User).where(User.id == user_id)
+        stmt = select(Users).where(Users.id == user_id)
         result = await self.session.execute(stmt)
         user = result.scalar_one_or_none()
 
@@ -66,7 +68,7 @@ class UserRepository:
 
         return user
 
-    async def get_by_email(self, email: str) -> User | None:
+    async def get_by_email(self, email: str) -> Users | None:
         """Get user by email.
 
         Args:
@@ -75,6 +77,6 @@ class UserRepository:
         Returns:
             Optional[User]: Found user or None if not found
         """
-        query = select(User).where(User.email == email)
+        query = select(Users).where(Users.email == email)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()

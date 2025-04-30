@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.alerts.routes import router as alerts_router
 from src.core.config import TAGS, settings
 from src.core.database import engine
 from src.core.logging import get_logger, setup_logging
@@ -21,9 +22,13 @@ logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    run_migrations()
-    await populate_tags(TAGS)
+    logger.info("Starting server...")
+    # Better off running these manually only when needed.
+    # run_migrations()
+    # await populate_tags(TAGS)
     yield
+    logger.info("Shutting down...")
+    await engine.dispose()
 
 
 app = FastAPI(
@@ -54,12 +59,8 @@ app.add_middleware(
 app.include_router(deals_router)
 app.include_router(products_router)
 app.include_router(search_router)
-# app.include_router(auth_router)
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await engine.dispose()
+app.include_router(auth_router)
+app.include_router(alerts_router)
 
 
 @app.get("/health")

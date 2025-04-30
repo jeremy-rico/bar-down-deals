@@ -1,13 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_session
 from src.core.logging import get_logger
 from src.core.security import get_current_user
-from src.users.models import LoginData, Token, User, UserCreate, UserResponse
+from src.users.models import LoginData, Token, UserCreate, UserResponse, Users
 from src.users.service import UserService
 
 logger = get_logger(__name__)
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 )
 async def register(
     user_data: UserCreate, session: AsyncSession = Depends(get_session)
-) -> User:
+) -> Users:
     """Register a new user."""
     logger.debug(f"Registering user: {user_data.email}")
     return await UserService(session).create_user(user_data)
@@ -38,6 +38,6 @@ async def login(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(user: User = Depends(get_current_user)) -> User:
+async def get_me(user: Users = Depends(get_current_user)) -> Users:
     """Get current authenticated user."""
     return user

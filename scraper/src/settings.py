@@ -40,6 +40,12 @@ DATABASE_URL = URL.create(
     database=get_ssm_param("DB_NAME", "postgres"),
 )
 
+# smtp config
+EMAIL_HOST = "smtp.zoho.com"
+EMAIL_PORT = 587  # 465 for SSL
+EMAIL_USER = "info@bardowndeals.com"
+EMAIL_PASSWORD = get_ssm_param("EMAIL_PASSWORD", "", secure=True)
+
 SCRAPERAPI_KEY = get_ssm_param("SCRAPERAPI_KEY", "", secure=True)
 
 # Enable or disable downloader middlewares

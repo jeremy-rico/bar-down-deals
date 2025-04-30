@@ -3,7 +3,10 @@ from sqlalchemy import URL
 
 
 class Settings(BaseSettings):
-    """Application settings."""
+    """
+    Application settings. If no default value is provided, the value must be
+    loaded from a .env file located in the /api directory (api/.env)
+    """
 
     PROJECT_NAME: str = "Bar Down Deals API"
     DB_DRIVERNAME: str = "postgresql+asyncpg"
@@ -23,7 +26,7 @@ class Settings(BaseSettings):
     ]
 
     # JWT Settings
-    JWT_SECRET: str = "test"  # TODO: Change in production
+    JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION: int = 30  # minutes
 
@@ -60,6 +63,7 @@ TAGS: list[str] = [
     "Goalie",
     "Apparel",
     "Accessories",
+    "Skate Accessories",
     # Stick Type
     "Composite",
     "Street",
