@@ -3,9 +3,10 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin, urlparse
 
 import boto3
+from api.src.alerts.models import UserAlert
 from api.src.deals.models import Deal
 from api.src.products.models import Product  # Need this to resolve Deal model
-from api.src.users.models import User, UserAlert
+from api.src.users.models import Users
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete, func, select
