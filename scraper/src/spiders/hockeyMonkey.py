@@ -8,6 +8,12 @@ from scraper.src.utils import read_json
 
 
 class HockeyMonkeySpider(scrapy.Spider):
+    """
+    NOTE: There are many empty/invisible product instances so this spider will
+    raise a lot of 'Dropped: Missing Price' warnings. About three per page. This
+    is fine and does not mean the spider is malfunctioning
+    """
+
     name = "hockeyMonkey"
     website_name = "Hockey Monkey"
     base_url = "https://www.hockeymonkey.com/"
@@ -22,7 +28,6 @@ class HockeyMonkeySpider(scrapy.Spider):
         Starting from the clearance categories page, explore each category link.
         """
         category_links = response.css(self.exp["category_links"]["css"])
-        category_links = category_links[:1]
         yield from response.follow_all(category_links, self.parse_category)
 
     def parse_category(self, response):
@@ -44,8 +49,7 @@ class HockeyMonkeySpider(scrapy.Spider):
         tags = self.get_tags(response.url)
 
         # Get all products on page
-        prods = response.css(self.exp["product_links"]["css"])
-        prods = prods[:1]
+        prods = response.css(self.exp["products"]["css"])
 
         for prod in prods:
             l = ProductLoader(item=Product(), selector=prod)

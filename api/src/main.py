@@ -1,3 +1,4 @@
+import tracemalloc
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -12,6 +13,8 @@ from src.deals.routes import router as deals_router
 from src.products.routes import router as products_router
 from src.search.routes import router as search_router
 from src.users.routes import router as auth_router
+
+tracemalloc.start()
 
 # Set up logging configuration
 setup_logging()
@@ -73,3 +76,10 @@ async def root():
     """Root endpoint."""
     logger.debug("Root endpoint called")
     return {"message": "Welcome to Bar Down Deals API!"}
+
+
+@app.get("/debug/mem")
+async def memory_snapshot():
+    snapshot = tracemalloc.take_snapshot()
+    top_stats = snapshot.statistics("lineno")
+    return {"top": [str(stat) for stat in top_stats[:5]]}

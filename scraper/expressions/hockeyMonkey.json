@@ -5,7 +5,7 @@
   "subcategory_links": {
     "css": "div.shop-by-category a"
   },
-  "product_links": {
+  "products": {
     "css": "div.product-item-info"
   },
   "product_info": {

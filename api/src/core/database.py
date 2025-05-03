@@ -1,13 +1,20 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from src.core.config import DATABASE_URL
 
-# Create DB session connection ONCE
-engine = create_async_engine(DATABASE_URL, echo=False, future=True)
-async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+# Create DB session connection ONCE on app startup
+# By default the session has a pool of 5 connections with a max limit of 10 and
+# a pool timeout of 30s
 
-async def get_session() -> AsyncSession:
+# Each time a route is called, a connection in the pool is opened, queries are
+# run, and then the connection is closed.
+engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+async_session = async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency for getting async database session.
 
@@ -16,4 +23,7 @@ async def get_session() -> AsyncSession:
     """
     # Create async session factory
     async with async_session() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            await session.close()

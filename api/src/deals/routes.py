@@ -1,3 +1,4 @@
+import tracemalloc
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
@@ -11,6 +12,8 @@ from src.deals.models import DealResponse, QueryParams
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
 from src.products.models import ProductResponse  # Needed for model_rebuild
+
+tracemalloc.start()
 
 # Set up logger for this module
 logger = get_logger(__name__)
@@ -52,6 +55,14 @@ async def get_deals(
             query_params.tags,
         )
         logger.info(f"Retrieved {len(deals[1])} deals")
+
+        # TODO: remove
+        snapshot = tracemalloc.take_snapshot()
+        top_stats = snapshot.statistics("lineno")
+        logger.info("Top 5 Memory Usage:")
+        for i, stat in enumerate(top_stats[:5]):
+            logger.info(f"{i+1}: {stat}")
+
         for k, i in deals[0].items():
             response.headers[k] = str(i)
         return deals[1]
@@ -64,7 +75,6 @@ async def get_deals(
 async def get_deal(
     deal_id: int,
     service: DealService = Depends(get_deal_service),
-    # current_user: User = Depends(get_current_user),
 ) -> DealResponse:
     """Get deal by ID."""
     logger.debug(f"Fetching deal {deal_id}")
