@@ -6,7 +6,6 @@ from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
 from scraper.src.database import clean_bucket, clean_database
-from scraper.src.settings import DATABASE_URL
 from scraper.src.spiders.ccmHockey import CCMHockeySpider
 from scraper.src.spiders.discountHockey import DiscountHockeySpider
 from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
@@ -53,10 +52,10 @@ logger.debug(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
 
 
 logger.info(f"Cleaning database...")
-clean_database(DATABASE_URL)
+clean_database()
 
 logger.info(f"Cleaning bucket...")
-clean_bucket(DATABASE_URL)
+clean_bucket()
 
 time_elapsed = datetime.now(timezone.utc) - start
 logger.info(f"All processes completed in {time_elapsed.total_seconds()} seconds")

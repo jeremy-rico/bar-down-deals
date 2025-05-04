@@ -5,7 +5,6 @@ from urllib.parse import urljoin
 # shared model definitions
 from api.src.deals.models import Deal, Website
 from api.src.products.models import Product, Tag
-
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy import Request
@@ -37,7 +36,7 @@ class PostgresPipeline:
         """
         Get db session
         """
-        self.session = get_session(self.database_url)
+        self.session = get_session()
         self.website = self.upsert_website(spider)
 
     def close_spider(self, spider):
