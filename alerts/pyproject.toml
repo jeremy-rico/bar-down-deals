@@ -1,0 +1,19 @@
+[project]
+name = "alerts"
+version = "0.1.0"
+description = "Alerts module for BarDownDeals. Sends users nightly, weekly, or monthly emails for categories and keywords that they've signed up to be alerted for."
+authors = [
+    {name = "Jeremy Rico",email = "jeremy.rico35@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+]
+
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
