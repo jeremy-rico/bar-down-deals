@@ -1,0 +1,110 @@
+<html>
+  <body style="font-family: Arial, sans-serif">
+    <div style="margin: 0px auto; max-width: 600px">
+      <div style="text-align: center; margin-bottom: 10px; margin-top: 30px">
+        <img src="{{ logo_url }}" alt="Logo" style="height: 60px" />
+      </div>
+      <hr style="border-top: 1px solid #ccc; width: 80%; text-align: center" />
+      <p style="font-size: 0.9em; color: #888; text-align: center">
+        The Best Hockey Deals, Coupons, and Promos
+      </p>
+      {% if frequency=='nightly'%}
+      <h2 style="text-align: center">Today's Hottest Deals</h2>
+      {% elif frequency=='weekly'%}
+      <h2 style="text-align: center">This Week's Hottest Deals</h2>
+      {% elif frequency=='weekly'%}
+      <h2 style="text-align: center">This Month's Hottest Deals</h2>
+      {% endif %}
+      <p style="text-align: center">
+        Here are the hottest deals from around the hockey world for the
+        categories that you're subscribed to!
+      </p>
+      {% for category, deals in deals_map.items() %}
+      <hr
+        style="
+          border-top: 1px solid #999;
+          width: 80%;
+          text-align: center;
+          margin-top: 20px;
+        "
+      />
+      <h3 style="">{{category.title()}}</h3>
+      <table
+        width="100%"
+        cellpadding="10"
+        cellspacing="0"
+        style="max-width: 600px; margin: 0 auto"
+      >
+        <tr>
+          {% for deal in deals %}
+          <td style="width: 50%; vertical-align: top">
+            <a
+              href="{{ deal.url }}"
+              target="_blank"
+              style="text-decoration: none; color: inherit; display: block"
+            >
+              <table
+                width="100%"
+                cellpadding="5"
+                cellspacing="0"
+                style="
+                  background: #fff;
+                  border: 1px solid #ddd;
+                  border-radius: 6px;
+                "
+              >
+                <tr>
+                  <td style="text-align: center">
+                    <img
+                      src="{{ deal.product.image_url }}"
+                      alt="{{ deal.product.name }}"
+                      style="
+                        width: 100%;
+                        max-height: 120px;
+                        object-fit: contain;
+                        background-color: #f4f4f4;
+                        border-bottom: 1px solid #eee;
+                      "
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong style="color: #1a5276"
+                      >{{ deal.product.name }}</strong
+                    ><br />
+                    <span style="color: #27ae60">${{ deal.price }}</span>
+                    <span style="text-decoration: line-through; color: #888"
+                      >${{ deal.original_price }}</span
+                    ><br />
+                    <span style="color: #e74c3c">{{ deal.discount }}% off</span
+                    ><br />
+                  </td>
+                </tr>
+              </table>
+            </a>
+          </td>
+          {% if loop.index % 2 == 0 %}
+        </tr>
+        <tr>
+          {% endif %} {% endfor %}
+        </tr>
+      </table>
+      {% endfor %}
+      <p style="font-size: 0.9em; color: #888; text-align: center">
+        You’re receiving this because you're subscribed to {{frequency}} deal
+        alerts for the following categories:
+      </p>
+      <ul style="list-style-type: none; padding: 0; margin: 0">
+        {% for category in deals_map.keys() %}
+        <li style="color: #888; text-align: center">
+          <p style="font-size: 0.9em; color: #888">{{category}}</p>
+        </li>
+        {% endfor %}
+      </ul>
+      <p style="font-size: 0.9em; color: #888; text-align: center">
+        If you'd like to unsubscribe or change your alert settings click here!
+      </p>
+    </div>
+  </body>
+</html>

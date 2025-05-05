@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from sqlmodel import col, delete, func, select
 
 from scraper.src.settings import DATABASE_URL, S3_HOST
-from scraper.src.utils import get_logger, send_email
+from scraper.src.utils import get_logger
 
 logger = get_logger(__name__)
 

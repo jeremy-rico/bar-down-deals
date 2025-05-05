@@ -1,20 +1,10 @@
 import json
 import logging
 import re
-import smtplib
 import sys
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import formataddr
 from pathlib import Path
 
-from scraper.src.settings import (
-    EMAIL_HOST,
-    EMAIL_PASSWORD,
-    EMAIL_PORT,
-    EMAIL_USER,
-    LOG_LEVEL,
-)
+from scraper.src.settings import LOG_LEVEL
 
 
 def setup_logging() -> None:
@@ -94,50 +84,3 @@ def get_discount(sale_price: float, original_price: float | None) -> float | Non
 def read_json(jsonPath: Path) -> dict:
     with open(str(jsonPath)) as f:
         return json.load(f)
-
-
-def send_email(to: str, subject: str, body: str) -> None:
-    """
-    Send alerts to users who have signed up for keyword alerts.
-
-    Args:
-        to: email address to send to
-        subject: email subject string
-        body: email body string
-
-    Returns:
-        None
-
-    Raises:
-        Generic Exception: email failed to send
-    """
-
-    # Your Zoho email credentials
-    smtp_server = EMAIL_HOST
-    smtp_port = EMAIL_PORT
-    username = EMAIL_USER
-    password = EMAIL_PASSWORD
-
-    # Email details
-    from_email = username
-    to_email = to
-    subject = subject
-    body = body
-
-    # Create email message
-    msg = MIMEMultipart()
-    msg["From"] = formataddr(("BarDownDeals", from_email))
-    msg["To"] = to_email
-    msg["Subject"] = subject
-
-    msg.attach(MIMEText(body, "plain"))
-
-    try:
-        # Connect and send email
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()  # Use .starttls() for TLS
-            server.login(username, password)
-            server.send_message(msg)
-            print(f"Email successfully sent to {to}.")
-    except Exception as e:
-        print(f"Failed to send email: {e}")

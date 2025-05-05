@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 # ============================== User Alerts Model ============================
 class UserAlertBase(SQLModel):
     keyword: str = Field(max_length=255)
+    frequency: str = Field(max_length=20, default="weekly")
 
 
 class UserAlert(UserAlertBase, table=True):
@@ -30,6 +31,10 @@ class UserAlertCreate(UserAlertBase):
 class UserAlertResponse(UserAlertBase):
     id: int
     user_id: int
+    user: "Users"
+
+
+UserAlert.model_rebuild()
 
 
 # =========================== Query Param Model ===============================
@@ -38,6 +43,8 @@ class QueryParams(BaseModel):
     Query params for /alert
 
     kw: keyword, string keyword which to send alerts on
+    f: frequency which the user wants to be alerted
     """
 
     kw: str = Field(max_length=255)
+    f: Literal["daily", "weekly", "monthly"] = "weekly"

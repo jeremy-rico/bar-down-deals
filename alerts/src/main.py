@@ -1,7 +1,8 @@
 # do stuff
 import argparse
 
-from core.alerts import send_alerts
+from alerts.src.core.alerts import AlertBot
+from alerts.src.core.logging import setup_logging
 
 parser = argparse.ArgumentParser(
     prog="BDD Email Alert Bot",
@@ -9,16 +10,20 @@ parser = argparse.ArgumentParser(
     who have signed up for category or keyword alerts""",
 )
 parser.add_argument(
-    "-g",
-    "--group",
-    choices=["nightly", "weekly", "monthly"],
+    "-f",
+    "--frequency",
+    choices=["daily", "weekly", "monthly"],
     help="Which user group to send alerts to.",
 )
 
 
+setup_logging()
+
+
 def main() -> None:
     args = parser.parse_args()
-    send_alerts(args.group)
+    alert_bot = AlertBot()
+    alert_bot.send_alerts(args.group)
 
 
 if __name__ == "__main__":

@@ -16,9 +16,11 @@ class AlertService:
         """Create user alert"""
         return await self.repository.get_all(user)
 
-    async def create_alert(self, user: Users, keyword: str) -> UserAlert:
+    async def create_alert(
+        self, user: Users, keyword: str, frequency: str
+    ) -> UserAlert:
         """Create user alert"""
-        return await self.repository.create(user, keyword)
+        return await self.repository.create(user, keyword, frequency)
 
     async def delete_alert(self, alert_id: int) -> None:
         """Create user alert"""

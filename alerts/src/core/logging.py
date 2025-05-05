@@ -1,6 +1,8 @@
 import logging
 import sys
 
+from alerts.src.core.config import settings
+
 
 def setup_logging() -> None:
     """Set up logging configuration."""
@@ -12,7 +14,7 @@ def setup_logging() -> None:
         "CRITICAL": logging.CRITICAL,
     }
     logging.basicConfig(
-        level=log_level_map[LOG_LEVEL],
+        level=log_level_map[settings.LOG_LEVEL],
         format=format_string,
         datefmt="%H:%M:%S",
         stream=sys.stdout,

@@ -47,10 +47,7 @@ async def create_alert(
     """Create user alert"""
     logger.debug(f"Creating alert for user {user}")
     try:
-        alert = await service.create_alert(
-            user,
-            query_params.kw,
-        )
+        alert = await service.create_alert(user, query_params.kw, query_params.f)
         logger.debug(f"Succesfully created alert for user {user}")
         return alert
     except Exception as e:

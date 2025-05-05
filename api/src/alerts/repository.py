@@ -24,7 +24,7 @@ class AlertRepository:
 
         return list(result.scalars().all())
 
-    async def create(self, user: Users, keyword: str) -> UserAlert:
+    async def create(self, user: Users, keyword: str, frequency: str) -> UserAlert:
         """
         Create new user alert
 
@@ -35,7 +35,7 @@ class AlertRepository:
         Returns:
             UserAlert
         """
-        user_alert = UserAlert(user_id=user.id, keyword=keyword)
+        user_alert = UserAlert(user_id=user.id, keyword=keyword, frequency=frequency)
         self.session.add(user_alert)
         await self.session.commit()
         await self.session.refresh(user_alert)

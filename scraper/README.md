@@ -35,7 +35,7 @@ from api.src.core import get_session
 ```
 
 For production you have nothing to worry about. HOWEVER, for development, if you
-want you IDE and lsp to be able to resolve these imports, you will need to add
+want your IDE and lsp to be able to resolve these imports, you will need to add
 the bar_down_deals root directory to the python path.
 
 There are many ways to do this, but I've found the best to be by adding a .pth
@@ -57,7 +57,7 @@ cd <env_path>/lib/python3.11/site-packages/
    bar_down_deals root inside of it
 
 ```bash
-echo path/to/bar/down/deals/project >> bardowndeals.path
+echo path/to/bar/down/deals/project >> bardowndeals.pth
 ```
 
 4. restart your venv
