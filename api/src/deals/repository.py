@@ -280,6 +280,7 @@ class DealRepository:
             .group_by(Product.brand)
             .filter(*filters)
             .filter(col(Product.brand).isnot(None))
+            .order_by(col(Product.brand).asc())
         )
         if having_tag is not None:
             stmt = stmt.having(having_tag)
@@ -307,6 +308,7 @@ class DealRepository:
                 .join(Website)
                 .group_by(Tag.name)
                 .filter(*filters)
+                .order_by(col(Tag.name).asc())
             )
             result = await self.session.execute(stmt)
             avail_tags = list(result.scalars().all())
@@ -336,6 +338,7 @@ class DealRepository:
                 .join(TagProductLink)
                 .where(col(TagProductLink.product_id).in_(select(product_ids_stmt)))
                 .distinct()
+                .order_by(col(Tag.name).asc())
             )
 
             result = await self.session.execute(associated_tags_stmt)
@@ -352,6 +355,7 @@ class DealRepository:
             .join(Tag)
             .group_by(Website.name)
             .filter(*filters)
+            .order_by(col(Website.name).asc())
         )
         if having_tag is not None:
             stmt = stmt.having(having_tag)

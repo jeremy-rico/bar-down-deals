@@ -31,7 +31,7 @@ class UserAlertCreate(UserAlertBase):
 class UserAlertResponse(UserAlertBase):
     id: int
     user_id: int
-    user: "Users"
+    # user: "Users"
 
 
 UserAlert.model_rebuild()

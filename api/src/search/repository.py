@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, func
 
+from src.core.config import TAGS
 from src.deals.models import Deal, Website
 from src.products.models import Product, Tag, TagProductLink
 
@@ -146,8 +147,11 @@ class SearchRepository:
         if tags and "tags" not in exclude_fields:
             filters.append(col(Tag.name).in_(tags))
 
-        for kword in q.split():
-            filters.append(col(Product.name).ilike(f"% {kword} %"))
+        if len(q.split()) == 1 and q.title() in TAGS:
+            filters.append(col(Tag.name) == q.title())
+        else:
+            for kword in q.split():
+                filters.append(col(Product.name).ilike(f"%{kword}%"))
 
         return filters
 
