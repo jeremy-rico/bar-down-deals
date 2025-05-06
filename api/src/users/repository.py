@@ -37,7 +37,6 @@ class UserRepository:
         # Create user
         user = Users(
             email=user_data.email,
-            username=user_data.username,
             hashed_password=get_password_hash(user_data.password),
         )
         self.session.add(user)
