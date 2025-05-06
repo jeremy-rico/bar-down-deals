@@ -49,6 +49,7 @@ class IceWarehouseSpider(scrapy.Spider):
         prods = response.css(self.exp["product_links"]["css"])
 
         for prod in prods:
+            print(prod.css(self.exp["product_info"]["name"]["css"]).get())
             price, original_price = self.get_pricing(prod)
             image_urls = self.get_image_urls(prod)
             l = ProductLoader(item=Product(), selector=prod)
@@ -102,7 +103,7 @@ class IceWarehouseSpider(scrapy.Spider):
             price = product.css(self.exp["product_info"]["price"]["css"]).get()
             if not price:
                 # Try backup selector
-                price = product.css(self.exp["product_info"]["price_back"]["css"]).get()
+                price = product.css(self.exp["product_info"]["price_bak"]["css"]).get()
 
         # Original price given as range
         if original_price_range:

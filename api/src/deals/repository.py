@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, func
+from sqlmodel import and_, any_, col, func, or_
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.core.logging import get_logger
@@ -20,6 +20,7 @@ class DealRepository:
 
     def __init__(self, session: AsyncSession):
         self.session = session
+        self.sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
         self.timeframes = {
             "today": datetime.now(timezone.utc) - timedelta(days=1),
             "week": datetime.now(timezone.utc) - timedelta(weeks=1),
@@ -64,18 +65,6 @@ class DealRepository:
         }
         filters = self.build_filters(**filter_kwargs)
 
-        # Need to add a having statment if we're filtering by tags
-        if default_tags and tags:
-            having_tag = func.count(col(Tag.name).distinct()) >= len(
-                default_tags + tags
-            )
-        elif default_tags:
-            having_tag = func.count(col(Tag.name).distinct()) >= len(default_tags)
-        elif tags:
-            having_tag = func.count(col(Tag.name).distinct()) >= len(tags)
-        else:
-            having_tag = None
-
         stmt = (
             select(Deal)
             .join(Website)
@@ -86,14 +75,11 @@ class DealRepository:
             .filter(*filters)
         )
 
-        if having_tag is not None:
-            stmt = stmt.having(having_tag)
-
         total_item_count = await self.get_item_count(stmt)
-        max_avail_price = await self.get_max_avail_price(having_tag, **filter_kwargs)
-        avail_brands = await self.get_avail_brands(having_tag, **filter_kwargs)
+        max_avail_price = await self.get_max_avail_price(**filter_kwargs)
+        avail_brands = await self.get_avail_brands(**filter_kwargs)
         avail_sizes, avail_tags = await self.get_avail_sizes_and_tags(**filter_kwargs)
-        avail_stores = await self.get_avail_stores(having_tag, **filter_kwargs)
+        avail_stores = await self.get_avail_stores(**filter_kwargs)
 
         if sort == "Oldest":
             stmt = stmt.order_by(col(Deal.created_at).asc())
@@ -205,6 +191,8 @@ class DealRepository:
             if min_price is not None:
                 filters.append(Deal.price >= min_price)
 
+        # If both default_max_price and max_price exist, we filter by
+        # whichever is greater
         if default_max_price:
             filters.append(Deal.price <= default_max_price)
         if max_price and "max_price" not in exclude_fields:
@@ -221,16 +209,46 @@ class DealRepository:
             filters.append(col(Product.brand).in_(brands))
 
         if default_tags and tags:
-            filters.append(col(Tag.name).in_(default_tags + tags))
+            filters.append(self.process_tags(default_tags + tags))
         elif default_tags:
-            filters.append(col(Tag.name).in_(default_tags))
+            filters.append(self.process_tags(default_tags))
         elif tags and "tags" not in exclude_fields:
-            filters.append(col(Tag.name).in_(tags))
+            filters.append(self.process_tags(tags))
 
         if added_since in self.timeframes:
             filters.append(Deal.created_at >= self.timeframes[added_since])
 
         return filters
+
+    def process_tags(self, tags: list[str]):
+        """
+        Defines logic for and vs or filtering. Size tags (Senior, Intermediate,
+        Junior, etc.) or grouped with and or_ and combined with all other tags
+        using an and_.
+
+        Ex: Senior, Intermediate, Sticks. Will return (Senior OR Intermediate)
+        AND (Sticks). Selecting all Sticks that are Senior or Intermediate.
+
+        Args:
+            tags: list of user selected tags
+
+        Returns:
+            sqlalchemy Boolean Clause: filters to be applied
+
+        """
+        size_tags = [tag for tag in tags if tag in self.sizes]
+        other_tags = [tag for tag in tags if tag not in self.sizes]
+        if size_tags and other_tags:
+            return and_(
+                col(Product.tags).any(
+                    or_(*(col(Tag.name) == tag for tag in size_tags))
+                ),
+                col(Product.tags).any(
+                    or_(*(col(Tag.name) == tag for tag in other_tags))
+                ),
+            )
+        else:
+            return col(Tag.name).in_(tags)
 
     async def get_item_count(self, stmt) -> int:
         """
@@ -246,7 +264,7 @@ class DealRepository:
         result = await self.session.execute(count_stmt)
         return result.scalars().one()
 
-    async def get_max_avail_price(self, having_tag, **filter_kwargs):
+    async def get_max_avail_price(self, **filter_kwargs):
         """
         Get max available price (ignores user input max price filter)
         """
@@ -260,13 +278,11 @@ class DealRepository:
             .group_by(col(Deal.id), Product.name)
             .filter(*filters)
         )
-        if having_tag is not None:
-            stmt = stmt.having(having_tag)
         stmt = select(func.max(stmt.c.price))
         result = await self.session.execute(stmt)
         return result.scalars().one() or 0
 
-    async def get_avail_brands(self, having_tag, **filter_kwargs) -> list[str | None]:
+    async def get_avail_brands(self, **filter_kwargs) -> list[str | None]:
         """
         Get available brands based on filters ignoring brand filters
         """
@@ -282,8 +298,6 @@ class DealRepository:
             .filter(col(Product.brand).isnot(None))
             .order_by(col(Product.brand).asc())
         )
-        if having_tag is not None:
-            stmt = stmt.having(having_tag)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
@@ -294,7 +308,6 @@ class DealRepository:
         Get available sizes and tags. With this setup, selecting a size filter
         does not change the tags filter. Possibly change that later.
         """
-        sizes = ["Senior", "Intermediate", "Junior", "Youth", "Adult", "Womens"]
         if filter_kwargs["default_tags"] is not None:
             avail_tags = await self.get_associated_tags(filter_kwargs["default_tags"])
         else:
@@ -314,7 +327,7 @@ class DealRepository:
             avail_tags = list(result.scalars().all())
 
         avail_sizes = []
-        for size in sizes:
+        for size in self.sizes:
             if size in avail_tags:
                 avail_sizes.append(size)
                 avail_tags.remove(size)
@@ -345,7 +358,7 @@ class DealRepository:
             ass_tags += list(result.scalars().all())
         return ass_tags
 
-    async def get_avail_stores(self, having_tag, **filter_kwargs) -> list[str]:
+    async def get_avail_stores(self, **filter_kwargs) -> list[str]:
         filters = self.build_filters(**filter_kwargs, exclude_fields=["stores"])
         stmt = (
             select(col(Website.name))
@@ -357,7 +370,5 @@ class DealRepository:
             .filter(*filters)
             .order_by(col(Website.name).asc())
         )
-        if having_tag is not None:
-            stmt = stmt.having(having_tag)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())

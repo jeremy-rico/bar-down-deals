@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 class UserBase(SQLModel):
     """User model."""
 
-    username: str = Field(max_length=255)
     email: EmailStr = Field(max_length=255, unique=True, index=True)
 
 
@@ -30,7 +29,7 @@ class Users(UserBase, table=True):
 class UserCreate(UserBase):
     """User creation schema"""
 
-    password: str
+    password: str = Field(min_length=8)
 
 
 class UserResponse(UserBase):

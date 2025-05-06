@@ -1,6 +1,6 @@
 {
-  " stick ": ["Sticks"],
-  " hockey stick ": ["Sticks"],
+  "ice hockey stick": ["Sticks"],
+  "hockey stick": ["Sticks"],
   "skates": ["Skates"],
   "protective": ["Protective"],
   "gamewear": ["Gamewear"],
