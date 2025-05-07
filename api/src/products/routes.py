@@ -5,7 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_session
 from src.core.logging import get_logger
-from src.products.models import FilterParams, ProductResponse, TagResponse
+from src.products.models import (
+    BrandResponse,
+    FilterParams,
+    ProductResponse,
+    TagResponse,
+)
 from src.products.repository import ProductRepository
 from src.products.service import ProductService
 
@@ -80,4 +85,23 @@ async def get_categories(
         return categories
     except Exception as e:
         logger.error(f"Failed to fetch categories: {str(e)}")
+        raise
+
+
+@router.get("/brands/", response_model=list[BrandResponse])
+async def get_brands(
+    service: ProductService = Depends(get_product_service),
+) -> list[BrandResponse]:
+    """
+    Get all available brands.
+
+    """
+    logger.debug("Fetching all brands")
+    try:
+        brands = await service.get_brands()
+        logger.info(f"Retrieved {len(brands)} brands")
+        return brands
+
+    except Exception as e:
+        logger.error(f"Failed to fetch brand: {str(e)}")
         raise

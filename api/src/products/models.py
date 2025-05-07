@@ -85,3 +85,16 @@ class FilterParams(BaseModel):
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
     added_since: Literal["today", "week", "month", "year", "all"] = "all"
+
+
+# ============================= Brand Models ==================================
+class BrandBase(SQLModel):
+    name: str
+
+
+class Brand(BrandBase):
+    pass
+
+
+class BrandResponse(BrandBase):
+    pass

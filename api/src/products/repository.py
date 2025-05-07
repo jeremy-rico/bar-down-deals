@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col
 
 from src.core.exceptions import NotFoundException
-from src.products.models import Product, Tag
+from src.products.models import Brand, Product, Tag
 
 
 class ProductRepository:
@@ -48,6 +48,14 @@ class ProductRepository:
         stmt = select(Tag)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+
+    async def get_all_brands(self) -> list[Brand]:
+        stmt = (
+            select(col(Product.brand)).filter(col(Product.brand).isnot(None)).distinct()
+        )
+        result = await self.session.execute(stmt)
+        brands = list(result.scalars().all())
+        return [Brand(name=b) for b in brands if b is not None]
 
     async def get_by_id(self, product_id: int) -> Product:
         """Get product by ID.

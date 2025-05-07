@@ -15,15 +15,15 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post(
-    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 async def register(
     user_data: UserCreate, session: AsyncSession = Depends(get_session)
-) -> Users:
+) -> Token:
     """Register a new user."""
     logger.debug(f"Registering user: {user_data.email}")
-    return await UserService(session).create_user(user_data)
+    login_data = LoginData(email=user_data.email, password=user_data.password)
+    await UserService(session).create_user(user_data)
+    return await UserService(session).authenticate(login_data)
 
 
 @router.post("/login", response_model=Token)
