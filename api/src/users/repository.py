@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import col, delete, select
+from sqlmodel import col, delete, select, update
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.core.logging import get_logger
 from src.core.security import get_password_hash
-from src.users.models import UserCreate, Users
+from src.users.models import UserCreate, Users, UserUpdate
 
 logger = get_logger(__name__)
 
@@ -82,6 +82,36 @@ class UserRepository:
         query = select(Users).where(Users.email == email)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def update_by_id(self, user_id: int, user_data: UserUpdate) -> Users:
+        """Update user by ID.
+
+        Args:
+            user_id: User ID
+            user_data: User update data
+
+        Returns:
+            Users: Updated User
+
+        Raises:
+            NotFoundException: If user not found
+        """
+        update_data = user_data.model_dump(exclude_unset=True)
+        if not update_data:
+            raise ValueError("No fields to update")
+
+        if update_data.get("password"):
+            update_data["hashed_password"] = get_password_hash(update_data["password"])
+            update_data.pop("password")
+
+        query = update(Users).where(col(Users.id) == user_id).values(**update_data)
+        result = await self.session.execute(query)
+
+        if result.rowcount == 0:
+            raise NotFoundException(f"User with id {user_id} not found")
+
+        await self.session.commit()
+        return await self.get_by_id(user_id)
 
     async def delete(self, user_id: int) -> None:
         """

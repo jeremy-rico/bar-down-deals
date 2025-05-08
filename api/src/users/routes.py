@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_session
 from src.core.logging import get_logger
 from src.core.security import get_current_user
-from src.users.models import LoginData, Token, UserCreate, UserResponse
+from src.users.models import LoginData, Token, UserCreate, UserResponse, UserUpdate
 from src.users.service import UserService
 
 logger = get_logger(__name__)
@@ -46,6 +46,23 @@ async def login(
 async def get_me(user: UserResponse = Depends(get_current_user)) -> UserResponse:
     """Get current authenticated user."""
     return user
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_hero(
+    user_data: UserUpdate,
+    user: UserResponse = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> UserResponse:
+    """Update user"""
+    logger.debug(f"Updating user {user.id}")
+    try:
+        hero = await UserService(session).update_user(user.id, user_data)
+        logger.info(f"Updated user {hero.id}")
+        return hero
+    except Exception as e:
+        logger.error(f"Failed to update user {user.id}: {str(e)}")
+        raise
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)

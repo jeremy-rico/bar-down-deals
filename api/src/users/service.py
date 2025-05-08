@@ -6,7 +6,14 @@ from src.core.config import settings
 from src.core.exceptions import UnauthorizedException
 from src.core.logging import get_logger
 from src.core.security import create_access_token, verify_password
-from src.users.models import LoginData, Token, UserCreate, UserResponse, Users
+from src.users.models import (
+    LoginData,
+    Token,
+    UserCreate,
+    UserResponse,
+    Users,
+    UserUpdate,
+)
 from src.users.repository import UserRepository
 
 logger = get_logger(__name__)
@@ -46,6 +53,10 @@ class UserService:
     async def get_user(self, user_id: int) -> UserResponse:
         """Get user by ID."""
         user = await self.repository.get_by_id(user_id)
+        return UserResponse.model_validate(user)
+
+    async def update_user(self, user_id: int, user_data: UserUpdate) -> UserResponse:
+        user = await self.repository.update_by_id(user_id, user_data)
         return UserResponse.model_validate(user)
 
     async def delete_user(self, user_id: int) -> None:
