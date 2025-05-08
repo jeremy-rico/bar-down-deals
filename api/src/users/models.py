@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from src.alerts.models import UserAlert
+    from src.alerts.models import UserAlert, UserAlertResponse
 
 
 # ============================== User Models ==================================
@@ -23,7 +23,11 @@ class Users(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
-    alerts: list["UserAlert"] = Relationship(back_populates="user")
+    alerts: list["UserAlert"] = Relationship(
+        back_populates="user",
+        cascade_delete=True,
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
 
 
 class UserCreate(UserBase):
@@ -36,6 +40,10 @@ class UserResponse(UserBase):
     """User response schema"""
 
     id: int
+    alerts: list["UserAlertResponse"]
+
+
+# ============================== JWT Token Model ==============================
 
 
 class Token(SQLModel):
@@ -43,6 +51,9 @@ class Token(SQLModel):
 
     access_token: str
     token_type: str = "bearer"
+
+
+# ============================ Login Data Shema ===============================
 
 
 class LoginData(SQLModel):

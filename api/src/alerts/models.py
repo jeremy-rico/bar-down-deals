@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -9,18 +9,20 @@ if TYPE_CHECKING:
 
 # ============================== User Alerts Model ============================
 class UserAlertBase(SQLModel):
-    keyword: str = Field(max_length=255)
-    frequency: str = Field(max_length=20, default="weekly")
+    size: str | None = Field(max_length=255, default=None)
+    brand: str | None = Field(max_length=255, default=None)
+    tag: str | None = Field(max_length=255, default=None)
+    keyword: str | None = Field(max_length=255, default=None)
 
 
 class UserAlert(UserAlertBase, table=True):
-    """User keyword based alert"""
+    """User category or keyword alert"""
 
     id: int | None = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="users.id")
+    user_id: int = Field(foreign_key="users.id", ondelete="CASCADE")
 
     user: "Users" = Relationship(
-        back_populates="alerts", sa_relationship_kwargs={"lazy": "selectin"}
+        back_populates="alerts",
     )
 
 
@@ -31,7 +33,6 @@ class UserAlertCreate(UserAlertBase):
 class UserAlertResponse(UserAlertBase):
     id: int
     user_id: int
-    # user: "Users"
 
 
 UserAlert.model_rebuild()
@@ -42,9 +43,23 @@ class QueryParams(BaseModel):
     """
     Query params for /alert
 
+    size: user size preference (Senior, Intermediate, Junior, Youth)
+    brand: user brand preference
+    tag: user tag preference
     kw: keyword, string keyword which to send alerts on
-    f: frequency which the user wants to be alerted
     """
 
-    kw: str = Field(max_length=255)
-    f: Literal["daily", "weekly", "monthly"] = "weekly"
+    size: Literal["Senior", "Intermediate", "Junior", "Youth"] | None = Field(
+        max_length=255, default=None
+    )
+    brand: str | None = Field(max_length=255, default=None)
+    tag: str | None = Field(max_length=255, default=None)
+    kw: str | None = Field(max_length=255, default=None)
+
+    @model_validator(mode="after")
+    def at_least_one_required(self) -> "QueryParams":
+        if not any([self.size, self.brand, self.tag, self.kw]):
+            raise ValueError(
+                "At least one of 'size', 'brand', 'tag', or 'kw' must be provided."
+            )
+        return self

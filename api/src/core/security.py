@@ -6,6 +6,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from src.core.config import settings
+from src.core.database import get_session
+from src.users.models import UserResponse
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -34,7 +36,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
     """Dependency to get current authenticated user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,7 +55,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
     # Import here to avoid circular imports
-    from src.core.database import get_session
     from src.users.service import UserService
 
     async for session in get_session():
@@ -61,3 +62,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if user is None:
             raise credentials_exception
         return user
+
+    # if no loop
+    raise credentials_exception

@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 class WebsiteBase(SQLModel):
     name: str = Field(max_length=255)
     url: str = Field(unique=True)
+    ships_to: str = Field(max_length=255)
 
 
 class Website(WebsiteBase, table=True):
@@ -74,6 +75,7 @@ class QueryParams(BaseModel):
     page: page number
     limit: limit items per request
     added_since: time since item was first scraped
+    country: country that website ships to
     min_price: minimum price
     default_max_price: max price determined by app page
     max_price: max price determined by user
@@ -98,6 +100,7 @@ class QueryParams(BaseModel):
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
     added_since: Literal["today", "week", "month", "year", "all"] = "all"
+    country: Literal["US", "CA"] | None = Field(default=None)
     min_price: int = Field(0, ge=0)
     default_max_price: int | None = Field(default=None, ge=1)
     max_price: int | None = Field(default=None, ge=1)

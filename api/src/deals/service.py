@@ -40,6 +40,7 @@ class DealService:
         page: int,
         limit: int,
         added_since: str,
+        country: str | None,
         min_price: int,
         default_max_price: int | None,
         max_price: int | None,
@@ -57,19 +58,20 @@ class DealService:
             List[DealResponse]: List of all deals
         """
         headers, deals = await self.repository.get_all(
-            sort,
-            page,
-            limit,
-            added_since,
-            min_price,
-            default_max_price,
-            max_price,
-            default_stores,
-            stores,
-            default_brands,
-            brands,
-            default_tags,
-            tags,
+            sort=sort,
+            page=page,
+            limit=limit,
+            added_since=added_since,
+            country=country,
+            min_price=min_price,
+            default_max_price=default_max_price,
+            max_price=max_price,
+            default_stores=default_stores,
+            stores=stores,
+            default_brands=default_brands,
+            brands=brands,
+            default_tags=default_tags,
+            tags=tags,
         )
         return headers, [DealResponse.model_validate(deal) for deal in deals]
 

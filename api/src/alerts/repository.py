@@ -15,16 +15,23 @@ class AlertRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_all(self, user: Users) -> list[UserAlert]:
+    async def get_all(self, user_id: int) -> list[UserAlert]:
         """
         Get all alerts for current user
         """
-        stmt = select(UserAlert).where(UserAlert.user_id == user.id)
+        stmt = select(UserAlert).where(UserAlert.user_id == user_id)
         result = await self.session.execute(stmt)
 
         return list(result.scalars().all())
 
-    async def create(self, user: Users, keyword: str, frequency: str) -> UserAlert:
+    async def create(
+        self,
+        user_id: int,
+        size: str | None,
+        brand: str | None,
+        tag: str | None,
+        keyword: str | None,
+    ) -> UserAlert:
         """
         Create new user alert
 
@@ -35,7 +42,13 @@ class AlertRepository:
         Returns:
             UserAlert
         """
-        user_alert = UserAlert(user_id=user.id, keyword=keyword, frequency=frequency)
+        user_alert = UserAlert(
+            user_id=user_id,
+            size=size,
+            brand=brand,
+            tag=tag,
+            keyword=keyword,
+        )
         self.session.add(user_alert)
         await self.session.commit()
         await self.session.refresh(user_alert)

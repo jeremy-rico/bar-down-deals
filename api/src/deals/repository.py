@@ -34,6 +34,7 @@ class DealRepository:
         page: int,
         limit: int,
         added_since: str,
+        country: str | None,
         min_price: int | None,
         default_max_price: int | None,
         max_price: int | None,
@@ -53,6 +54,7 @@ class DealRepository:
         # Create various filters for grabbing available filters
         filter_kwargs = {
             "added_since": added_since,
+            "country": country,
             "min_price": min_price,
             "default_max_price": default_max_price,
             "max_price": max_price,
@@ -165,6 +167,7 @@ class DealRepository:
     def build_filters(
         self,
         added_since: str | None = None,
+        country: str | None = None,
         min_price: int | None = None,
         default_max_price: int | None = None,
         max_price: int | None = None,
@@ -187,6 +190,13 @@ class DealRepository:
             tuple: list[filters]
         """
         filters = []
+
+        if added_since in self.timeframes:
+            filters.append(Deal.created_at >= self.timeframes[added_since])
+
+        if country:
+            filters.append(Website.ships_to == country)
+
         if "min_price" not in exclude_fields:
             if min_price is not None:
                 filters.append(Deal.price >= min_price)
@@ -215,9 +225,6 @@ class DealRepository:
         elif tags and "tags" not in exclude_fields:
             filters.append(self.process_tags(tags))
 
-        if added_since in self.timeframes:
-            filters.append(Deal.created_at >= self.timeframes[added_since])
-
         return filters
 
     def process_tags(self, tags: list[str]):
@@ -236,8 +243,16 @@ class DealRepository:
             sqlalchemy Boolean Clause: filters to be applied
 
         """
-        size_tags = [tag for tag in tags if tag in self.sizes]
-        other_tags = [tag for tag in tags if tag not in self.sizes]
+        # seperate tags into size and other tags
+        size_tags = []
+        other_tags = []
+        for tag in tags:
+            if tag in self.sizes:
+                size_tags.append(tags)
+            else:
+                size_tags.append(other_tags)
+
+        # Create filters using and + or logic
         if size_tags and other_tags:
             return and_(
                 col(Product.tags).any(
@@ -334,6 +349,10 @@ class DealRepository:
         return avail_sizes, avail_tags
 
     async def get_associated_tags(self, tag_names: list[str]) -> list[str]:
+        """
+        Get all tags associated with the Products returned from the tag_names
+        variable. This is used to gather default tags on page load.
+        """
         ass_tags = []
         for tag_name in tag_names:
             # Get all products associated with tag_name
@@ -359,6 +378,9 @@ class DealRepository:
         return ass_tags
 
     async def get_avail_stores(self, **filter_kwargs) -> list[str]:
+        """
+        Get available stores based on the filters.
+        """
         filters = self.build_filters(**filter_kwargs, exclude_fields=["stores"])
         stmt = (
             select(col(Website.name))

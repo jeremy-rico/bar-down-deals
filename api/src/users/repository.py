@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select
+from sqlmodel import col, delete, select
 
 from src.core.exceptions import AlreadyExistsException, NotFoundException
 from src.core.logging import get_logger
@@ -16,7 +16,8 @@ class UserRepository:
         self.session = session
 
     async def create(self, user_data: UserCreate) -> Users:
-        """Create a new user.
+        """
+        Create a new user.
 
         Args:
             user_data: User creation data
@@ -47,7 +48,8 @@ class UserRepository:
         return user
 
     async def get_by_id(self, user_id: int) -> Users:
-        """Get user by ID.
+        """
+        Get user by ID.
 
         Args:
             user_id: User ID
@@ -68,7 +70,8 @@ class UserRepository:
         return user
 
     async def get_by_email(self, email: str) -> Users | None:
-        """Get user by email.
+        """
+        Get user by email.
 
         Args:
             email: User email
@@ -79,3 +82,17 @@ class UserRepository:
         query = select(Users).where(Users.email == email)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def delete(self, user_id: int) -> None:
+        """
+        Delete user by id
+
+        Args:
+            user_id: user id
+
+        Returns:
+            None
+        """
+        stmt = delete(Users).where(col(Users.id) == user_id)
+        await self.session.execute(stmt)
+        await self.session.commit()

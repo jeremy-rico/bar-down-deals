@@ -6,7 +6,7 @@ from src.core.config import settings
 from src.core.exceptions import UnauthorizedException
 from src.core.logging import get_logger
 from src.core.security import create_access_token, verify_password
-from src.users.models import LoginData, Token, UserCreate, Users
+from src.users.models import LoginData, Token, UserCreate, UserResponse, Users
 from src.users.repository import UserRepository
 
 logger = get_logger(__name__)
@@ -43,6 +43,11 @@ class UserService:
         logger.info(f"User authenticated: {user.email}")
         return Token(access_token=access_token)
 
-    async def get_user(self, user_id: int) -> Users:
+    async def get_user(self, user_id: int) -> UserResponse:
         """Get user by ID."""
-        return await self.repository.get_by_id(user_id)
+        user = await self.repository.get_by_id(user_id)
+        return UserResponse.model_validate(user)
+
+    async def delete_user(self, user_id: int) -> None:
+        """Delete user by id"""
+        await self.repository.delete(user_id)

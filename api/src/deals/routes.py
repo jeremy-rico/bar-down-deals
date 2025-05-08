@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
@@ -10,14 +11,15 @@ from src.core.logging import get_logger
 from src.deals.models import DealResponse, QueryParams
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
-from src.products.models import ProductResponse  # Needed for model_rebuild
 
 # Set up logger for this module
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/deals", tags=["deals"])
 
-# Rebuild model with late added dependencies
+# Resolve nested model forward references
+from src.products.models import ProductResponse  # Needed for model_rebuild
+
 DealResponse.model_rebuild()
 
 
@@ -35,21 +37,23 @@ async def get_deals(
 ) -> list[DealResponse]:
     """Get sorted, filtered, paginated deals."""
     logger.debug("Fetching all deals")
+    logger.info(f"Query: {pprint(query_params)}")
     try:
         deals = await service.get_deals(
-            query_params.sort,
-            query_params.page,
-            query_params.limit,
-            query_params.added_since,
-            query_params.min_price,
-            query_params.default_max_price,
-            query_params.max_price,
-            query_params.default_stores,
-            query_params.stores,
-            query_params.default_brands,
-            query_params.brands,
-            query_params.default_tags,
-            query_params.tags,
+            sort=query_params.sort,
+            page=query_params.page,
+            limit=query_params.limit,
+            added_since=query_params.added_since,
+            country=query_params.country,
+            min_price=query_params.min_price,
+            default_max_price=query_params.default_max_price,
+            max_price=query_params.max_price,
+            default_stores=query_params.default_stores,
+            stores=query_params.stores,
+            default_brands=query_params.default_brands,
+            brands=query_params.brands,
+            default_tags=query_params.default_tags,
+            tags=query_params.tags,
         )
         logger.info(f"Retrieved {len(deals[1])} deals")
 

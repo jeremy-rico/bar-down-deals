@@ -1,18 +1,23 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_session
 from src.core.logging import get_logger
 from src.core.security import get_current_user
-from src.users.models import LoginData, Token, UserCreate, UserResponse, Users
+from src.users.models import LoginData, Token, UserCreate, UserResponse
 from src.users.service import UserService
 
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+# Resolve nested model forward references
+from src.alerts.models import UserAlertResponse
+
+UserResponse.model_rebuild()
 
 
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
@@ -38,6 +43,20 @@ async def login(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(user: Users = Depends(get_current_user)) -> Users:
+async def get_me(user: UserResponse = Depends(get_current_user)) -> UserResponse:
     """Get current authenticated user."""
     return user
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_me(
+    user: UserResponse = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> None:
+    """Get current authenticated user."""
+    # TODO: Expire session on delete
+    try:
+        await UserService(session).delete_user(user.id)
+        logger.info(f"Deleted user {user.id}")
+    except Exception as e:
+        logger.error(f"Failed to delete user {user.id}: {e}")

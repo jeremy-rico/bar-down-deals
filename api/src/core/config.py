@@ -18,6 +18,9 @@ class Settings(BaseSettings):
 
     FRONTEND_KEY: str
 
+    # Maximum number of alerts a user can sign up for
+    MAX_ALERTS: int = 5
+
     DEBUG: bool = False
     ORIGINS: list[str] = [
         "http://localhost:3000",
@@ -28,7 +31,7 @@ class Settings(BaseSettings):
     # JWT Settings
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRATION: int = 60 * 24 * 31  # about a month
+    JWT_EXPIRATION: int = 60 * 24 * 30  # 30 days
 
     model_config = SettingsConfigDict(
         env_file=".env",

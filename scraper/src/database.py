@@ -35,14 +35,13 @@ def get_session() -> Session:
 
 def clean_database() -> None:
     """
-    After nightly scrape, remove deals that are over 24 hrs old. This means they
-    haven't been scraped and are probably removed from the parent
-    site.
+    After nightly scrape, remove deals that haven't been updated in 48 hrs. This means
+    its hasn't been found for two crawls and is probably removed from the parent site.
     """
 
     logger.info("Cleaning database...")
     session = get_session()
-    expiration = datetime.now(timezone.utc) - timedelta(days=1)
+    expiration = datetime.now(timezone.utc) - timedelta(days=2)
 
     stmt = delete(Deal).filter(col(Deal.updated_at) <= expiration)
     count = (

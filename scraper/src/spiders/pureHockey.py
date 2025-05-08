@@ -28,6 +28,10 @@ class PureHockeySpider(scrapy.Spider):
         """
         Parse all items in category page
         """
+        # NOTE: Skip apparel, its too much clutter
+        if response.url.endswith("hockey-apparel-sale"):
+            return
+
         # Get tags from url
         tags = self.get_tags(response.url)
 

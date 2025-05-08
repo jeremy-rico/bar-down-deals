@@ -45,13 +45,16 @@ class ProductRepository:
         return list(result.scalars().all())
 
     async def get_all_tags(self) -> list[Tag]:
-        stmt = select(Tag)
+        stmt = select(Tag).order_by(col(Tag.name).asc())
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
     async def get_all_brands(self) -> list[Brand]:
         stmt = (
-            select(col(Product.brand)).filter(col(Product.brand).isnot(None)).distinct()
+            select(col(Product.brand))
+            .filter(col(Product.brand).isnot(None))
+            .order_by(col(Product.brand).asc())
+            .distinct()
         )
         result = await self.session.execute(stmt)
         brands = list(result.scalars().all())
