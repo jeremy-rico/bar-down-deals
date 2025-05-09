@@ -1,10 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, delete, select
 
-from src.alerts.models import UserAlert, UserAlertResponse
+from src.alerts.models import UserAlert, UserAlertCreate
 from src.core.exceptions import NotFoundException
 from src.core.logging import get_logger
-from src.users.models import Users
 
 logger = get_logger(__name__)
 
@@ -24,31 +23,19 @@ class AlertRepository:
 
         return list(result.scalars().all())
 
-    async def create(
-        self,
-        user_id: int,
-        size: str | None,
-        brand: str | None,
-        tag: str | None,
-        keyword: str | None,
-    ) -> UserAlert:
+    async def create(self, user_id: int, alert_data: UserAlertCreate) -> UserAlert:
         """
         Create new user alert
 
         Args:
-            user: current user
-            kws: keywords to create alerts for
+            user_id: current user ID
+            alert_data: alert data from request body
 
         Returns:
             UserAlert
         """
-        user_alert = UserAlert(
-            user_id=user_id,
-            size=size,
-            brand=brand,
-            tag=tag,
-            keyword=keyword,
-        )
+        create_data = alert_data.model_dump(exclude_unset=True)
+        user_alert = UserAlert(user_id=user_id, **create_data)
         self.session.add(user_alert)
         await self.session.commit()
         await self.session.refresh(user_alert)

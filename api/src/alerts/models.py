@@ -27,7 +27,7 @@ class UserAlert(UserAlertBase, table=True):
 
 
 class UserAlertCreate(UserAlertBase):
-    user_id: int
+    pass
 
 
 class UserAlertResponse(UserAlertBase):
@@ -36,30 +36,3 @@ class UserAlertResponse(UserAlertBase):
 
 
 UserAlert.model_rebuild()
-
-
-# =========================== Query Param Model ===============================
-class QueryParams(BaseModel):
-    """
-    Query params for /alert
-
-    size: user size preference (Senior, Intermediate, Junior, Youth)
-    brand: user brand preference
-    tag: user tag preference
-    kw: keyword, string keyword which to send alerts on
-    """
-
-    size: Literal["Senior", "Intermediate", "Junior", "Youth"] | None = Field(
-        max_length=255, default=None
-    )
-    brand: str | None = Field(max_length=255, default=None)
-    tag: str | None = Field(max_length=255, default=None)
-    kw: str | None = Field(max_length=255, default=None)
-
-    @model_validator(mode="after")
-    def at_least_one_required(self) -> "QueryParams":
-        if not any([self.size, self.brand, self.tag, self.kw]):
-            raise ValueError(
-                "At least one of 'size', 'brand', 'tag', or 'kw' must be provided."
-            )
-        return self

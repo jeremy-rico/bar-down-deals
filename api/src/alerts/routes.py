@@ -1,9 +1,7 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.alerts.models import QueryParams, UserAlert, UserAlertResponse
+from src.alerts.models import UserAlertCreate, UserAlertResponse
 from src.alerts.repository import AlertRepository
 from src.alerts.service import AlertService
 from src.core.database import get_session
@@ -41,20 +39,14 @@ async def get_user_alerts(
 
 @router.post("/", response_model=UserAlertResponse)
 async def create_alert(
-    query_params: Annotated[QueryParams, Query()],
+    alert_data: UserAlertCreate,
     user: UserResponse = Depends(get_current_user),
     service: AlertService = Depends(get_alert_service),
-) -> UserAlert:
+) -> UserAlertResponse:
     """Create weekly alert; Maximum 5 per user"""
     logger.debug(f"Creating alert for user {user.id}")
     try:
-        alert = await service.create_alert(
-            user_id=user.id,
-            size=query_params.size,
-            brand=query_params.brand,
-            tag=query_params.tag,
-            keyword=query_params.kw,
-        )
+        alert = await service.create_alert(user_id=user.id, alert_data=alert_data)
         logger.info(f"Created alert for user {user}")
         return alert
     except Exception as e:

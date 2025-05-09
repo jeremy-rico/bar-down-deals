@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from src.alerts.models import UserAlert, UserAlertResponse
+from src.alerts.models import UserAlert, UserAlertCreate, UserAlertResponse
 from src.alerts.repository import AlertRepository
 from src.core.config import settings
 from src.core.logging import get_logger
@@ -20,13 +20,8 @@ class AlertService:
         return [UserAlertResponse.model_validate(alert) for alert in alerts]
 
     async def create_alert(
-        self,
-        user_id: int,
-        size: str | None,
-        brand: str | None,
-        tag: str | None,
-        keyword: str | None,
-    ) -> UserAlert:
+        self, user_id: int, alert_data: UserAlertCreate
+    ) -> UserAlertResponse:
         """Create user alert"""
         alerts = await self.repository.get_all(user_id)
         if len(alerts) >= settings.MAX_ALERTS:
@@ -35,13 +30,8 @@ class AlertService:
                 detail=f"Only {settings.MAX_ALERTS} alerts allowed per user",
             )
 
-        return await self.repository.create(
-            user_id=user_id,
-            size=size,
-            brand=brand,
-            tag=tag,
-            keyword=keyword,
-        )
+        alert = await self.repository.create(user_id=user_id, alert_data=alert_data)
+        return UserAlertResponse.model_validate(alert)
 
     async def delete_alert(self, alert_id: int) -> None:
         """Create user alert"""
