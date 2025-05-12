@@ -1,6 +1,5 @@
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, model_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -13,6 +12,7 @@ class UserAlertBase(SQLModel):
     brand: str | None = Field(max_length=255, default=None)
     tag: str | None = Field(max_length=255, default=None)
     keyword: str | None = Field(max_length=255, default=None)
+    frequency: str = Field(max_length=255, default="daily")
 
 
 class UserAlert(UserAlertBase, table=True):

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     FRONTEND_KEY: str
 
     # Maximum number of alerts a user can sign up for
-    MAX_ALERTS: int = 5
+    MAX_ALERTS: int = 10
 
     DEBUG: bool = False
     ORIGINS: list[str] = [
