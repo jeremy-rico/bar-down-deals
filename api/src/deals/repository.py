@@ -230,7 +230,7 @@ class DealRepository:
     def process_tags(self, tags: list[str]):
         """
         Defines logic for and vs or filtering. Size tags (Senior, Intermediate,
-        Junior, etc.) or grouped with and or_ and combined with all other tags
+        Junior, etc.) are grouped with an or_ and combined with all other tags
         using an and_.
 
         Ex: Senior, Intermediate, Sticks. Will return (Senior OR Intermediate)
@@ -248,9 +248,9 @@ class DealRepository:
         other_tags = []
         for tag in tags:
             if tag in self.sizes:
-                size_tags.append(tags)
+                size_tags.append(tag)
             else:
-                size_tags.append(other_tags)
+                other_tags.append(tag)
 
         # Create filters using and + or logic
         if size_tags and other_tags:

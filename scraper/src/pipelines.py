@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 # shared model definitions
 from api.src.deals.models import Deal, Website
 from api.src.products.models import Product, Tag
+
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy import Request
@@ -135,8 +136,9 @@ class PostgresPipeline:
             return product
 
         # Get brand if it wasn't scraped
-        if item.get("brand") == None:
-            item["brand"] = get_brand(item.get("name"))
+        item["brand"] = get_brand(
+            name=item.get("name"), scraped_brand=item.get("brand")
+        )
 
         # Create Product instance and write to db
         product = Product(
@@ -256,22 +258,34 @@ def get_extra_tags(title: str, start_tags: list[str] | None) -> list[str]:
     return list(all_tags)
 
 
-def get_brand(title: str) -> str | None:
+def get_brand(name: str, scraped_brand: str | None) -> str | None:
     """
-    Helper function to get brand from title if it can't be scraped
+    Helper function to get brand from title if it can't be scraped, OR combine
+    brand variations into one.
 
     Args:
-      title: Product title
+      name: Product name
+      brand: scraped product brand
       start_tags: Product tags pulled from url
 
     Returns:
-      List[str]: list of all tags
+      str | None: brand OR None
     """
     # Get keyword --> tag map
     json_path = Path(__file__).parent.parent / "expressions" / "brands.json"
-    keywords = read_json(json_path)
-    title = title.lower()
+    brands_map = read_json(json_path)
 
-    for kw in keywords.keys():
-        if kw in title:
-            return keywords[kw]
+    # If we scraped a brand, normalize its name and return
+    # Ex: CCM Jetspeed, CCM QuickLite, CCM Ribcore all get turned to CCM
+    if scraped_brand:
+        for brand, brand_name in brands_map.items():
+            if brand in scraped_brand.lower():
+                return brand_name
+
+    # Otherwise try to scrape brand from title
+    for brand, brand_name in brands_map.keys():
+        if brand in name.lower():
+            return brand_name
+
+    # If we still can't find a brand, return None
+    return None
