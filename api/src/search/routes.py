@@ -40,6 +40,8 @@ async def search(
             sort=search_params.sort,
             page=search_params.page,
             limit=search_params.limit,
+            added_since=search_params.added_since,
+            country=search_params.country,
             min_price=search_params.min_price,
             max_price=search_params.max_price,
             stores=search_params.stores,

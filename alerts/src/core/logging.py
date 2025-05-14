@@ -7,14 +7,8 @@ from alerts.src.core.config import settings
 def setup_logging() -> None:
     """Set up logging configuration."""
     format_string = "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s"
-    log_level_map = {
-        "DEBUG": logging.DEBUG,
-        "INFO": logging.INFO,
-        "WARNING": logging.WARNING,
-        "CRITICAL": logging.CRITICAL,
-    }
     logging.basicConfig(
-        level=log_level_map[settings.LOG_LEVEL],
+        level=settings.LOG_LEVEL,
         format=format_string,
         datefmt="%H:%M:%S",
         stream=sys.stdout,

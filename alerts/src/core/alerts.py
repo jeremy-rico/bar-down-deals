@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 from pathlib import Path
 from pprint import pprint
+from urllib.parse import urlencode
 
 import requests
 from api.src.alerts.models import UserAlert
@@ -20,7 +21,6 @@ from alerts.src.core.utils import read_json
 
 logger = get_logger(__name__)
 
-tags = read_json(Path(__file__).parent.parent.parent.parent / "api/src/core/tags.json")
 template_path = Path(__file__).parent.parent / "templates"
 
 
@@ -29,27 +29,25 @@ class AlertBot:
         self.session = get_session()
         self.logo_url = "https://bar-down-deals-bucket.s3.us-west-1.amazonaws.com/images/logo/email_logo.png"
         self.api = "https://api.bardowndeals.com/"
-        self.added_since_map = {"daily": "today", "weekly": "week", "monthly": "month"}
+        self.added_since_map = {"daily": "today", "weekly": "week"}
+        self.success = 0
+        self.fail = 0
 
     def send_alerts(self, frequency: str):
 
-        # Get all weekly alerts
+        # Get all unique user ids for alert frequency
         stmt = (
             select(UserAlert.user_id).where(UserAlert.frequency == frequency).distinct()
         )
-
-        # Get all users subscribed to weekly alerts
         user_ids = self.session.scalars(stmt)
 
         for user_id in user_ids:
             # Get all alerts for user
-            stmt = select(UserAlert.keyword).where(UserAlert.user_id == user_id)
-            user_tags = list(self.session.scalars(stmt))
+            stmt = select(UserAlert).where(UserAlert.user_id == user_id)
+            user_alerts = list(self.session.scalars(stmt))
 
             # Get all deal data
-            deals_map = self.get_data(
-                user_tags=user_tags, added_since=self.added_since_map[frequency]
-            )
+            deals_map = self.get_data(user_alerts=user_alerts)
 
             # Render email body using data
             alert_body = self.render_alert(
@@ -70,38 +68,79 @@ class AlertBot:
                 body=alert_body,
             )
 
-    def get_data(self, user_tags: list[str], added_since: str) -> dict:
+        results = {
+            "Total": self.success + self.fail,
+            "Success": self.success,
+            "Failed": self.fail,
+        }
+        logger.info(f"Finished sending alerts.")
+        for k, v in results.items():
+            logger.info(f"{k}: {v}")
+
+    def get_data(self, user_alerts: list[UserAlert]) -> dict:
         """
         Uses BarDownDeals api to grab relevent deals
         """
         deals_map = {}
-        stmt = select(Tag)
-        all_tags = self.session.scalars(stmt).all()
 
-        stmt = select(Product.brand).distinct()
-        brands = self.session.scalars(stmt).all()
+        for user_alert in user_alerts:
+            title = self.build_title(user_alert)
+            url = self.build_url(user_alert)
+            response = requests.get(url)
+            new_data = response.json()
 
-        for user_tag in user_tags:
-            if user_tag.title() in all_tags:
-                response = requests.get(
-                    self.api
-                    + f"deals/?added_since={added_since}&tags={user_tag.title()}"
-                )
+            # if no new deals
+            if not new_data:
+                url = self.build_url(user_alert, added_since=False)
+                response = requests.get(url)
                 data = response.json()
-            elif user_tag.title() in brands:
-                response = requests.get(
-                    self.api
-                    + f"deals/?added_since={added_since}&brands={user_tag.title()}"
-                )
-                data = response.json()
+                deals_map[title] = {"new_count": 0, "deals": data}
             else:
-                response = requests.get(
-                    self.api + f"search/?added_since={added_since}&q={user_tag}"
-                )
-                data = response.json()
+                deals_map[title] = {"new_count": len(new_data), "deals": new_data}
 
-            deals_map[user_tag] = data
         return deals_map
+
+    def build_url(self, user_alert: UserAlert, added_since=True) -> str:
+        """
+        Build api endpoint using alert data
+        """
+        endpoint = "search/?" if user_alert.keyword else "deals/?"
+        params = []
+        params.append(("sort", "Newest"))
+        params.append(("limit", 10))
+
+        for tag in [user_alert.tag, user_alert.size]:
+            if tag:
+                params.append(("tags", tag))
+
+        if user_alert.brand:
+            params.append(("brands", user_alert.brand))
+
+        if user_alert.keyword:
+            params.append(("q", user_alert.keyword))
+
+        if added_since:
+            params.append(("added_since", self.added_since_map[user_alert.frequency]))
+
+        query_string = urlencode(params, doseq=True)
+        return self.api + endpoint + query_string
+
+    def build_title(self, user_alert: UserAlert) -> str:
+        """
+        Build alert title
+        """
+        title = []
+
+        if user_alert.size:
+            title.append(user_alert.size)
+        if user_alert.brand:
+            title.append(user_alert.brand)
+        if user_alert.tag:
+            title.append(user_alert.tag)
+        if user_alert.keyword:
+            title.append(user_alert.keyword)
+
+        return "+".join(title)
 
     def render_alert(
         self,
@@ -161,6 +200,8 @@ class AlertBot:
                 server.starttls()  # Use .starttls() for TLS
                 server.login(username, password)
                 server.send_message(msg)
-                print(f"Email successfully sent to {to}.")
+                logger.info(f"Successfully sent alert to {to}.")
+            self.success += 1
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            self.fail += 1
+            logger.critical(f"Failed to send alert to {to}: {e}")

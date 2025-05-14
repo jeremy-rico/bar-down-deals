@@ -1,3 +1,4 @@
+import logging
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
     EMAIL_USER: str
     EMAIL_PASSWORD: str
 
-    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "CRITICAL"] = "DEBUG"
+    LOG_LEVEL: int = logging.INFO
 
     model_config = SettingsConfigDict(
         env_file=".env",

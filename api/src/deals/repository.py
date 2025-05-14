@@ -2,12 +2,11 @@ import json
 import math
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import delete, select, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import and_, any_, col, func, or_
+from sqlmodel import and_, col, func, or_
 
-from src.core.exceptions import AlreadyExistsException, NotFoundException
+from src.core.exceptions import NotFoundException
 from src.core.logging import get_logger
 from src.deals.models import Deal, Website
 from src.products.models import Product, Tag, TagProductLink
