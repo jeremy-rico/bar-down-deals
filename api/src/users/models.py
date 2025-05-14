@@ -62,11 +62,33 @@ class Token(SQLModel):
     token_type: str = "bearer"
 
 
-# ============================ Login Data Shema ===============================
+# ============================ Login Data Schema ===============================
 
 
 class LoginData(SQLModel):
     """Login data schema"""
 
     email: EmailStr
+    password: str
+
+
+# ======================= Password Reset Schemas ==============================
+class ForgotPasswordBase(SQLModel):
+    """Forgot password schema"""
+
+    email: EmailStr
+
+
+class ForgotPasswordRequest(ForgotPasswordBase):
+    pass
+
+
+class ForgotPasswordResponse(ForgotPasswordBase):
+    token: str
+
+
+class ResetPasswordRequest(SQLModel):
+    """Reset password schema"""
+
+    token: str
     password: str

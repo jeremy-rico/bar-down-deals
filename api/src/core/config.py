@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     DB_PORT: int
     DB_NAME: str
 
+    # SMTP server settings
+    EMAIL_HOST: str = "smtp.zoho.com"
+    EMAIL_PORT: int = 587
+    EMAIL_USER: str = "info@bardowndeals.com"
+    EMAIL_PASSWORD: str
+
     FRONTEND_KEY: str
 
     # Maximum number of alerts a user can sign up for
@@ -32,6 +38,7 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION: int = 60 * 24 * 30  # 30 days
+    RESET_PASSWORD_JWT_EXPIRATION: int = 10  # minutes
 
     model_config = SettingsConfigDict(
         env_file=".env",

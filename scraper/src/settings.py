@@ -27,7 +27,7 @@ SPIDER_MODULES = ["scraper.src.spiders"]
 NEWSPIDER_MODULE = "scraper.src.spiders"
 
 # Logger settings
-LOG_LEVEL = "INFO"
+LOG_LEVEL = logging.INFO
 BOTO_LOG_LEVEL = logging.CRITICAL  # logging.DEBUG
 
 # Database configuration

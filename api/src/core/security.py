@@ -15,6 +15,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme for token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
+credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Invalid authentication credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash."""
@@ -36,13 +42,34 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
 
+def create_reset_access_token(
+    data: dict, expires_delta: timedelta | None = None
+) -> str:
+    """Create temporary JWT access token for password resets."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=settings.RESET_PASSWORD_JWT_EXPIRATION)
+    )
+    to_encode.update({"exp": expire})
+    to_encode.update({"type": "reset"})
+    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+
+def verify_reset_token(token: str) -> str | None:
+    """Verify reset JWT access token for password resets"""
+    try:
+        payload = jwt.decode(
+            token, settings.JWT_SECRET, algorithms=settings.JWT_ALGORITHM
+        )
+        if payload.get("type") != "reset":
+            return None
+        return payload.get("sub")
+    except JWTError:
+        raise credentials_exception
+
+
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
     """Dependency to get current authenticated user."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid authentication credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
 
     try:
         payload = jwt.decode(

@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 from scrapy.crawler import CrawlerProcess
-from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
 from scraper.src.database import clean_bucket, clean_database
@@ -20,7 +19,6 @@ settings = get_project_settings()
 
 setup_logging()
 logger = get_logger(__name__)
-configure_logging({"LOG_LEVEL": settings.get("LOG_LEVEL")})
 
 logger.info("Beginning crawl...")
 

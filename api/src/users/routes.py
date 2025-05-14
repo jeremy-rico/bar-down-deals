@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_session
 from src.core.logging import get_logger
 from src.core.security import get_current_user
-from src.users.models import LoginData, Token, UserCreate, UserResponse, UserUpdate
+from src.users.models import (ForgotPasswordRequest, ForgotPasswordResponse,
+                              LoginData, ResetPasswordRequest, Token,
+                              UserCreate, UserResponse, UserUpdate)
 from src.users.service import UserService
 
 logger = get_logger(__name__)
@@ -77,3 +79,33 @@ async def delete_me(
         logger.info(f"Deleted user {user.id}")
     except Exception as e:
         logger.error(f"Failed to delete user {user.id}: {e}")
+
+
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+async def forgot_password(
+    user: ForgotPasswordRequest, session: AsyncSession = Depends(get_session)
+) -> ForgotPasswordResponse:
+    """Generate temporary jwt to reset password"""
+    try:
+        response = await UserService(session).forgot_password(user.email)
+        logger.info(f"Temporary token generated for user {user.email}")
+        return response
+    except Exception as e:
+        logger.error(f"Failed to generate temporary token for user {user.email}: {e}")
+        raise
+
+
+@router.post("/reset-password", response_model=UserResponse)
+async def reset_password(
+    reset_data: ResetPasswordRequest, session: AsyncSession = Depends(get_session)
+) -> UserResponse:
+    """Generate temporary jwt to reset password"""
+    try:
+        user = await UserService(session).reset_password(
+            token=reset_data.token, new_password=reset_data.password
+        )
+        logger.info(f"Reset password for user {user.email}")
+        return user
+    except Exception as e:
+        logger.error(f"Failed reset user password: {e}")
+        raise

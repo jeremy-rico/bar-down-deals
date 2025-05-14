@@ -3,10 +3,19 @@ from datetime import timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
-from src.core.exceptions import UnauthorizedException
+from src.core.exceptions import NotFoundException, UnauthorizedException
 from src.core.logging import get_logger
-from src.core.security import create_access_token, verify_password
+from src.core.security import (
+    create_access_token,
+    create_reset_access_token,
+    credentials_exception,
+    get_password_hash,
+    verify_password,
+    verify_reset_token,
+)
+from src.core.utils import send_reset_email
 from src.users.models import (
+    ForgotPasswordResponse,
     LoginData,
     Token,
     UserCreate,
@@ -62,3 +71,28 @@ class UserService:
     async def delete_user(self, user_id: int) -> None:
         """Delete user by id"""
         await self.repository.delete(user_id)
+
+    async def forgot_password(self, user_email: str) -> ForgotPasswordResponse:
+        """Generate temp token for passowrd reset. No repo call"""
+        user = await self.repository.get_by_email(user_email)
+        if not user:
+            raise NotFoundException(f"No user with email {user_email} found")
+
+        access_token = create_reset_access_token(
+            data={"sub": str(user_email)},
+            expires_delta=timedelta(minutes=settings.RESET_PASSWORD_JWT_EXPIRATION),
+        )
+        response = ForgotPasswordResponse(email=user_email, token=access_token)
+        await send_reset_email(
+            to_email=user_email,
+            reset_link=f"https://bardowndeals.com/password/reset?token={response.token}",
+        )
+
+        return response
+
+    async def reset_password(self, token: str, new_password: str) -> UserResponse:
+        user_email = verify_reset_token(token)
+        user = await self.repository.get_by_email(user_email)
+        user_data = UserUpdate(password=new_password)
+        user = await self.repository.update_by_id(user_id=user.id, user_data=user_data)
+        return UserResponse.model_validate(user)
