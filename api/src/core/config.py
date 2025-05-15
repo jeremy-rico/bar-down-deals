@@ -29,9 +29,10 @@ class Settings(BaseSettings):
 
     DEBUG: bool = False
     ORIGINS: list[str] = [
-        "http://localhost:3000",
-        "https://bardowndeals.com",
+        "https://bardowndeals.com",  # Production
         "https://www.bardowndeals.com",
+        "https://dev.d2dyfkjacjr6so.amplifyapp.com",  # Staging
+        "http://localhost:3000",  # Local development
     ]
 
     # JWT Settings
