@@ -3,17 +3,15 @@ from datetime import timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
+from src.core.emails import send_reset_email, send_welcome_email
 from src.core.exceptions import NotFoundException, UnauthorizedException
 from src.core.logging import get_logger
 from src.core.security import (
     create_access_token,
     create_reset_access_token,
-    credentials_exception,
-    get_password_hash,
     verify_password,
     verify_reset_token,
 )
-from src.core.utils import send_reset_email
 from src.users.models import (
     ForgotPasswordResponse,
     LoginData,
@@ -37,6 +35,7 @@ class UserService:
 
     async def create_user(self, user_data: UserCreate) -> Users:
         """Create a new user."""
+        await send_welcome_email(user_data.email)
         return await self.repository.create(user_data)
 
     async def authenticate(self, login_data: LoginData) -> Token:
@@ -84,7 +83,7 @@ class UserService:
         )
         response = ForgotPasswordResponse(email=user_email, token=access_token)
         await send_reset_email(
-            to_email=user_email,
+            to=user_email,
             reset_link=f"https://bardowndeals.com/password/reset?token={response.token}",
         )
 

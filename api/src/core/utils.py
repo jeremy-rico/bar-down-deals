@@ -1,14 +1,10 @@
-import smtplib
 import subprocess
 import sys
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.core.config import settings
 from src.core.database import DATABASE_URL, get_session
 from src.deals.models import Deal
 from src.products.models import Tag
@@ -74,48 +70,3 @@ async def populate_tags(
 
         finally:
             await session.close()
-
-
-async def send_reset_email(to_email: str, reset_link: str) -> None:
-    # Email credentials
-    SMTP_SERVER = settings.EMAIL_HOST
-    SMTP_PORT = settings.EMAIL_PORT
-    FROM_EMAIL = settings.EMAIL_USER
-    FROM_PASSWORD = settings.EMAIL_PASSWORD
-
-    # Create email content
-    subject = "Password Reset Request"
-    text = f"Hi,\n\nClick the link below to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore this email."
-    html = f"""
-    <html>
-      <body>
-        <p>Hi!<br><br>
-           A password reset was requested for your BarDownDeals account.<br>
-           <a href="{reset_link}">Click here to reset your password!</a><br><br>
-           This link will expire in <strong>ten minutes</strong>. <br><br>
-           If you did not request this, you may safely ignore this email.
-        </p>
-      </body>
-    </html>
-    """
-
-    message = MIMEMultipart("alternative")
-    message["Subject"] = subject
-    message["From"] = FROM_EMAIL
-    message["To"] = to_email
-
-    part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
-
-    message.attach(part1)
-    message.attach(part2)
-
-    # Send the email
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(FROM_EMAIL, FROM_PASSWORD)
-            server.sendmail(FROM_EMAIL, to_email, message.as_string())
-            print(f"Reset email sent to {to_email}")
-    except Exception as e:
-        print(f"Failed to send email: {e}")

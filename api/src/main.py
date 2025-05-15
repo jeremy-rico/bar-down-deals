@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.alerts.routes import router as alerts_router
-from src.core.config import TAGS, settings
+from src.core.config import settings
 from src.core.database import engine
 from src.core.logging import get_logger, setup_logging
 from src.core.utils import populate_tags, run_migrations

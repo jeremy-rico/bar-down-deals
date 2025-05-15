@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
@@ -37,7 +36,6 @@ async def get_deals(
 ) -> list[DealResponse]:
     """Get sorted, filtered, paginated deals."""
     logger.debug("Fetching all deals")
-    logger.info(f"Query: {pprint(query_params)}")
     try:
         deals = await service.get_deals(
             sort=query_params.sort,
