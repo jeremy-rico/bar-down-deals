@@ -47,10 +47,10 @@ async def create_alert(
     logger.debug(f"Creating alert for user {user.id}")
     try:
         alert = await service.create_alert(user_id=user.id, alert_data=alert_data)
-        logger.info(f"Created alert for user {user}")
+        logger.info(f"Created alert for user {user.id}")
         return alert
     except Exception as e:
-        logger.error(f"Failed to create alert for user {user}: {e}")
+        logger.error(f"Failed to create alert for user {user.id}: {e}")
         raise
 
 

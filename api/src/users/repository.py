@@ -1,7 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import col, delete, select, update
 
-from src.core.exceptions import AlreadyExistsException, NotFoundException
+from src.core.exceptions import (
+    AlreadyExistsException,
+    NotFoundException,
+    NoValueException,
+)
 from src.core.logging import get_logger
 from src.core.security import get_password_hash
 from src.users.models import UserCreate, Users, UserUpdate
@@ -98,7 +102,7 @@ class UserRepository:
         """
         update_data = user_data.model_dump(exclude_unset=True)
         if not update_data:
-            raise ValueError("No fields to update")
+            raise NoValueException("No fields to update")
 
         if update_data.get("password"):
             update_data["hashed_password"] = get_password_hash(update_data["password"])

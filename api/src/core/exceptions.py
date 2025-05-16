@@ -27,3 +27,10 @@ class ForbiddenException(HTTPException):
 
     def __init__(self, detail: str = "Access forbidden"):
         super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
+
+
+class NoValueException(HTTPException):
+    """Base exception for no value."""
+
+    def __init__(self, detail: str = "No values provided"):
+        super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)

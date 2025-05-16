@@ -43,7 +43,11 @@ class AlertBot:
 
         for user_id in user_ids:
             # Get all alerts for user
-            stmt = select(UserAlert).where(UserAlert.user_id == user_id)
+            stmt = (
+                select(UserAlert)
+                .where(UserAlert.user_id == user_id)
+                .where(UserAlert.frequency == frequency)
+            )
             user_alerts = list(self.session.scalars(stmt))
 
             # Get all deal data
@@ -106,11 +110,16 @@ class AlertBot:
         """
         endpoint = "search/?" if user_alert.keyword else "deals/?"
         params = []
-        params.append(("sort", "Newest"))
         params.append(("limit", 10))
+        misc_tags = ["Popular Deals", "Today's Deals", "Newest Deals", "None"]
+
+        if user_alert.tag == "Popular Deals":
+            params.append(("sort", "Popular"))
+        else:
+            params.append(("sort", "Newest"))
 
         for tag in [user_alert.tag, user_alert.size]:
-            if tag:
+            if tag and tag not in misc_tags:
                 params.append(("tags", tag))
 
         if user_alert.brand:
@@ -119,7 +128,7 @@ class AlertBot:
         if user_alert.keyword:
             params.append(("q", user_alert.keyword))
 
-        if added_since:
+        if added_since or user_alert.tag == "Today's Deals":
             params.append(("added_since", self.added_since_map[user_alert.frequency]))
 
         query_string = urlencode(params, doseq=True)
