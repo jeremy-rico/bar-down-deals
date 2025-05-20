@@ -68,6 +68,10 @@ def verify_reset_token(token: str) -> str | None:
         raise credentials_exception
 
 
+# Import here to avoid circulat imports
+from src.users.service import UserService
+
+
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
     """Dependency to get current authenticated user."""
 
@@ -80,9 +84,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserResponse:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-
-    # Import here to avoid circular imports
-    from src.users.service import UserService
 
     async for session in get_session():
         user = await UserService(session).get_user(int(user_id))

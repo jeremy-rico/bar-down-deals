@@ -1,5 +1,4 @@
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from pathlib import Path
@@ -15,6 +14,15 @@ logger = get_logger(__name__)
 
 
 async def send_welcome_email(to: str) -> None:
+    """
+    Sends welcome email when user signs up
+
+    Args:
+        to: email address of user
+
+    Returns:
+        None
+    """
     # Email credentials
     SMTP_SERVER = settings.EMAIL_HOST
     SMTP_PORT = settings.EMAIL_PORT
@@ -48,6 +56,16 @@ async def send_welcome_email(to: str) -> None:
 
 
 async def send_reset_email(to: str, reset_link: str) -> None:
+    """
+    Sends email for password reset
+
+    Args:
+        to: email address to send to
+        reset_link: link with jwt token
+
+    Returns:
+        None
+    """
     # Email credentials
     SMTP_SERVER = settings.EMAIL_HOST
     SMTP_PORT = settings.EMAIL_PORT

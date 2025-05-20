@@ -11,21 +11,25 @@ from src.deals.models import DealResponse, QueryParams
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
 
-# Set up logger for this module
-logger = get_logger(__name__)
-
-router = APIRouter(prefix="/deals", tags=["deals"])
-
 # Resolve nested model forward references
 from src.products.models import ProductResponse  # Needed for model_rebuild
 
 DealResponse.model_rebuild()
+
+# Set up logger for this module
+logger = get_logger(__name__)
+
+router = APIRouter(prefix="/deals", tags=["deals"])
 
 
 def get_deal_service(session: AsyncSession = Depends(get_session)) -> DealService:
     """Dependency for getting deal service instance."""
     repository = DealRepository(session)
     return DealService(repository)
+
+
+import tracemalloc
+from pprint import pprint
 
 
 @router.get("/", response_model=list[DealResponse])
@@ -57,6 +61,10 @@ async def get_deals(
 
         for k, i in deals[0].items():
             response.headers[k] = str(i)
+
+        snapshot = tracemalloc.take_snapshot()
+        top_stats = snapshot.statistics("lineno")
+        pprint([str(stat) for stat in top_stats[:5]])
         return deals[1]
     except Exception as e:
         logger.error(f"Failed to fetch deals: {str(e)}")
