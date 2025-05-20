@@ -10,6 +10,7 @@ from scraper.src.utils import read_json
 class DiscountHockeySpider(scrapy.Spider):
     name = "discountHockey"
     website_name = "Discount Hockey"
+    ships_to = "US"
     base_url = "https://discounthockey.com/"
     start_urls = [
         base_url + "collections/all-clearance-items",

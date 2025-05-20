@@ -16,6 +16,7 @@ class HockeyMonkeySpider(scrapy.Spider):
 
     name = "hockeyMonkey"
     website_name = "Hockey Monkey"
+    ships_to = "US"
     base_url = "https://www.hockeymonkey.com/"
     start_urls = [
         base_url + "clearance.html",
@@ -28,15 +29,11 @@ class HockeyMonkeySpider(scrapy.Spider):
         Starting from the clearance categories page, explore each category link.
         """
         category_links = response.css(self.exp["category_links"]["css"])
-        yield from response.follow_all(category_links, self.parse_category)
-
-    def parse_category(self, response):
-        """
-        Determine if there are subcategories.
-        """
         subcategory_links = response.css(self.exp["subcategory_links"]["css"])
-        if subcategory_links:
-            yield from response.follow_all(subcategory_links, self.parse_category)
+        if category_links:
+            yield from response.follow_all(category_links, self.parse)
+        elif subcategory_links:
+            yield from response.follow_all(subcategory_links, self.parse)
         else:
             yield from self.parse_products(response)
 
@@ -45,6 +42,17 @@ class HockeyMonkeySpider(scrapy.Spider):
         Extract product details from product list page to minimize number of
         requests made.
         """
+        # Ignore apparel and footwear
+        ignore = [
+            "clearance-adult-hockey-apparel.html",
+            "clearance-youth-hockey-apparel.html",
+            "clearance-womens-hockey-apparel.html",
+            "clearance-footwear.html",
+        ]
+        if response.url.split("/")[-1] in ignore:
+            print(f"Ignoring url {response.url}")
+            return
+
         # Get tags based on url
         tags = self.get_tags(response.url)
 

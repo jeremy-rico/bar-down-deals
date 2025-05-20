@@ -74,6 +74,7 @@ class PostgresPipeline:
             .values(
                 name=spider.website_name,
                 url=spider.base_url,
+                ships_to=spider.ships_to,
                 updated_at=datetime.now(timezone.utc),
             )
             .on_conflict_do_update(
@@ -283,7 +284,7 @@ def get_brand(name: str, scraped_brand: str | None) -> str | None:
                 return brand_name
 
     # Otherwise try to scrape brand from title
-    for brand, brand_name in brands_map.keys():
+    for brand, brand_name in brands_map.items():
         if brand in name.lower():
             return brand_name
 

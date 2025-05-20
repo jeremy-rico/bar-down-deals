@@ -1,5 +1,5 @@
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 import scrapy
 
@@ -7,13 +7,21 @@ from scraper.src.items import Product, ProductLoader
 from scraper.src.utils import read_json
 
 
-class PeranisHockeyWorldSpider(scrapy.Spider):
-    name = "peranisHockeyWorld"
-    website_name = "Peranis Hockey World"
-    country = "US"
-    base_url = "https://www.hockeyworld.com/"
+class HockeyMonkeyCASpider(scrapy.Spider):
+    """
+    Hockey Monkey CANADA spider
+
+    NOTE: There are many empty/invisible product instances so this spider will
+    raise a lot of 'Dropped: Missing Price' warnings. About three per page. This
+    is fine and does not mean the spider is malfunctioning
+    """
+
+    name = "hockeyMonkeyCA"
+    website_name = "Hockey Monkey (CA)"
+    ships_to = "CA"
+    base_url = "https://hockeymonkey.ca/"
     start_urls = [
-        base_url + "CLEARANCE",
+        base_url + "clearance.html",
     ]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
@@ -33,36 +41,29 @@ class PeranisHockeyWorldSpider(scrapy.Spider):
         Extract product details from product list page to minimize number of
         requests made.
         """
-        # Ignore apparel page
+        # Ignore apparel and footwear
         ignore = [
-            "Clearance-Apparel",
+            "clearance-adult-hockey-apparel.html",
+            "clearance-youth-hockey-apparel.html",
+            "clearance-womens-hockey-apparel.html",
+            "clearance-hockey-headwear.html",
         ]
         if response.url.split("/")[-1] in ignore:
+            print(f"Ignoring url {response.url}")
             return
 
         # Get tags based on url
         tags = self.get_tags(response.url)
+        print(tags)
 
         # Get all products on page
-        prods = response.css(self.exp["product_links"]["css"])
+        prods = response.css(self.exp["products"]["css"])
 
         for prod in prods:
             l = ProductLoader(item=Product(), selector=prod)
             for field_name in l.item.fields.keys():
                 if field_name == "tags":
                     l.add_value("tags", tags)
-                elif field_name == "url":
-                    # Manually create and add url
-                    endpoint = prod.css(self.exp["product_info"]["url"]["css"]).get()
-                    url = urljoin(self.base_url, endpoint)
-                    l.add_value("url", url)
-                elif field_name == "image_urls":
-                    # Manually create and add image urls
-                    endpoint = prod.css(
-                        self.exp["product_info"]["image_urls"]["css"]
-                    ).get()
-                    image_urls = urljoin(self.base_url, endpoint)
-                    l.add_value("image_urls", image_urls)
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
             yield l.load_item()
@@ -82,10 +83,12 @@ class PeranisHockeyWorldSpider(scrapy.Spider):
         Returns:
             list[str]: list of tags
         """
+        tags = []
         try:
-            url_page = urlparse(url).path.split("/")[-1]
-            tags = self.exp["tags"].get(url_page) or []
-            return tags
+            for url_keyword, tag in self.exp["tags"].items():
+                if url_keyword in url:
+                    tags += tag
         except Exception as e:
             print(f"Unable to infer tags from url {url}. Error: {e}")
-            return []
+
+        return tags

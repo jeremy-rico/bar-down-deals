@@ -13,6 +13,7 @@ from scraper.src.utils import read_json
 class IceWarehouseSpider(scrapy.Spider):
     name = "iceWarehouse"
     website_name = "Ice Warehouse"
+    country = "US"
     base_url = "https://www.icewarehouse.com/"
     start_urls = [
         base_url + "Clearance_Hockey_Gear/catpage-HOCSALE.html",
@@ -25,15 +26,11 @@ class IceWarehouseSpider(scrapy.Spider):
         Starting from the clearance categories page, explore each category link.
         """
         category_links = response.css(self.exp["category_links"]["css"])
-        yield from response.follow_all(category_links, self.parse_category)
-
-    def parse_category(self, response):
-        """
-        Determine if there are subcategories.
-        """
         subcategory_links = response.css(self.exp["subcategory_links"]["css"])
-        if subcategory_links:
-            yield from response.follow_all(subcategory_links, self.parse_category)
+        if category_links:
+            yield from response.follow_all(category_links, self.parse)
+        elif subcategory_links:
+            yield from response.follow_all(subcategory_links, self.parse)
         else:
             yield from self.parse_products(response)
 
@@ -42,6 +39,14 @@ class IceWarehouseSpider(scrapy.Spider):
         Extract product details from product list page to minimize number of
         requests made.
         """
+        # Ignore apparel page
+        ignore = [
+            "catpage-CSHALFTEAM.html",
+            "catpage-SWOMHOAP.html",
+        ]
+        if response.url.split("/")[-1] in ignore:
+            return
+
         # Get tags based on url
         tags = self.get_tags(response.url)
 

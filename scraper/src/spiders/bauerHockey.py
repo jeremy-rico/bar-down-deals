@@ -18,6 +18,7 @@ class BauerHockeySpider(scrapy.Spider):
 
     name = "bauerHockey"
     website_name = "Bauer Hockey"
+    ships_to = "US"
     base_url = "https://www.bauer.com/"
     start_urls = [
         base_url + "collections/hockey-sticks-on-sale",

@@ -9,6 +9,7 @@ from scraper.src.utils import read_json
 class PureGoalieSpider(scrapy.Spider):
     name = "pureGoalie"
     website_name = "Pure Goalie"
+    country = "US"
     base_url = "https://goalie.purehockey.com/"
     start_urls = [
         base_url + "c/goalie-equipment-sale",
