@@ -28,10 +28,6 @@ def get_deal_service(session: AsyncSession = Depends(get_session)) -> DealServic
     return DealService(repository)
 
 
-import tracemalloc
-from pprint import pprint
-
-
 @router.get("/", response_model=list[DealResponse])
 async def get_deals(
     response: Response,
@@ -62,9 +58,6 @@ async def get_deals(
         for k, i in deals[0].items():
             response.headers[k] = str(i)
 
-        snapshot = tracemalloc.take_snapshot()
-        top_stats = snapshot.statistics("lineno")
-        pprint([str(stat) for stat in top_stats[:5]])
         return deals[1]
     except Exception as e:
         logger.error(f"Failed to fetch deals: {str(e)}")
