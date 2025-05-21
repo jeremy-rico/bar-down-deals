@@ -26,7 +26,7 @@ logger.info("Beginning crawl...")
 
 spiders = [
     DiscountHockeySpider,
-    HockeyMonkeySpider,
+    # HockeyMonkeySpider,
     PureHockeySpider,
     IceWarehouseSpider,
     PeranisHockeyWorldSpider,
@@ -43,20 +43,27 @@ logger.info(f"Spiders scheduled to crawl: {spider_names}")
 start = datetime.now(timezone.utc)
 logger.debug(f"Start time: {start} UTC")
 
-# Crawl all spiders
+# Add all spiders to process
 process = CrawlerProcess(settings)
 for spider in spiders:
     process.crawl(spider)
+
+
+# Begin crawl
 process.start()
+
+# Get crawl elapsed time
 time_elapsed = datetime.now(timezone.utc) - start
 logger.debug(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
 
-
+# Clean database
 logger.info(f"Cleaning database...")
 clean_database()
 
+# Clean S3
 logger.info(f"Cleaning bucket...")
 clean_bucket()
 
+# Get total elapsed time
 time_elapsed = datetime.now(timezone.utc) - start
 logger.info(f"All processes completed in {time_elapsed.total_seconds()} seconds")

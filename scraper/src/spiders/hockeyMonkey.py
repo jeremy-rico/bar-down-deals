@@ -15,7 +15,7 @@ class HockeyMonkeySpider(scrapy.Spider):
     """
 
     name = "hockeyMonkey"
-    website_name = "Hockey Monkey"
+    website_name = "Hockey Monkey (US)"
     ships_to = "US"
     base_url = "https://www.hockeymonkey.com/"
     start_urls = [
@@ -47,6 +47,7 @@ class HockeyMonkeySpider(scrapy.Spider):
             "clearance-adult-hockey-apparel.html",
             "clearance-youth-hockey-apparel.html",
             "clearance-womens-hockey-apparel.html",
+            "clearance-hockey-headwear.html",
             "clearance-footwear.html",
         ]
         if response.url.split("/")[-1] in ignore:

@@ -10,7 +10,7 @@ from scraper.src.utils import read_json
 class PeranisHockeyWorldSpider(scrapy.Spider):
     name = "peranisHockeyWorld"
     website_name = "Peranis Hockey World"
-    country = "US"
+    ships_to = "US"
     base_url = "https://www.hockeyworld.com/"
     start_urls = [
         base_url + "CLEARANCE",
