@@ -5,8 +5,10 @@ from scrapy.utils.project import get_project_settings
 
 from scraper.src.database import clean_bucket, clean_database
 from scraper.src.spiders.ccmHockey import CCMHockeySpider
+from scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
 from scraper.src.spiders.discountHockey import DiscountHockeySpider
 from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
+from scraper.src.spiders.hockeyMonkeyCA import HockeyMonkeyCASpider
 from scraper.src.spiders.hockeyShot import HockeyShotSpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
 from scraper.src.spiders.peranisHockeyWorld import PeranisHockeyWorldSpider
@@ -32,6 +34,8 @@ spiders = [
     PureGoalieSpider,
     PolyGlideSpider,
     HockeyShotSpider,
+    HockeyMonkeyCASpider,
+    CCMHockeyCASpider,
 ]
 spider_names = [spider.name for spider in spiders]
 logger.info(f"Spiders scheduled to crawl: {spider_names}")
