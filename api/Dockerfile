@@ -1,41 +1,36 @@
-# ============== Stage 1: Build dependencies ====================
-FROM python:3.12-slim AS builder 
+# Stage 1: base
+FROM python:3.12-slim as base
+ENV  POETRY_VERSION=2.0.1 \
+	PYTHONUNBUFFERED=1 \
+	PYTHONDONTWRITEBYTECODE=1 \
+	PIP_NO_CACHE_DIR=off \
+	PIP_DISABLE_PIP_VERSION_CHECK=on \
+	PIP_DEFAULT_TIMEOUT=100 \
+	POETRY_HOME="/opt/poetry" \
+	POETRY_VIRTUALENVS_IN_PROJECT=true \
+	POETRY_NO_INTERACTION=1 \
+	PYSETUP_PATH="/opt/pysetup" \
+	VENV_PATH="/opt/pysetup/.venv"
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# Install OS-level dependencies (build-essential, etc.)
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-# build-essential gcc libffi-dev libpq-dev curl && \
-# rm -rf /var/lib/apt/lists/*
+# Stage 2: builder
+FROM base as builder
+RUN --mount=type=cache,target=/root/.cache \
+	pip install "poetry==$POETRY_VERSION"
+WORKDIR $PYSETUP_PATH
+COPY ./poetry.lock ./pyproject.toml ./
+RUN --mount=type=cache,target=$POETRY_HOME/pypoetry/cache \
+	poetry install --only main
 
-# Set working directory
-WORKDIR /app
-
-# Install pip-tools to freeze dependencies
-RUN pip install --upgrade pip setuptools wheel
-
-# Install application dependencies
-COPY requirements.txt .
-RUN pip install --prefix=/install -r requirements.txt
-
-# ============== Stage 2: Runtime ====================
-FROM python:3.12-slim
-
-LABEL maintainer="jeremy.rico35@gmail.com"
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# Copy installed packages from builder
-COPY --from=builder /install /usr/local
+# Stage 3: production
+FROM base as production
+ENV FASTAPI_ENV=production
+COPY --from=builder $VENV_PATH $VENV_PATH
 COPY . /app
-
-# Set working directory
 WORKDIR /app
-
-# Expose port
 EXPOSE 8000
-
-# Set non-root user for security
-RUN adduser --disabled-password --no-create-home appuser && chown -R appuser /app
-USER appuser
-
-# Use Gunicorn + Uvicorn worker for production async performance
-CMD ["gunicorn", "src.main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--workers", "1", "--threads", "2", "--timeout", "30"]
+# Two workers help mitigate memory leaks and reduce per-worker memory pressure 
+# --keep-alive 30 Keeps connections alive longer, reducing SSL setup/teardown overhead
+CMD ["gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000", "--keep-alive", "30"]
+# CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000"]
+# CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
