@@ -9,15 +9,15 @@ from scraper.src.items import Product, ProductLoader
 from scraper.src.utils import read_json
 
 
-class BauerHockeySpider(scrapy.Spider):
+class BauerHockeyUSSpider(scrapy.Spider):
     """
     Bauer is a bitch and holds all their data behind js. Not able to get any
     category or product links so for this scraper we hardcode each category page
     and extract what we can from a script that has some content.
     """
 
-    name = "bauerHockey"
-    website_name = "Bauer Hockey"
+    name = "bauerHockeyUS"
+    website_name = "Bauer Hockey (US)"
     ships_to = "US"
     base_url = "https://www.bauer.com/"
     start_urls = [

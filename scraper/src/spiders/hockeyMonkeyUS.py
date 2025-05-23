@@ -7,14 +7,14 @@ from scraper.src.items import Product, ProductLoader
 from scraper.src.utils import read_json
 
 
-class HockeyMonkeySpider(scrapy.Spider):
+class HockeyMonkeyUSSpider(scrapy.Spider):
     """
     NOTE: There are many empty/invisible product instances so this spider will
     raise a lot of 'Dropped: Missing Price' warnings. About three per page. This
     is fine and does not mean the spider is malfunctioning
     """
 
-    name = "hockeyMonkey"
+    name = "hockeyMonkeyUS"
     website_name = "Hockey Monkey (US)"
     ships_to = "US"
     base_url = "https://www.hockeymonkey.com/"

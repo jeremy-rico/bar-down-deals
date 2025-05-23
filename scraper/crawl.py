@@ -4,15 +4,17 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 from scraper.src.database import clean_bucket, clean_database
-from scraper.src.spiders.ccmHockey import CCMHockeySpider
+from scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
 from scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
+from scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
 from scraper.src.spiders.discountHockey import DiscountHockeySpider
-from scraper.src.spiders.hockeyMonkey import HockeyMonkeySpider
 from scraper.src.spiders.hockeyMonkeyCA import HockeyMonkeyCASpider
+from scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSSpider
 from scraper.src.spiders.hockeyShot import HockeyShotSpider
 from scraper.src.spiders.iceWarehouse import IceWarehouseSpider
 from scraper.src.spiders.peranisHockeyWorld import PeranisHockeyWorldSpider
 from scraper.src.spiders.polyGlideIce import PolyGlideSpider
+from scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
 from scraper.src.spiders.pureGoalie import PureGoalieSpider
 from scraper.src.spiders.pureHockey import PureHockeySpider
 from scraper.src.utils import get_logger, setup_logging
@@ -25,17 +27,19 @@ logger = get_logger(__name__)
 logger.info("Beginning crawl...")
 
 spiders = [
+    BauerHockeyUSSpider,
+    CCMHockeyUSSpider,
+    CCMHockeyCASpider,
     DiscountHockeySpider,
-    # HockeyMonkeySpider,
-    PureHockeySpider,
+    HockeyMonkeyCASpider,
+    HockeyMonkeyUSSpider,
+    HockeyShotSpider,
     IceWarehouseSpider,
     PeranisHockeyWorldSpider,
-    CCMHockeySpider,
-    PureGoalieSpider,
     PolyGlideSpider,
-    HockeyShotSpider,
-    HockeyMonkeyCASpider,
-    CCMHockeyCASpider,
+    ProHockeyLifeSpider,
+    PureGoalieSpider,
+    PureHockeySpider,
 ]
 spider_names = [spider.name for spider in spiders]
 logger.info(f"Spiders scheduled to crawl: {spider_names}")

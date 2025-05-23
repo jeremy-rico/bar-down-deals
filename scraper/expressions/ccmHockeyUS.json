@@ -24,5 +24,16 @@
     "url": {
       "css": "div.ccm-product-tile-image a.ccm-product-tile-image__link.js-product-tile-link.js-focusable-element::attr(href)"
     }
+  },
+  "tags": {
+    "Skates": ["Skates"],
+    "Sticks": ["Sticks"],
+    "Gloves": ["Protective", "Gloves"],
+    "Pants": ["Protective", "Pants"],
+    "Shoulder-Pads": ["Protective", "Shoulder Pads"],
+    "Elbow-Pads": ["Protective", "Elbow Pads"],
+    "Shin-Guards": ["Protective", "Shin Guards"],
+    "Goalie": ["Goalie"],
+    "Accessories": ["Accessories"]
   }
 }

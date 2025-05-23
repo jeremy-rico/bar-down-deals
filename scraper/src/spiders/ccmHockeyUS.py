@@ -7,13 +7,21 @@ from scraper.src.items import Product, ProductLoader
 from scraper.src.utils import read_json
 
 
-class CCMHockeySpider(scrapy.Spider):
-    name = "ccmHockey"
-    website_name = "CCM Hockey"
+class CCMHockeyUSSpider(scrapy.Spider):
+    name = "ccmHockeyUS"
+    website_name = "CCM Hockey (US)"
     ships_to = "US"
     base_url = "https://us.ccmhockey.com/"
     start_urls = [
-        base_url + "Sale",
+        base_url + "Sale/Skates",
+        base_url + "Sale/Sticks",
+        base_url + "Sale/Protective/Gloves",
+        base_url + "Sale/Protective/Pants",
+        base_url + "Sale/Protective/Shoulder-Pads",
+        base_url + "Sale/Protective/Elbow-Pads",
+        base_url + "Sale/Protective/Shin-Guards",
+        base_url + "Sale/Goalie",
+        # base_url + "Sale/Accessories", # no Accessories page for us site
     ]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
@@ -25,6 +33,7 @@ class CCMHockeySpider(scrapy.Spider):
         # Holder for manually added values
         manual_vals = {}
         manual_vals["brand"] = "CCM"
+        manual_vals["tags"] = self.get_tags(response.url)
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])
@@ -57,3 +66,10 @@ class CCMHockeySpider(scrapy.Spider):
         # they change one day
         next_links = response.css(self.exp["next_links"]["css"])
         yield from response.follow_all(next_links, self.parse)
+
+    def get_tags(self, url: str) -> list[str]:
+        """
+        Get tags based on url
+        """
+        url_end = url.split("/")[-1]
+        return self.exp["tags"][url_end]
