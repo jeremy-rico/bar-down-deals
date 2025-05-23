@@ -31,6 +31,7 @@ WORKDIR /app
 EXPOSE 8000
 # Two workers help mitigate memory leaks and reduce per-worker memory pressure 
 # --keep-alive 30 Keeps connections alive longer, reducing SSL setup/teardown overhead
-CMD ["gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000", "--keep-alive", "30"]
+CMD ["gunicorn", "src.main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--workers", "1", "--threads", "2", "--timeout", "30"]
+# CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000", "--keep-alive", "30"]
 # CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "src.main:app", "--bind", "0.0.0.0:8000"]
 # CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
