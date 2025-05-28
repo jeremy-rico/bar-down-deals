@@ -1,3 +1,4 @@
+import gc
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
@@ -58,6 +59,9 @@ async def get_deals(
         for k, i in deals[0].items():
             response.headers[k] = str(i)
 
+        # TODO: See if this helps memory leak?
+        logger.info("Collecting garbage...")
+        gc.collect()
         return deals[1]
     except Exception as e:
         logger.error(f"Failed to fetch deals: {str(e)}")
