@@ -1,0 +1,3 @@
+{
+  "price": "div.product-info-main span.normal-price span.price::text"
+}

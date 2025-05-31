@@ -1,0 +1,78 @@
+{
+  "category_links": {
+    "css": "div.shop-by-category a.sub-category-image"
+  },
+  "subcategory_links": {
+    "css": "div.shop-by-category a"
+  },
+  "products": {
+    "css": "div.product-item-info"
+  },
+  "product_info": {
+    "name": {
+      "css": "a.product-item-link::text"
+    },
+    "brand": {
+      "css": "strong.brand-name::text"
+    },
+    "url": {
+      "css": "a.product-item-link::attr(href)"
+    },
+    "image_urls": {
+      "css": "img.product-image-photo::attr(data-src)"
+    },
+    "price": {
+      "css": "span.normal-price.is-clearance span.price::text"
+    },
+    "original_price": {
+      "css": "span.old-price span.price::text"
+    }
+  },
+  "next_links": {
+    "css": "div.pages a.action.next"
+  },
+  "tags": {
+    "hockey-equipment/sticks": ["Sticks"],
+    "hockey-equipment/skates": ["Skates"],
+    "hockey-equipment/helmets": ["Protective", "Helmets"],
+    "hockey-equipment/cages-shields": ["Protective", "Cages & Shields"],
+    "hockey-equipment/gloves": ["Protective", "Gloves"],
+    "hockey-equipment/shoulder-pads": ["Protective", "Shoulder Pads"],
+    "hockey-equipment/shin-guards": ["Protective", "Shin Guards"],
+    "hockey-equipment/elbow-pads": ["Protective", "Elbow Pads"],
+    "hockey-equipment/pants": ["Protective", "Pants"],
+    "hockey-equipment/pants/shells": ["Protective", "Pant Shells"],
+    "hockey-equipment/bags": ["Bags"],
+
+    "goalie-equipment/leg-pads": ["Goalie", "Leg Pads"],
+    "goalie-equipment/gloves": ["Goalie", "Catchers"],
+    "goalie-equipment/blockers": ["Goalie", "Blockers"],
+    "goalie-equipment/chest-protectors": ["Goalie", "Chest & Arm"],
+    "goalie-equipment/pants": ["Goalie", "Goalie Pants"],
+    "goalie-equipment/masks": ["Goalie", "Masks"],
+    "goalie-equipment/skates": ["Goalie", "Goalie Skates"],
+    "goalie-equipment/sticks": ["Goalie", "Goalie Sticks"],
+    "goalie-equipment/accessories": ["Goalie", "Accessories"],
+
+    "roller": ["Roller"],
+    "roller/skates": ["Roller", "Inline Skates"],
+
+    "gamewear/clearance-gamewear": ["Gamewear", "Jerseys"],
+    "gamewear/clearance-hockey-socks": ["Gamewear", "Socks"],
+    "gamewear/closeout-undergarments/clearance-hockey-upper-body-undergarments": [
+      "Gamewear",
+      "Base Layer"
+    ],
+    "gamewear/closeout-undergarments/clearance-hockey-lower-body-undergarments-jocks": [
+      "Gamewear",
+      "Base Layer",
+      "Jocks"
+    ],
+    "accessories": ["Accessories"],
+
+    "senior": ["Senior"],
+    "intermediate": ["Intermediate"],
+    "junior": ["Junior"],
+    "youth": ["Youth"]
+  }
+}

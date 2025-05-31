@@ -1,0 +1,40 @@
+{
+  "category_links": {
+    "css": "div.ph-brand-category-grid a"
+  },
+  "next_links": {
+    "css": "div.pager a.pg.pg-arrow.fwd-pg"
+  },
+  "product_links": {
+    "css": "div.item"
+  },
+  "product_info": {
+    "brand": {
+      "css": "None"
+    },
+    "image_urls": {
+      "css": "div.image img::attr(src)"
+    },
+    "name": {
+      "css": "div.details div.name a::text"
+    },
+    "original_price": {
+      "css": "div.details div.price div.price-was::text"
+    },
+    "price": {
+      "css": "div.details div.price div.price-is::text"
+    },
+    "url": {
+      "css": "div.item div.details a::attr(href)"
+    }
+  },
+  "tags": {
+    "hockey-sticks-sale": ["Sticks"],
+    "hockey-skates-sale": ["Skates"],
+    "hockey-clearance-gloves": ["Protective", "Gloves"],
+    "hockey-helmets-sale": ["Protective", "Helmets"],
+    "hockey-protective-sale": ["Protective"],
+    "hockey-apparel-sale": ["Apparel"],
+    "hockey-clearance-accessories": ["Accessories"]
+  }
+}

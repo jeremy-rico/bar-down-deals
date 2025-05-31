@@ -12,6 +12,7 @@ from src.core.utils import populate_tags, run_migrations
 from src.deals.routes import router as deals_router
 from src.products.routes import router as products_router
 from src.search.routes import router as search_router
+from src.sticks.routes import router as sticks_router
 from src.users.routes import router as auth_router
 
 tracemalloc.start()
@@ -64,6 +65,7 @@ app.include_router(products_router)
 app.include_router(search_router)
 app.include_router(auth_router)
 app.include_router(alerts_router)
+app.include_router(sticks_router)
 
 
 @app.get("/health")

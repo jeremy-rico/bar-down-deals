@@ -1,0 +1,58 @@
+{
+  "category_links": {
+    "css": "div.rte p a"
+  },
+  "subcategory_links": {
+    "css": "div.btn-group.btn-group-justified div.btn-group a"
+  },
+  "product_links": {
+    "css": "div.product-collection.products-grid.row div.no_crop_image.grid-item.col-xs-6.col-md-3"
+  },
+  "product_info": {
+    "name": {
+      "css": "a.product-title::text"
+    },
+    "brand": {
+      "css": "None"
+    },
+    "url": {
+      "css": "a.product-title::attr(href)"
+    },
+    "image_urls": {
+      "css": "img::attr(src)"
+    },
+    "price": {
+      "css": "div.price-box p.sale span.special-price::text"
+    },
+    "original_price": {
+      "css": "div.price-box p.sale span.old-price::text"
+    }
+  },
+  "next_links": {
+    "css": "ul.pagination-page li.text a"
+  },
+  "tags": {
+    "hockey-skates": ["Skates"],
+    "hockey-sticks": ["Sticks"],
+    "shoulder-pads": ["Protective", "Shoulder Pads"],
+    "elbow-pads": ["Protective", "Elbow Pads"],
+    "hockey-gloves": ["Protective", "Gloves"],
+    "hockey-pants": ["Protective", "Pants"],
+    "shin-guards": ["Protective", "Shin Guards"],
+    "hockey-helmets": ["Protective", "Helmets"],
+
+    "goalie-pads": ["Goalie", "Leg Pads"],
+    "goalie-catchers": ["Goalie", "Catchers"],
+    "goalie-blockers": ["Goalie", "Blockers"],
+    "chest-protectors": ["Goalie", "Chest & Arm"],
+    "goalie-pants": ["Goalie", "Goalie Pants"],
+    "goalie-masks": ["Goalie", "Masks"],
+    "goalie-skates": ["Goalie", "Goalie Skates"],
+    "goalie-sticks": ["Goalie", "Goalie Sticks"],
+
+    "senior": ["Senior"],
+    "intermediate": ["Intermediate"],
+    "junior": ["junior"],
+    "youth": ["youth"]
+  }
+}

@@ -7,6 +7,7 @@ from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from src.products.models import Product, ProductResponse
+    from src.sticks.models import StickPrice
 
 
 # ============================= Website Models ==================================
@@ -21,6 +22,9 @@ class Website(WebsiteBase, table=True):
     updated_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
 
     deals: list["Deal"] = Relationship(back_populates="website", cascade_delete=True)
+    stick_price: list["StickPrice"] = Relationship(
+        back_populates="website", cascade_delete=True
+    )
 
     def __repr__(self) -> str:
         return f"Website(id={self.id}, name={self.name}, url={self.url})"

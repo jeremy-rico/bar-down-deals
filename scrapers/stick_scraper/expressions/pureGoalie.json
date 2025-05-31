@@ -1,0 +1,28 @@
+{
+  "next_links": {
+    "css": "div.pager a.pg.pg-arrow.fwd-pg"
+  },
+  "products": {
+    "css": "div.item"
+  },
+  "product_info": {
+    "name": {
+      "css": "div.details div.name a::text"
+    },
+    "brand": {
+      "css": "None"
+    },
+    "image_urls": {
+      "css": "div.image img::attr(src)"
+    },
+    "price": {
+      "css": "div.details div.price div.price-is::text"
+    },
+    "original_price": {
+      "css": "div.details div.price div.price-was::text"
+    },
+    "url": {
+      "css": "div.details div.name a::attr(href)"
+    }
+  }
+}
