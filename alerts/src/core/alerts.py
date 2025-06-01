@@ -1,15 +1,16 @@
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from pathlib import Path
-from pprint import pprint
 from urllib.parse import urlencode
 
 import requests
 from api.src.alerts.models import UserAlert
+
+# All below are needed for models to resolve
 from api.src.deals.models import Deal
 from api.src.products.models import Product, Tag
+from api.src.sticks.models import StickPrice
 from api.src.users.models import Users  # needed for UserAlert to resolve
 from jinja2 import Environment, FileSystemLoader
 from sqlmodel import select
