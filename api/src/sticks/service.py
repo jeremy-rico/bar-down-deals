@@ -33,7 +33,24 @@ class StickService:
             min_price=min_price,
             max_price=max_price,
         )
-        return [StickResponse.model_validate(stick) for stick in sticks]
+
+        if not sticks:
+            return []
+
+        # Fetch all current prices in one go
+        current_prices = await self.repository.get_current_price_bulk()
+
+        # Map stick_id -> price for fast lookup
+        price_map = {price.stick_id: price.current_price for price in current_prices}
+
+        # Attach prices and construct response
+        sticks_response = []
+        for stick in sticks:
+            stick_data = stick.model_dump()
+            stick_data["price"] = price_map.get(stick.id)
+            sticks_response.append(StickResponse.model_validate(stick_data))
+
+        return sticks_response
 
     async def get_stick(self, stick_id: int) -> StickResponse:
         """Get stick by ID.

@@ -23,13 +23,16 @@ class PureGoalieSpider(scrapy.Spider):
         """
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])
+        manual_vals = {"currency": "USD"}
 
         # Extract product details
         for prod in prods:
             # Load item
             l = ProductLoader(item=Product(), selector=prod)
             for field_name in l.item.fields.keys():
-                if field_name in self.exp["product_info"]:
+                if field_name in manual_vals:
+                    l.add_value(field_name, manual_vals[field_name])
+                elif field_name in self.exp["product_info"]:
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
 
             yield l.load_item()

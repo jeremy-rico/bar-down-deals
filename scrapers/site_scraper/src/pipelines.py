@@ -179,6 +179,7 @@ class PostgresPipeline:
                 website_id=self.website.id,
                 price=item.get("price"),
                 original_price=item.get("original_price", None),
+                currency=item.get("currency"),
                 discount=discount,
                 url=item.get("url"),
                 created_at=datetime.now(timezone.utc),

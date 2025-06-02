@@ -55,7 +55,9 @@ class HockeyMonkeyUSSpider(scrapy.Spider):
             return
 
         # Get tags based on url
-        tags = self.get_tags(response.url)
+        manual_vals = {}
+        manual_vals["tags"] = self.get_tags(response.url)
+        manual_vals["currency"] = "USD"
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])
@@ -63,8 +65,8 @@ class HockeyMonkeyUSSpider(scrapy.Spider):
         for prod in prods:
             l = ProductLoader(item=Product(), selector=prod)
             for field_name in l.item.fields.keys():
-                if field_name == "tags":
-                    l.add_value("tags", tags)
+                if field_name in manual_vals:
+                    l.add_value(field_name, manual_vals[field_name])
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
             yield l.load_item()

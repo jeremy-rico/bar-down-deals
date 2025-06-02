@@ -34,6 +34,7 @@ class CCMHockeyUSSpider(scrapy.Spider):
         manual_vals = {}
         manual_vals["brand"] = "CCM"
         manual_vals["tags"] = self.get_tags(response.url)
+        manual_vals["currency"] = "USD"
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])

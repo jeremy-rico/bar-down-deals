@@ -52,6 +52,7 @@ class BauerHockeyUSSpider(scrapy.Spider):
                 l.add_value("url", url)
                 l.add_value("tags", tags)
                 l.add_value("price", prod["price"])
+                l.add_value("currency", "USD")
                 l.add_value("image_urls", image_urls)
                 l.add_value("original_price", prod["compareAtPrice"])
 

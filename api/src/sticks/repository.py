@@ -98,9 +98,41 @@ class StickRepository:
         stmt = select(StickPrice).where(col(StickPrice.stick_id) == stick_id)
 
         if time_period in time_period_map:
-            start_date = time_period_map[time_period]
-            stmt = stmt.filter(col(StickPrice.timestamp) >= start_date)
+            since = time_period_map[time_period]
+            stmt = stmt.filter(col(StickPrice.timestamp) >= since)
 
         result = await self.session.execute(stmt)
-
         return list(result.scalars().all())
+
+    async def get_current_price(self, stick_id: int) -> StickPrice:
+        """
+        Get current price. Defined as lowest price found in the last 24hrs
+        """
+        since = datetime.now(timezone.utc) - timedelta(hours=24)
+        stmt = (
+            select(StickPrice)
+            .where(
+                col(StickPrice.stick_id) == stick_id, col(StickPrice.timestamp) >= since
+            )
+            .order_by(col(StickPrice.price).asc())
+            .limit(1)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
+
+    async def get_current_price_bulk(self):
+        """
+        Bulk operation to get current price of all sticks
+        """
+        since = datetime.now(timezone.utc) - timedelta(hours=24)
+        stmt = (
+            select(
+                col(StickPrice.stick_id),
+                func.min(col(StickPrice.price)).label("current_price"),
+            )
+            .where(col(StickPrice.timestamp) >= since)
+            .group_by(col(StickPrice.stick_id))
+        )
+
+        result = await self.session.execute(stmt)
+        return list(result.all())

@@ -24,6 +24,7 @@ class PolyGlideSpider(scrapy.Spider):
         manual_vals = {}
         manual_vals["brand"] = "PolyGlide"
         manual_vals["tags"] = ["Synthetic Ice"]
+        manual_vals["currency"] = "USD"
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])

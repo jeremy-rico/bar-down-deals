@@ -16,7 +16,7 @@ from scrapers.site_scraper.src.spiders.peranisHockeyWorld import (
 from scrapers.site_scraper.src.spiders.polyGlideIce import PolyGlideSpider
 from scrapers.site_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
 from scrapers.site_scraper.src.spiders.pureGoalie import PureGoalieSpider
-from scrapers.site_scraper.src.spiders.pureHockey import PureHockeySpider
+from scrapers.site_scraper.src.spiders.pureHockey import PureHockeyStickSpider
 from scrapers.site_scraper.src.utils import get_logger, setup_logging
 from scrapers.stick_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSStickSpider
 
@@ -40,7 +40,7 @@ spiders = [
     # PolyGlideSpider,
     # ProHockeyLifeSpider,
     # PureGoalieSpider,
-    # PureHockeySpider,
+    PureHockeyStickSpider,
 ]
 spider_names = [spider.name for spider in spiders]
 logger.info(f"Spiders scheduled to crawl: {spider_names}")

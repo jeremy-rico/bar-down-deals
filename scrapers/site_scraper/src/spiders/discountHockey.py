@@ -24,6 +24,7 @@ class DiscountHockeySpider(scrapy.Spider):
         """
         # Holder for manually added values
         manual_vals = {}
+        manual_vals["currency"] = "USD"
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])

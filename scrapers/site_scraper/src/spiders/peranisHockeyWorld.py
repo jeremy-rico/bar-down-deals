@@ -51,18 +51,20 @@ class PeranisHockeyWorldSpider(scrapy.Spider):
             for field_name in l.item.fields.keys():
                 if field_name == "tags":
                     l.add_value("tags", tags)
+                # Manually create and add url
                 elif field_name == "url":
-                    # Manually create and add url
                     endpoint = prod.css(self.exp["product_info"]["url"]["css"]).get()
                     url = urljoin(self.base_url, endpoint)
                     l.add_value("url", url)
+                # Manually create and add image urls
                 elif field_name == "image_urls":
-                    # Manually create and add image urls
                     endpoint = prod.css(
                         self.exp["product_info"]["image_urls"]["css"]
                     ).get()
                     image_urls = urljoin(self.base_url, endpoint)
                     l.add_value("image_urls", image_urls)
+                elif field_name == "currency":
+                    l.add_value("currency", "USD")
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
             yield l.load_item()

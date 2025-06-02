@@ -63,6 +63,8 @@ class ProHockeyLifeSpider(scrapy.Spider):
                         else endpoint
                     )
                     l.add_value("image_urls", image_urls)
+                elif field_name == "currency":
+                    l.add_value("currency", "CAD")
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
             yield l.load_item()

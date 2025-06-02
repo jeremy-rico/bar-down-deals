@@ -54,7 +54,6 @@ class IceWarehouseSpider(scrapy.Spider):
         prods = response.css(self.exp["product_links"]["css"])
 
         for prod in prods:
-            print(prod.css(self.exp["product_info"]["name"]["css"]).get())
             price, original_price = self.get_pricing(prod)
             image_urls = self.get_image_urls(prod)
             l = ProductLoader(item=Product(), selector=prod)
@@ -67,6 +66,8 @@ class IceWarehouseSpider(scrapy.Spider):
                     l.add_value("original_price", original_price)
                 elif field_name == "image_urls":
                     l.add_value("image_urls", image_urls)
+                elif field_name == "currency":
+                    l.add_value("currency", "USD")
                 elif field_name in self.exp["product_info"].keys():
                     l.add_css(field_name, self.exp["product_info"][field_name]["css"])
             yield l.load_item()

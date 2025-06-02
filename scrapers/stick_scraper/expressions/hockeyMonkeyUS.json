@@ -1,3 +1,4 @@
 {
+  "sale_price": "div.product-info-main span.normal-price.is-clearance span.price::text",
   "price": "div.product-info-main span.normal-price span.price::text"
 }

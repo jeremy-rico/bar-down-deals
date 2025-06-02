@@ -14,6 +14,7 @@ class StickBase(SQLModel):
     model_name: str = Field(max_length=255, index=True)
     brand: str | None = Field(max_length=64)
     line: str = Field(max_length=255)
+    msrp: Decimal = Field(max_digits=10, decimal_places=2)
     description: str
     handedness: str = Field(max_length=16)
     flex: int
@@ -39,6 +40,7 @@ class StickCreate(StickBase):
 
 class StickResponse(StickBase):
     id: int
+    price: float
     updated_at: datetime
     created_at: datetime
 

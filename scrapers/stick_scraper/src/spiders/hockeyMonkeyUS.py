@@ -37,8 +37,10 @@ class HockeyMonkeyUSStickSpider(scrapy.Spider):
         l.add_value("currency", "USD")
         l.add_value("url", response.url)
 
-        # Add css
-        for field_name in self.exp.keys():
-            l.add_css(field_name, self.exp[field_name])
+        # Check for sale price, fall back to original
+        if response.css(self.exp["sale_price"]).get():
+            l.add_css("price", self.exp["sale_price"])
+        else:
+            l.add_css("price", self.exp["price"])
 
         yield l.load_item()

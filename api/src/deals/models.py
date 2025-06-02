@@ -38,6 +38,7 @@ class WebsiteResponse(WebsiteBase):
 class DealBase(SQLModel):
     price: Decimal = Field(max_digits=10, decimal_places=2)
     original_price: Decimal | None = Field(max_digits=10, decimal_places=2)
+    currency: str = Field(max_length=3)
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
     url: str = Field(unique=True)
     views: int = Field(default=0)

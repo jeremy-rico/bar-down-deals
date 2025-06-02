@@ -11,6 +11,7 @@ class Product(Item):
     url = Field()
     price = Field()
     original_price = Field()
+    currency = Field()
     image_urls = Field()
     images = Field()
     tags = Field()
