@@ -60,7 +60,7 @@ class StickService:
         stick = await self.repository.get_by_id(stick_id)
         images = await self.repository.get_images(stick_id)
         stick_data = stick.model_dump()
-        stick_data["image_urls"] = images
+        stick_data["images"] = images
 
         return StickResponse.model_validate(stick_data)
 

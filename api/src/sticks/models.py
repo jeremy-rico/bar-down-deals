@@ -73,8 +73,9 @@ class StickImage(StickImageBase, table=True):
     )
 
 
-class StickImageResponse(StickImageBase):
-    pass
+class StickImageResponse(BaseModel):
+    stick_id: int
+    image_urls: list[str]
 
 
 # =========================== Stick Price Models ==============================
@@ -110,11 +111,6 @@ class StickPriceResponse(StickPriceBase):
 class HistoricalPrice(BaseModel):
     timestamp: datetime
     min_price: float
-
-
-class StickImageResponse(BaseModel):
-    stick_id: int
-    image_urls: list[str]
 
 
 # =============================== Filter Query Model ==========================
