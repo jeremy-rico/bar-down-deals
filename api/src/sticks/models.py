@@ -15,6 +15,12 @@ class StickBase(SQLModel):
     brand: str | None = Field(max_length=64)
     line: str = Field(max_length=255)
     msrp: Decimal = Field(max_digits=10, decimal_places=2)
+    price: Decimal = Field(
+        max_digits=10,
+        decimal_places=2,
+    )
+    currency: str = Field(max_length=3)
+    discount: Decimal | None = Field(max_digits=4, decimal_places=2)
     description: str
     handedness: str = Field(max_length=16)
     flex: int
@@ -30,7 +36,15 @@ class Stick(StickBase, table=True):
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True)))
 
     price_history: list["StickPrice"] = Relationship(
-        back_populates="stick", cascade_delete=True
+        back_populates="stick",
+        cascade_delete=True,
+        # sa_relationship_kwargs={"lazy": "selectin"},
+    )
+
+    images: list["StickImage"] = Relationship(
+        back_populates="stick",
+        cascade_delete=True,
+        sa_relationship_kwargs={"lazy": "selectin"},
     )
 
 
@@ -40,9 +54,27 @@ class StickCreate(StickBase):
 
 class StickResponse(StickBase):
     id: int
-    price: float
+    images: list[str]
     updated_at: datetime
     created_at: datetime
+
+
+# =========================== Stick Images Models =============================
+class StickImageBase(SQLModel):
+    url: str = Field(max_length=255, unique=True)
+
+
+class StickImage(StickImageBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    stick_id: int = Field(foreign_key="stick.id", ondelete="CASCADE")
+
+    stick: "Stick" = Relationship(
+        back_populates="images", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+
+class StickImageResponse(StickImageBase):
+    pass
 
 
 # =========================== Stick Price Models ==============================
@@ -75,6 +107,16 @@ class StickPriceResponse(StickPriceBase):
     website: "WebsiteResponse"
 
 
+class HistoricalPrice(BaseModel):
+    timestamp: datetime
+    min_price: float
+
+
+class StickImageResponse(BaseModel):
+    stick_id: int
+    image_urls: list[str]
+
+
 # =============================== Filter Query Model ==========================
 class StickQueryParams(BaseModel):
     """
@@ -90,7 +132,6 @@ class StickQueryParams(BaseModel):
     """
 
     sort: Literal[
-        "Popular",
         "Alphabetical",
         "Newest",
         "Oldest",
@@ -98,7 +139,7 @@ class StickQueryParams(BaseModel):
         "Price High",
         "Price Low",
         "Random",
-    ] = "Popular"
+    ] = "Alphabetical"
     page: int = Field(1, ge=1)
     limit: int = Field(20, gt=0, le=100)
     brand: str | None = Field(default=None)
@@ -114,4 +155,4 @@ class PriceQueryParams(BaseModel):
     time_period: time period to grab from
     """
 
-    time_period: Literal["1W", "1M", "YTD", "1Y", "5Y", "All"] = "1M"
+    time_period: Literal["1W", "1M", "6M", "1Y", "5Y", "All"] = "1M"

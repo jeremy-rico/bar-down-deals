@@ -58,6 +58,27 @@ class PostgresPipeline:
         if not adapter.get("price"):
             raise DropItem("Missing Price")
 
+    def update_stick(self, item) -> Stick:
+        """
+        Update stick if necessary
+        """
+        stmt = select(Stick).where(Stick.id == item.get("stick_id"))
+        result = self.session.execute(stmt)
+        stick = result.scalar_one()
+        stick.updated_at = datetime.now(timezone.utc)
+
+        if item.get("price") < stick.price:
+            stick.price = item.get("price")
+            stick.currency = item.get("currency")
+            self.session.add(stick)
+            try:
+                self.session.commit()
+                self.session.refresh(stick)
+            except Exception as e:
+                logger.warning(f"Failed to insert price: {e}")
+                self.session.rollback()
+        return stick
+
     def insert_price(self, item) -> StickPrice:
         """
         INSERT new price

@@ -30,4 +30,5 @@ class ProductLoader(ItemLoader):
     url_out = TakeFirst()
     price_out = TakeFirst()
     original_price_out = TakeFirst()
+    currency_out = TakeFirst()
     store_out = TakeFirst()

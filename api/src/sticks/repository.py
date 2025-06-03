@@ -1,15 +1,19 @@
-import json
-import math
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import and_, col, func, or_
+from sqlmodel import col, func
 
 from src.core.exceptions import NotFoundException
 from src.core.logging import get_logger
 from src.deals.models import Website
-from src.sticks.models import Stick, StickPrice
+from src.sticks.models import (
+    HistoricalPrice,
+    Stick,
+    StickImage,
+    StickImageResponse,
+    StickPrice,
+)
 
 logger = get_logger(__name__)
 
@@ -19,6 +23,14 @@ class StickRepository:
 
     def __init__(self, session: AsyncSession):
         self.session = session
+        self.granularity_map = {
+            "1W": "day",
+            "1M": "day",
+            "6M": "week",
+            "1Y": "month",
+            "5Y": "month",
+            "All": "day",  # NOTE: check this
+        }
 
     async def get_all(
         self,
@@ -26,7 +38,6 @@ class StickRepository:
         page: int,
         limit: int,
         brand: str | None,
-        country: str | None,
         min_price: int | None,
         max_price: int | None,
     ) -> list[Stick]:
@@ -36,12 +47,34 @@ class StickRepository:
         Returns:
             list of all sticks
         """
-        stmt = (
-            select(Stick)
-            # .join(StickPrice)
-            # .join(Website)
-            # .filter(*filters)
-        )
+        # Create filters
+        filters = []
+        if brand:
+            filters.append(Stick.brand == brand)
+        if min_price:
+            filters.append(Stick.price >= min_price)
+        if max_price:
+            filters.append(Stick.price <= max_price)
+
+        # Main query
+        stmt = select(Stick).filter(*filters).distinct()
+
+        # Sorting
+        if sort == "Oldest":
+            stmt = stmt.order_by(col(Stick.created_at).asc())
+        elif sort == "Newest":
+            stmt = stmt.order_by(col(Stick.created_at).desc())
+        elif sort == "Discount":
+            stmt = stmt.where(col(Stick.discount) != None)
+            stmt = stmt.order_by(col(Stick.discount).desc())
+        elif sort == "Price Low":
+            stmt = stmt.order_by(col(Stick.price).asc())
+        elif sort == "Price High":
+            stmt = stmt.order_by(col(Stick.price).desc())
+        elif sort == "Alphabetical":
+            stmt = stmt.order_by(col(Stick.model_name).asc())
+        elif sort == "Random":
+            stmt = stmt.order_by(func.random())
 
         offset = (page - 1) * limit
         stmt = stmt.offset(offset).limit(limit)
@@ -71,7 +104,7 @@ class StickRepository:
 
     async def get_price_history(
         self, stick_id: int, time_period: str
-    ) -> list[StickPrice]:
+    ) -> list[HistoricalPrice]:
         """Get price history.
 
         Args:
@@ -95,44 +128,61 @@ class StickRepository:
         # Check if stick exists
         await self.get_by_id(stick_id)
 
-        stmt = select(StickPrice).where(col(StickPrice.stick_id) == stick_id)
+        truncation = self.granularity_map[time_period]
+
+        stmt = (
+            select(
+                func.date_trunc(truncation, StickPrice.timestamp).label("timestamp"),
+                func.min(StickPrice.price).label("min_price"),
+            )
+            .where(col(StickPrice.stick_id) == stick_id)
+            .group_by("timestamp")
+            .order_by("timestamp")
+            .distinct()
+        )
 
         if time_period in time_period_map:
             since = time_period_map[time_period]
             stmt = stmt.filter(col(StickPrice.timestamp) >= since)
 
         result = await self.session.execute(stmt)
+        return [
+            HistoricalPrice(timestamp=row[0], min_price=row[1]) for row in result.all()
+        ]
+
+    async def get_current_prices(self, stick_id: int) -> list[StickPrice]:
+        """
+        Get all prices for stick scraped in the last 24 hr
+        """
+        since = datetime.now(timezone.utc) - timedelta(days=1)
+        stmt = select(StickPrice).where(
+            col(StickPrice.stick_id) == stick_id, col(StickPrice.timestamp) >= since
+        )
+        result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_current_price(self, stick_id: int) -> StickPrice:
+    async def get_images(self, stick_id) -> StickImageResponse:
         """
-        Get current price. Defined as lowest price found in the last 24hrs
+        Get images for one stick
         """
-        since = datetime.now(timezone.utc) - timedelta(hours=24)
         stmt = (
-            select(StickPrice)
-            .where(
-                col(StickPrice.stick_id) == stick_id, col(StickPrice.timestamp) >= since
-            )
-            .order_by(col(StickPrice.price).asc())
-            .limit(1)
+            select(func.array_agg(col(StickImage.url)))
+            .where(StickImage.stick_id == stick_id)
+            .group_by(col(StickImage.stick_id))
         )
         result = await self.session.execute(stmt)
         return result.scalar_one()
 
-    async def get_current_price_bulk(self):
+    async def get_all_images(self) -> list[StickImageResponse]:
         """
-        Bulk operation to get current price of all sticks
+        Bulk operation to get all images for each stick
         """
-        since = datetime.now(timezone.utc) - timedelta(hours=24)
-        stmt = (
-            select(
-                col(StickPrice.stick_id),
-                func.min(col(StickPrice.price)).label("current_price"),
-            )
-            .where(col(StickPrice.timestamp) >= since)
-            .group_by(col(StickPrice.stick_id))
-        )
-
+        stmt = select(
+            col(StickImage.stick_id),
+            func.array_agg(col(StickImage.url)).label("image_urls"),
+        ).group_by(col(StickImage.stick_id))
         result = await self.session.execute(stmt)
-        return list(result.all())
+        return [
+            StickImageResponse(stick_id=row[0], image_urls=row[1])
+            for row in result.all()
+        ]

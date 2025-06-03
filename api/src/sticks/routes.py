@@ -7,6 +7,7 @@ from src.core.database import get_session
 from src.core.logging import get_logger
 from src.deals.models import WebsiteResponse  # Need for model rebuild
 from src.sticks.models import (
+    HistoricalPrice,
     PriceQueryParams,
     StickPriceResponse,
     StickQueryParams,
@@ -43,7 +44,6 @@ async def get_sticks(
             page=query_params.page,
             limit=query_params.limit,
             brand=query_params.brand,
-            country=query_params.country,
             min_price=query_params.min_price,
             max_price=query_params.max_price,
         )
@@ -71,12 +71,27 @@ async def get_stick(
         raise
 
 
-@router.get("/{stick_id}/price_history", response_model=list[StickPriceResponse])
+@router.get("/{stick_id}/current_prices", response_model=list[StickPriceResponse])
+async def get_current_prices(
+    stick_id: int,
+    service: StickService = Depends(get_stick_service),
+) -> list[StickPriceResponse]:
+    logger.debug(f"Fetching prices for stick {stick_id}")
+    try:
+        prices = await service.get_current_prices(stick_id=stick_id)
+        logger.info(f"Retrieved {len(prices)} prices")
+        return prices
+    except Exception as e:
+        logger.error(f"Failed to fetch prices for stick {stick_id}: {e}")
+        raise
+
+
+@router.get("/{stick_id}/price_history", response_model=list[HistoricalPrice])
 async def get_price_history(
     query_params: Annotated[PriceQueryParams, Query()],
     stick_id: int,
     service: StickService = Depends(get_stick_service),
-) -> list[StickPriceResponse]:
+) -> list[HistoricalPrice]:
     logger.debug(f"Fetching prices for stick {stick_id}")
     try:
         prices = await service.get_price_history(

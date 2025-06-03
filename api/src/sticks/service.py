@@ -1,4 +1,4 @@
-from src.sticks.models import StickPriceResponse, StickResponse
+from src.sticks.models import HistoricalPrice, StickPriceResponse, StickResponse
 from src.sticks.repository import StickRepository
 
 
@@ -14,7 +14,6 @@ class StickService:
         page: int,
         limit: int,
         brand: str | None,
-        country: str | None,
         min_price: int,
         max_price: int | None,
     ) -> list[StickResponse]:
@@ -29,7 +28,6 @@ class StickService:
             page=page,
             limit=limit,
             brand=brand,
-            country=country,
             min_price=min_price,
             max_price=max_price,
         )
@@ -37,17 +35,15 @@ class StickService:
         if not sticks:
             return []
 
-        # Fetch all current prices in one go
-        current_prices = await self.repository.get_current_price_bulk()
+        images = await self.repository.get_all_images()
 
-        # Map stick_id -> price for fast lookup
-        price_map = {price.stick_id: price.current_price for price in current_prices}
+        image_map = {image.stick_id: image.image_urls for image in images}
 
         # Attach prices and construct response
         sticks_response = []
         for stick in sticks:
             stick_data = stick.model_dump()
-            stick_data["price"] = price_map.get(stick.id)
+            stick_data["images"] = image_map.get(stick.id)
             sticks_response.append(StickResponse.model_validate(stick_data))
 
         return sticks_response
@@ -62,11 +58,22 @@ class StickService:
             StickResponse: Stick data
         """
         stick = await self.repository.get_by_id(stick_id)
-        return StickResponse.model_validate(stick)
+        images = await self.repository.get_images(stick_id)
+        stick_data = stick.model_dump()
+        stick_data["image_urls"] = images
+
+        return StickResponse.model_validate(stick_data)
+
+    async def get_current_prices(self, stick_id: int) -> list[StickPriceResponse]:
+        """
+        Get prices from all stores for stick scraped in the past 24hrs
+        """
+        prices = await self.repository.get_current_prices(stick_id)
+        return [StickPriceResponse.model_validate(price) for price in prices]
 
     async def get_price_history(
         self, stick_id: int, time_period: str
-    ) -> list[StickPriceResponse]:
+    ) -> list[HistoricalPrice]:
         """
         Get historical price for stick ID
 
@@ -78,4 +85,4 @@ class StickService:
             list[StickPriceResponse]
         """
         prices = await self.repository.get_price_history(stick_id, time_period)
-        return [StickPriceResponse.model_validate(price) for price in prices]
+        return prices

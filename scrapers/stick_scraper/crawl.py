@@ -3,22 +3,22 @@ from datetime import datetime, timezone
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-from scrapers.site_scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
-from scrapers.site_scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
-from scrapers.site_scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
-from scrapers.site_scraper.src.spiders.discountHockey import DiscountHockeySpider
-from scrapers.site_scraper.src.spiders.hockeyMonkeyCA import HockeyMonkeyCASpider
-from scrapers.site_scraper.src.spiders.hockeyShot import HockeyShotSpider
-from scrapers.site_scraper.src.spiders.iceWarehouse import IceWarehouseSpider
-from scrapers.site_scraper.src.spiders.peranisHockeyWorld import (
+from scrapers.stick_scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
+from scrapers.stick_scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
+from scrapers.stick_scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
+from scrapers.stick_scraper.src.spiders.discountHockey import DiscountHockeySpider
+from scrapers.stick_scraper.src.spiders.hockeyMonkeyCA import HockeyMonkeyCASpider
+from scrapers.stick_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSStickSpider
+from scrapers.stick_scraper.src.spiders.hockeyShot import HockeyShotSpider
+from scrapers.stick_scraper.src.spiders.iceWarehouse import IceWarehouseSpider
+from scrapers.stick_scraper.src.spiders.peranisHockeyWorld import (
     PeranisHockeyWorldSpider,
 )
-from scrapers.site_scraper.src.spiders.polyGlideIce import PolyGlideSpider
-from scrapers.site_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
-from scrapers.site_scraper.src.spiders.pureGoalie import PureGoalieSpider
-from scrapers.site_scraper.src.spiders.pureHockey import PureHockeyStickSpider
-from scrapers.site_scraper.src.utils import get_logger, setup_logging
-from scrapers.stick_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSStickSpider
+from scrapers.stick_scraper.src.spiders.polyGlideIce import PolyGlideSpider
+from scrapers.stick_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
+from scrapers.stick_scraper.src.spiders.pureGoalie import PureGoalieSpider
+from scrapers.stick_scraper.src.spiders.pureHockey import PureHockeyStickSpider
+from scrapers.stick_scraper.src.utils import get_logger, setup_logging
 
 settings = get_project_settings()
 
