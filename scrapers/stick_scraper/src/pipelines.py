@@ -58,27 +58,6 @@ class PostgresPipeline:
         if not adapter.get("price"):
             raise DropItem("Missing Price")
 
-    def update_stick(self, item) -> Stick:
-        """
-        Update stick if necessary
-        """
-        stmt = select(Stick).where(Stick.id == item.get("stick_id"))
-        result = self.session.execute(stmt)
-        stick = result.scalar_one()
-        stick.updated_at = datetime.now(timezone.utc)
-
-        if item.get("price") < stick.price:
-            stick.price = item.get("price")
-            stick.currency = item.get("currency")
-            self.session.add(stick)
-            try:
-                self.session.commit()
-                self.session.refresh(stick)
-            except Exception as e:
-                logger.warning(f"Failed to insert price: {e}")
-                self.session.rollback()
-        return stick
-
     def insert_price(self, item) -> StickPrice:
         """
         INSERT new price
@@ -134,61 +113,3 @@ class CustomImagePipeline(ImagesPipeline):
                     "Referer": referer,  # Replace with actual page URL hosting the image
                 },
             )
-
-
-def get_extra_tags(title: str, start_tags: list[str] | None) -> list[str]:
-    """
-    Helper function to get extra tags in product title that can't be inferred from url
-
-    Args:
-      title: Product title
-      start_tags: Product tags pulled from url
-
-    Returns:
-      List[str]: list of all tags
-    """
-    all_tags = set(start_tags) if start_tags else set()
-
-    # Get keyword --> tag map
-    json_path = Path(__file__).parent.parent / "expressions" / "tags.json"
-    keywords = read_json(json_path)
-    title = title.lower()
-
-    for kw in keywords.keys():
-        if kw in title:
-            all_tags.update(keywords[kw])
-
-    return list(all_tags)
-
-
-def get_brand(name: str, scraped_brand: str | None) -> str | None:
-    """
-    Helper function to get brand from title if it can't be scraped, OR combine
-    brand variations into one.
-
-    Args:
-      name: Product name
-      brand: scraped product brand
-      start_tags: Product tags pulled from url
-
-    Returns:
-      str | None: brand OR None
-    """
-    # Get keyword --> tag map
-    json_path = Path(__file__).parent.parent / "expressions" / "brands.json"
-    brands_map = read_json(json_path)
-
-    # If we scraped a brand, normalize its name and return
-    # Ex: CCM Jetspeed, CCM QuickLite, CCM Ribcore all get turned to CCM
-    if scraped_brand:
-        for brand, brand_name in brands_map.items():
-            if brand in scraped_brand.lower():
-                return brand_name
-
-    # Otherwise try to scrape brand from title
-    for brand, brand_name in brands_map.items():
-        if brand in name.lower():
-            return brand_name
-
-    # If we still can't find a brand, return None
-    return None

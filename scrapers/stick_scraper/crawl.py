@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
+from scrapers.stick_scraper.src.logging import get_logger, setup_logging
 from scrapers.stick_scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
 from scrapers.stick_scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
 from scrapers.stick_scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
@@ -18,7 +19,7 @@ from scrapers.stick_scraper.src.spiders.polyGlideIce import PolyGlideSpider
 from scrapers.stick_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
 from scrapers.stick_scraper.src.spiders.pureGoalie import PureGoalieSpider
 from scrapers.stick_scraper.src.spiders.pureHockey import PureHockeyStickSpider
-from scrapers.stick_scraper.src.utils import get_logger, setup_logging
+from scrapers.stick_scraper.src.utils import update_sticks
 
 settings = get_project_settings()
 
@@ -61,6 +62,9 @@ process.start()
 time_elapsed = datetime.now(timezone.utc) - start
 logger.debug(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
 
+logger.info("Updating sticks...")
+update_sticks()
+
 # Get total elapsed time
 time_elapsed = datetime.now(timezone.utc) - start
-logger.info(f"Completed in {time_elapsed.total_seconds()} seconds")
+logger.info(f"All processes completed in {time_elapsed.total_seconds()} seconds")

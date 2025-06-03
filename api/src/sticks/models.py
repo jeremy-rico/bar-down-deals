@@ -21,13 +21,15 @@ class StickBase(SQLModel):
     )
     currency: str = Field(max_length=3)
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
-    description: str
+    price_drop: bool = Field()
+    historical_low: bool = Field()
+    description: str = Field()
     handedness: str = Field(max_length=16)
-    flex: int
+    flex: int = Field()
     curve: str = Field(max_length=16)
     size: str = Field(max_length=16)
     kickpoint: str = Field(max_length=16)
-    release_year: int
+    release_year: int = Field()
 
 
 class Stick(StickBase, table=True):
