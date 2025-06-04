@@ -173,6 +173,7 @@ class StickRepository:
                 col(Website.name),
                 col(Website.logo),
             )
+            .order_by("price")
         )
         result = await self.session.execute(stmt)
         return [
