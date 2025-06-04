@@ -111,7 +111,7 @@ class StickPriceResponse(StickPriceBase):
 
 
 class CurrentPrice(BaseModel):
-    price: float
+    price: Decimal = Field(max_digits=10, decimal_places=2)
     currency: str = Field(max_length=3)
     url: str = Field(max_length=255)
     website_name: str
@@ -120,11 +120,11 @@ class CurrentPrice(BaseModel):
 
 class HistoricalPrice(BaseModel):
     timestamp: datetime
-    min_price: float
+    min_price: Decimal = Field(max_digits=10, decimal_places=2)
 
 
 # =============================== Filter Query Model ==========================
-class StickQueryParams(BaseModel):
+class SticksQueryParams(BaseModel):
     """
     Query parameter for sticks endpoint
 
@@ -147,14 +147,23 @@ class StickQueryParams(BaseModel):
         "Random",
     ] = "Alphabetical"
     page: int = Field(1, ge=1)
-    limit: int = Field(20, gt=0, le=100)
+    limit: int = Field(24, gt=0, le=100)
     brand: str | None = Field(default=None)
     country: Literal["US", "CA"] | None = Field(default=None)
     min_price: int = Field(0, ge=0)
     max_price: int | None = Field(default=None, ge=1)
+    currency: str = Field(max_length=3)
 
 
-class PriceQueryParams(BaseModel):
+class StickQueryParams(BaseModel):
+    currency: str = Field(max_length=3)
+
+
+class CurrentPricesQueryParams(BaseModel):
+    currency: str = Field(max_length=3)
+
+
+class PriceHistoryQueryParams(BaseModel):
     """
     Query parameter for sticks endpoint
 
@@ -162,3 +171,4 @@ class PriceQueryParams(BaseModel):
     """
 
     since: Literal["1W", "1M", "6M", "1Y", "5Y", "All"] = "1M"
+    currency: str = Field(max_length=3)

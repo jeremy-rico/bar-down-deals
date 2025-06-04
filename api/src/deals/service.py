@@ -1,3 +1,4 @@
+from src.core.utils import convert_currency
 from src.deals.models import DealResponse
 from src.deals.repository import DealRepository
 
@@ -7,18 +8,6 @@ class DealService:
 
     def __init__(self, repository: DealRepository):
         self.repository = repository
-
-    async def get_deal(self, deal_id: int) -> DealResponse:
-        """Get deal by ID.
-
-        Args:
-            deal_id: Deal ID
-
-        Returns:
-            DealResponse: Deal data
-        """
-        deal = await self.repository.get_by_id(deal_id)
-        return DealResponse.model_validate(deal)
 
     async def get_deals(
         self,
@@ -36,6 +25,7 @@ class DealService:
         brands: list[str] | None,
         default_tags: list[str] | None,
         tags: list[str] | None,
+        currency: str,
     ) -> tuple[dict[str, str], list[DealResponse]]:
         """
         Get all deals.
@@ -59,7 +49,38 @@ class DealService:
             default_tags=default_tags,
             tags=tags,
         )
+
+        # Convert currency if necessary
+        for deal in deals:
+            if deal.currency != currency:
+                deal.price = await convert_currency(deal.price, deal.currency, currency)
+                if deal.original_price:
+                    deal.original_price = await convert_currency(
+                        deal.original_price, deal.currency, currency
+                    )
+
         return headers, [DealResponse.model_validate(deal) for deal in deals]
+
+    async def get_deal(self, deal_id: int, currency: str) -> DealResponse:
+        """Get deal by ID.
+
+        Args:
+            deal_id: Deal ID
+
+        Returns:
+            DealResponse: Deal data
+        """
+        deal = await self.repository.get_by_id(deal_id)
+
+        # Convert currency if necessary
+        if deal.currency != currency:
+            deal.price = await convert_currency(deal.price, deal.currency, currency)
+            if deal.original_price:
+                deal.original_price = await convert_currency(
+                    deal.original_price, deal.currency, currency
+                )
+
+        return DealResponse.model_validate(deal)
 
     async def increment_deal(self, deal_id: int) -> DealResponse:
         """

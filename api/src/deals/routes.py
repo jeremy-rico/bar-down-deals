@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.config import settings
 from src.core.database import get_session
 from src.core.logging import get_logger
-from src.deals.models import DealResponse, QueryParams
+from src.deals.models import DealQueryParams, DealResponse, DealsQueryParams
 from src.deals.repository import DealRepository
 from src.deals.service import DealService
 
@@ -32,7 +32,7 @@ def get_deal_service(session: AsyncSession = Depends(get_session)) -> DealServic
 @router.get("/", response_model=list[DealResponse])
 async def get_deals(
     response: Response,
-    query_params: Annotated[QueryParams, Query()],
+    query_params: Annotated[DealsQueryParams, Query()],
     service: DealService = Depends(get_deal_service),
 ) -> list[DealResponse]:
     """Get sorted, filtered, paginated deals."""
@@ -53,6 +53,7 @@ async def get_deals(
             brands=query_params.brands,
             default_tags=query_params.default_tags,
             tags=query_params.tags,
+            currency=query_params.currency,
         )
         logger.info(f"Retrieved {len(deals[1])} deals")
 
@@ -71,12 +72,13 @@ async def get_deals(
 @router.get("/{deal_id}", response_model=DealResponse)
 async def get_deal(
     deal_id: int,
+    query_params: Annotated[DealQueryParams, Query()],
     service: DealService = Depends(get_deal_service),
 ) -> DealResponse:
     """Get deal by ID."""
     logger.debug(f"Fetching deal {deal_id}")
     try:
-        deal = await service.get_deal(deal_id)
+        deal = await service.get_deal(deal_id=deal_id, currency=query_params.currency)
         logger.info(f"Retrieved deal {deal_id}")
         return deal
     except Exception as e:

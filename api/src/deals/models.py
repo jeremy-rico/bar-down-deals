@@ -73,7 +73,7 @@ class DealResponse(DealBase):
 
 
 # =============================== Filter Query Model ==========================
-class QueryParams(BaseModel):
+class DealsQueryParams(BaseModel):
     """
     Query parameter for deals endpoint
 
@@ -104,7 +104,7 @@ class QueryParams(BaseModel):
         "Random",
     ] = "Popular"
     page: int = Field(1, ge=1)
-    limit: int = Field(20, gt=0, le=100)
+    limit: int = Field(24, gt=0, le=100)
     added_since: Literal["today", "week", "month", "year", "all"] = "all"
     country: Literal["US", "CA"] | None = Field(default=None)
     min_price: int = Field(0, ge=0)
@@ -116,3 +116,8 @@ class QueryParams(BaseModel):
     brands: list[str] | None = Field(default=None)
     default_tags: list[str] | None = Field(default=None)
     tags: list[str] | None = Field(default=None)
+    currency: str = Field(max_length=3, default="USD")
+
+
+class DealQueryParams(BaseModel):
+    currency: str = Field(max_length=3, default="USD")

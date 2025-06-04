@@ -1,13 +1,33 @@
 import subprocess
 import sys
+from decimal import Decimal
 
+import requests
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from src.core.config import settings
 from src.core.database import DATABASE_URL, get_session
 from src.deals.models import Deal
 from src.products.models import Tag
+
+
+async def convert_currency(amount: Decimal, from_curr: str, to_curr: str) -> Decimal:
+    """
+    Real time currency conversion
+    """
+    api_key = settings.EXCHANGERATE_API_KEY
+    url = f"https://v6.exchangerate-api.com/v6/{api_key}/pair/{from_curr}/{to_curr}/{amount}"
+
+    response = requests.get(url)
+    data = response.json()
+
+    if response.status_code == 200 and data.get("result") == "success":
+        conversion_result = data.get("conversion_result")
+        return round(conversion_result, 2)
+    else:
+        raise Exception("Currency conversion failed.")
 
 
 def run_migrations():
