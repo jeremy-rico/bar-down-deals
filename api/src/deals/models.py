@@ -15,6 +15,7 @@ class WebsiteBase(SQLModel):
     name: str = Field(max_length=255)
     url: str = Field(unique=True)
     ships_to: str = Field(max_length=255)
+    logo: str | None = Field()
 
 
 class Website(WebsiteBase, table=True):

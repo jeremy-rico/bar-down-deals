@@ -7,6 +7,7 @@ from src.core.database import get_session
 from src.core.logging import get_logger
 from src.deals.models import WebsiteResponse  # Need for model rebuild
 from src.sticks.models import (
+    CurrentPrice,
     HistoricalPrice,
     PriceQueryParams,
     StickPriceResponse,
@@ -71,11 +72,11 @@ async def get_stick(
         raise
 
 
-@router.get("/{stick_id}/current_prices", response_model=list[StickPriceResponse])
+@router.get("/{stick_id}/current_prices", response_model=list[CurrentPrice])
 async def get_current_prices(
     stick_id: int,
     service: StickService = Depends(get_stick_service),
-) -> list[StickPriceResponse]:
+) -> list[CurrentPrice]:
     logger.debug(f"Fetching prices for stick {stick_id}")
     try:
         prices = await service.get_current_prices(stick_id=stick_id)
@@ -95,7 +96,7 @@ async def get_price_history(
     logger.debug(f"Fetching prices for stick {stick_id}")
     try:
         prices = await service.get_price_history(
-            stick_id=stick_id, time_period=query_params.time_period
+            stick_id=stick_id, since=query_params.since
         )
         logger.info(f"Retrieved {len(prices)} prices")
         return prices

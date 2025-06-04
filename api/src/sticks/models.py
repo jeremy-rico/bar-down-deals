@@ -110,6 +110,14 @@ class StickPriceResponse(StickPriceBase):
     website: "WebsiteResponse"
 
 
+class CurrentPrice(BaseModel):
+    price: float
+    currency: str = Field(max_length=3)
+    url: str = Field(max_length=255)
+    website_name: str
+    website_logo: str
+
+
 class HistoricalPrice(BaseModel):
     timestamp: datetime
     min_price: float
@@ -153,4 +161,4 @@ class PriceQueryParams(BaseModel):
     time_period: time period to grab from
     """
 
-    time_period: Literal["1W", "1M", "6M", "1Y", "5Y", "All"] = "1M"
+    since: Literal["1W", "1M", "6M", "1Y", "5Y", "All"] = "1M"

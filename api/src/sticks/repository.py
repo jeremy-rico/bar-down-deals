@@ -8,6 +8,7 @@ from src.core.exceptions import NotFoundException
 from src.core.logging import get_logger
 from src.deals.models import Website
 from src.sticks.models import (
+    CurrentPrice,
     HistoricalPrice,
     Stick,
     StickImage,
@@ -103,13 +104,13 @@ class StickRepository:
         return stick
 
     async def get_price_history(
-        self, stick_id: int, time_period: str
+        self, stick_id: int, since: str
     ) -> list[HistoricalPrice]:
         """Get price history.
 
         Args:
             stick_id: Stick ID
-            time_period: time window to grab from
+            since: time window to grab from
 
         Returns:
             list of prices
@@ -117,7 +118,7 @@ class StickRepository:
         Raises:
             NotFoundException: If stick not found
         """
-        time_period_map = {
+        since_map = {
             "1W": datetime.now(timezone.utc) - timedelta(weeks=1),
             "1M": datetime.now(timezone.utc) - timedelta(weeks=4),
             "6M": datetime.now(timezone.utc) - timedelta(weeks=4 * 6),
@@ -128,7 +129,7 @@ class StickRepository:
         # Check if stick exists
         await self.get_by_id(stick_id)
 
-        truncation = self.granularity_map[time_period]
+        truncation = self.granularity_map[since]
 
         stmt = (
             select(
@@ -141,25 +142,49 @@ class StickRepository:
             .distinct()
         )
 
-        if time_period in time_period_map:
-            since = time_period_map[time_period]
-            stmt = stmt.filter(col(StickPrice.timestamp) >= since)
+        if since in since_map:
+            stmt = stmt.filter(col(StickPrice.timestamp) >= since_map[since])
 
         result = await self.session.execute(stmt)
         return [
             HistoricalPrice(timestamp=row[0], min_price=row[1]) for row in result.all()
         ]
 
-    async def get_current_prices(self, stick_id: int) -> list[StickPrice]:
+    async def get_current_prices(self, stick_id: int) -> list[CurrentPrice]:
         """
         Get all prices for stick scraped in the last 24 hr
         """
         since = datetime.now(timezone.utc) - timedelta(days=1)
-        stmt = select(StickPrice).where(
-            col(StickPrice.stick_id) == stick_id, col(StickPrice.timestamp) >= since
+        stmt = (
+            select(
+                func.min(StickPrice.price).label("price"),
+                col(StickPrice.currency),
+                col(StickPrice.url),
+                col(Website.name),
+                col(Website.logo),
+            )
+            .join(Website)
+            .where(
+                col(StickPrice.stick_id) == stick_id, col(StickPrice.timestamp) >= since
+            )
+            .group_by(
+                col(StickPrice.currency),
+                col(StickPrice.url),
+                col(Website.name),
+                col(Website.logo),
+            )
         )
         result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+        return [
+            CurrentPrice(
+                price=row[0],
+                currency=row[1],
+                url=row[2],
+                website_name=row[3],
+                website_logo=row[4],
+            )
+            for row in result.all()
+        ]
 
     async def get_images(self, stick_id) -> StickImageResponse:
         """
