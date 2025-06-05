@@ -152,15 +152,15 @@ class SticksQueryParams(BaseModel):
     country: Literal["US", "CA"] | None = Field(default=None)
     min_price: int = Field(0, ge=0)
     max_price: int | None = Field(default=None, ge=1)
-    currency: str = Field(max_length=3)
+    currency: str = Field(max_length=3, default="USD")
 
 
 class StickQueryParams(BaseModel):
-    currency: str = Field(max_length=3)
+    currency: str = Field(max_length=3, default="USD")
 
 
 class CurrentPricesQueryParams(BaseModel):
-    currency: str = Field(max_length=3)
+    currency: str = Field(max_length=3, default="USD")
 
 
 class PriceHistoryQueryParams(BaseModel):
@@ -171,4 +171,4 @@ class PriceHistoryQueryParams(BaseModel):
     """
 
     since: Literal["1W", "1M", "6M", "1Y", "5Y", "All"] = "1M"
-    currency: str = Field(max_length=3)
+    currency: str = Field(max_length=3, default="USD")

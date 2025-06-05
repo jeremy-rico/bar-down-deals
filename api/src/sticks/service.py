@@ -46,9 +46,13 @@ class StickService:
         for stick in sticks:
             # Convert currency if necessary
             if stick.currency != currency:
-                stick.price = convert_currency(stick.price, stick.currency, currency)
+                stick.price = await convert_currency(
+                    stick.price, stick.currency, currency
+                )
                 if stick.msrp:
-                    stick.msrp = convert_currency(stick.msrp, stick.currency, currency)
+                    stick.msrp = await convert_currency(
+                        stick.msrp, stick.currency, currency
+                    )
 
             # Get images
             stick_data = stick.model_dump()
@@ -72,9 +76,11 @@ class StickService:
         stick_data["images"] = images
 
         if stick.currency != currency:
-            stick.price = convert_currency(stick.price, stick.currency, currency)
+            stick.price = await convert_currency(stick.price, stick.currency, currency)
             if stick.msrp:
-                stick.msrp = convert_currency(stick.msrp, stick.currency, currency)
+                stick.msrp = await convert_currency(
+                    stick.msrp, stick.currency, currency
+                )
 
         return StickResponse.model_validate(stick_data)
 
@@ -88,7 +94,9 @@ class StickService:
 
         for price in prices:
             if price.currency != currency:
-                price.price = convert_currency(price.price, price.currency, currency)
+                price.price = await convert_currency(
+                    price.price, price.currency, currency
+                )
 
         return [CurrentPrice.model_validate(price) for price in prices]
 
