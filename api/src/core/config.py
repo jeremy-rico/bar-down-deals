@@ -23,7 +23,6 @@ class Settings(BaseSettings):
     EMAIL_PASSWORD: str
 
     FRONTEND_KEY: str
-    EXCHANGERATE_API_KEY: str = "a65accbcb9478f16d8529a55"
 
     # Maximum number of alerts a user can sign up for
     MAX_ALERTS: int = 10
