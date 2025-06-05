@@ -1,4 +1,3 @@
-from src.core.utils import convert_currency
 from src.sticks.models import CurrentPrice, HistoricalPrice, StickResponse
 from src.sticks.repository import StickRepository
 
