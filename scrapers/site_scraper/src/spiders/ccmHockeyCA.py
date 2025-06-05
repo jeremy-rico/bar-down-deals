@@ -10,7 +10,7 @@ from scrapers.site_scraper.src.utils import read_json
 class CCMHockeyCASpider(scrapy.Spider):
     name = "ccmHockeyCA"
     website_name = "CCM Hockey (CA)"
-    ships_to = "CA"
+    country = "CA"
     base_url = "https://ca.ccmhockey.com/en/"
     start_urls = [
         base_url + "Sale/Skates",
@@ -34,7 +34,7 @@ class CCMHockeyCASpider(scrapy.Spider):
         manual_vals = {}
         manual_vals["brand"] = "CCM"
         manual_vals["tags"] = self.get_tags(response.url)
-        manual_vals["currency"] = "CAD"
+        manual_vals["currency"] = "USD"
 
         # Get all products on page
         prods = response.css(self.exp["products"]["css"])

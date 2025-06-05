@@ -2,15 +2,15 @@ from pathlib import Path
 
 import scrapy
 
-from scrapers.site_scraper.src.utils import read_json
 from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class PureHockeyStickSpider(scrapy.Spider):
 
     name = "pureHockey"
     website_name = "Pure Hockey"
-    ships_to = "US"
+    country = "US"
     base_url = "https://www.purehockey.com/"
     start_urls = [
         base_url

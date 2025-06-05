@@ -4,24 +4,22 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 from scrapers.site_scraper.src.database import clean_bucket, clean_database
+from scrapers.site_scraper.src.logging import get_logger, setup_logging
 from scrapers.site_scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
 from scrapers.site_scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
 from scrapers.site_scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
-from scrapers.site_scraper.src.spiders.discountHockey import \
-    DiscountHockeySpider
-from scrapers.site_scraper.src.spiders.hockeyMonkeyCA import \
-    HockeyMonkeyCASpider
-from scrapers.site_scraper.src.spiders.hockeyMonkeyUS import \
-    HockeyMonkeyUSSpider
+from scrapers.site_scraper.src.spiders.discountHockey import DiscountHockeySpider
+from scrapers.site_scraper.src.spiders.hockeyMonkeyCA import HockeyMonkeyCASpider
+from scrapers.site_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSSpider
 from scrapers.site_scraper.src.spiders.hockeyShot import HockeyShotSpider
 from scrapers.site_scraper.src.spiders.iceWarehouse import IceWarehouseSpider
-from scrapers.site_scraper.src.spiders.peranisHockeyWorld import \
-    PeranisHockeyWorldSpider
+from scrapers.site_scraper.src.spiders.peranisHockeyWorld import (
+    PeranisHockeyWorldSpider,
+)
 from scrapers.site_scraper.src.spiders.polyGlideIce import PolyGlideSpider
 from scrapers.site_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
 from scrapers.site_scraper.src.spiders.pureGoalie import PureGoalieSpider
 from scrapers.site_scraper.src.spiders.pureHockey import PureHockeySpider
-from scrapers.site_scraper.src.utils import get_logger, setup_logging
 
 settings = get_project_settings()
 

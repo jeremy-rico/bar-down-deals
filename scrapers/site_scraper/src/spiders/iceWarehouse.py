@@ -13,7 +13,7 @@ from scrapers.site_scraper.src.utils import read_json
 class IceWarehouseSpider(scrapy.Spider):
     name = "iceWarehouse"
     website_name = "Ice Warehouse"
-    ships_to = "US"
+    country = "US"
     base_url = "https://www.icewarehouse.com/"
     start_urls = [
         base_url + "Clearance_Hockey_Gear/catpage-HOCSALE.html",

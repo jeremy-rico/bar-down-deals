@@ -4,20 +4,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 from scrapers.stick_scraper.src.logging import get_logger, setup_logging
-from scrapers.stick_scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
-from scrapers.stick_scraper.src.spiders.ccmHockeyCA import CCMHockeyCASpider
-from scrapers.stick_scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
-from scrapers.stick_scraper.src.spiders.discountHockey import DiscountHockeySpider
-from scrapers.stick_scraper.src.spiders.hockeyMonkeyCA import HockeyMonkeyCASpider
 from scrapers.stick_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSStickSpider
-from scrapers.stick_scraper.src.spiders.hockeyShot import HockeyShotSpider
-from scrapers.stick_scraper.src.spiders.iceWarehouse import IceWarehouseSpider
-from scrapers.stick_scraper.src.spiders.peranisHockeyWorld import (
-    PeranisHockeyWorldSpider,
-)
-from scrapers.stick_scraper.src.spiders.polyGlideIce import PolyGlideSpider
-from scrapers.stick_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
-from scrapers.stick_scraper.src.spiders.pureGoalie import PureGoalieSpider
 from scrapers.stick_scraper.src.spiders.pureHockey import PureHockeyStickSpider
 from scrapers.stick_scraper.src.utils import fetch_usd_exchange_rates, update_sticks
 
@@ -29,18 +16,7 @@ logger = get_logger(__name__)
 logger.info("Beginning stick crawl...")
 
 spiders = [
-    # BauerHockeyUSSpider,
-    # CCMHockeyUSSpider,
-    # CCMHockeyCASpider,
-    # DiscountHockeySpider,
-    # HockeyMonkeyCASpider,
     HockeyMonkeyUSStickSpider,
-    # HockeyShotSpider,
-    # IceWarehouseSpider,
-    # PeranisHockeyWorldSpider,
-    # PolyGlideSpider,
-    # ProHockeyLifeSpider,
-    # PureGoalieSpider,
     PureHockeyStickSpider,
 ]
 spider_names = [spider.name for spider in spiders]

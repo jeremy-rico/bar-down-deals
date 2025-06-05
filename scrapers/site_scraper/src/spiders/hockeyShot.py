@@ -18,7 +18,7 @@ class HockeyShotSpider(scrapy.Spider):
 
     name = "hockeyShot"
     website_name = "Hockey Shot"
-    ships_to = "US"
+    country = "US"
     base_url = "https://hockeyshot.com/"
     start_urls = [base_url + "collections/dryland-accessories-sale"]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")

@@ -194,19 +194,19 @@ def fetch_usd_exchange_rates() -> None:
                 session.rollback()
 
 
-def convert_currency(amount: float, from_curr: str, to_curr: str) -> float:
+def convert_to_usd(amount: float, base_currency: str) -> float:
     """
-    Real time currency conversion
+    Convert foreign currency to USD
     """
-    url = f"https://api.exchangerate.host/convert"
-    params = {"from": from_curr, "to": to_curr, "amount": amount}
 
-    response = requests.get(url, params=params)
-    data = response.json()
+    session = get_session()
+    stmt = select(col(ExchangeRate.rate)).where(
+        ExchangeRate.target_currency == base_currency
+    )
 
-    if response.status_code == 200 and data.get("success"):
-        result = data["result"]
-        print(f"{amount} {from_curr} = {result:.2f} {to_curr}")
-        return result
-    else:
-        raise Exception("Currency conversion failed.")
+    result = session.execute(stmt)
+    rate = result.scalar()
+    if not rate:
+        raise ValueError(f"No rate found for {base_currency}")
+
+    return round(amount * (1 / float(rate)), 2)

@@ -11,8 +11,8 @@ from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
 from sqlmodel import col, delete, func, select
 
-from scrapers.site_scraper.src.settings import DATABASE_URL, S3_HOST
-from scrapers.site_scraper.src.utils import get_logger
+from scrapers.stick_scraper.src.logging import get_logger
+from scrapers.stick_scraper.src.settings import DATABASE_URL, S3_HOST
 
 logger = get_logger(__name__)
 

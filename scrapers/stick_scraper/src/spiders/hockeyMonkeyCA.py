@@ -3,8 +3,8 @@ from urllib.parse import urlparse
 
 import scrapy
 
-from scrapers.site_scraper.src.items import Product, ProductLoader
-from scrapers.site_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class HockeyMonkeyCASpider(scrapy.Spider):
@@ -18,7 +18,7 @@ class HockeyMonkeyCASpider(scrapy.Spider):
 
     name = "hockeyMonkeyCA"
     website_name = "Hockey Monkey (CA)"
-    ships_to = "CA"
+    country = "CA"
     base_url = "https://hockeymonkey.ca/"
     start_urls = [
         base_url + "clearance.html",

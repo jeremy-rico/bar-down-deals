@@ -16,8 +16,9 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import col
 
 # database connection
-from scrapers.site_scraper.src.database import get_session
-from scrapers.site_scraper.src.utils import get_discount, get_logger, read_json
+from scrapers.stick_scraper.src.database import get_session
+from scrapers.stick_scraper.src.logging import get_logger
+from scrapers.stick_scraper.src.utils import convert_to_usd
 
 logger = get_logger(__name__)
 
@@ -65,6 +66,12 @@ class PostgresPipeline:
         Returns:
            Product
         """
+        if item.get("currency") != "USD":
+            item["price"] = convert_to_usd(
+                float(item.get("price")), item.get("currency")
+            )
+            item["msrp"] = convert_to_usd(float(item.get("msrp")), item.get("currency"))
+
         # Create price object
         price = StickPrice(
             stick_id=item.get("stick_id"),

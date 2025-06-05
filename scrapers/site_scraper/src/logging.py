@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from scrapers.stick_scraper.src.settings import LOG_LEVEL
+from scrapers.site_scraper.src.settings import LOG_LEVEL
 
 
 def setup_logging() -> None:

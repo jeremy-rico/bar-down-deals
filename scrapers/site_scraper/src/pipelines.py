@@ -18,7 +18,8 @@ from sqlmodel import col
 
 # database connection
 from scrapers.site_scraper.src.database import get_session
-from scrapers.site_scraper.src.utils import get_discount, get_logger, read_json
+from scrapers.site_scraper.src.logging import get_logger
+from scrapers.site_scraper.src.utils import convert_to_usd, get_discount, read_json
 
 logger = get_logger(__name__)
 
@@ -75,7 +76,7 @@ class PostgresPipeline:
             .values(
                 name=spider.website_name,
                 url=spider.base_url,
-                ships_to=spider.ships_to,
+                country=spider.country,
                 updated_at=datetime.now(timezone.utc),
             )
             .on_conflict_do_update(
@@ -172,6 +173,16 @@ class PostgresPipeline:
             item.get("original_price", None),
         )
 
+        # Convert currency if necessary
+        if item.get("currency") != "USD":
+            item["price"] = convert_to_usd(
+                float(item.get("price")), item.get("currency")
+            )
+            if item.get("original_price"):
+                item["original_price"] = convert_to_usd(
+                    float(item.get("original_price")), item.get("currency")
+                )
+
         stmt = (
             insert(Deal)
             .values(
@@ -179,7 +190,6 @@ class PostgresPipeline:
                 website_id=self.website.id,
                 price=item.get("price"),
                 original_price=item.get("original_price", None),
-                currency=item.get("currency"),
                 discount=discount,
                 url=item.get("url"),
                 created_at=datetime.now(timezone.utc),

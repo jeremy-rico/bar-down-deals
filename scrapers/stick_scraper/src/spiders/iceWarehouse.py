@@ -6,14 +6,14 @@ from urllib.parse import urlparse
 import scrapy
 from scrapy.selector.unified import Selector
 
-from scrapers.site_scraper.src.items import Product, ProductLoader
-from scrapers.site_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class IceWarehouseSpider(scrapy.Spider):
     name = "iceWarehouse"
     website_name = "Ice Warehouse"
-    ships_to = "US"
+    country = "US"
     base_url = "https://www.icewarehouse.com/"
     start_urls = [
         base_url + "Clearance_Hockey_Gear/catpage-HOCSALE.html",

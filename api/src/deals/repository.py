@@ -128,7 +128,7 @@ class DealRepository:
 
         return headers, deals
 
-    async def get_by_id(self, deal_id: int, currency:str) -> Deal:
+    async def get_by_id(self, deal_id: int, currency: str) -> Deal:
         """Get deal by ID.
 
         Args:
@@ -213,7 +213,7 @@ class DealRepository:
             filters.append(Deal.created_at >= self.timeframes[added_since])
 
         if country:
-            filters.append(Website.ships_to == country)
+            filters.append(Website.country == country)
 
         if "min_price" not in exclude_fields:
             if min_price is not None:

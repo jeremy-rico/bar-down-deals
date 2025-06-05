@@ -19,7 +19,7 @@ class StickBase(SQLModel):
         max_digits=10,
         decimal_places=2,
     )
-    currency: str = Field(max_length=3)
+    currency: str = Field(max_length=3, default="USD")
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
     price_drop: bool = Field()
     historical_low: bool = Field()

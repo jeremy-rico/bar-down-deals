@@ -10,7 +10,7 @@ from scrapers.site_scraper.src.utils import read_json
 class CCMHockeyUSSpider(scrapy.Spider):
     name = "ccmHockeyUS"
     website_name = "CCM Hockey (US)"
-    ships_to = "US"
+    country = "US"
     base_url = "https://us.ccmhockey.com/"
     start_urls = [
         base_url + "Sale/Skates",

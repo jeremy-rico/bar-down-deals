@@ -5,8 +5,8 @@ from urllib.parse import urljoin, urlparse
 import chompjs
 import scrapy
 
-from scrapers.site_scraper.src.items import Product, ProductLoader
-from scrapers.site_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class BauerHockeyUSSpider(scrapy.Spider):
@@ -18,7 +18,7 @@ class BauerHockeyUSSpider(scrapy.Spider):
 
     name = "bauerHockeyUS"
     website_name = "Bauer Hockey (US)"
-    ships_to = "US"
+    country = "US"
     base_url = "https://www.bauer.com/"
     start_urls = [
         base_url + "collections/hockey-sticks-on-sale",

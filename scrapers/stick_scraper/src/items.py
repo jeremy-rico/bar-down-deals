@@ -2,7 +2,7 @@ from itemloaders.processors import MapCompose, TakeFirst
 from scrapy.item import Field, Item
 from scrapy.loader import ItemLoader
 
-from scrapers.site_scraper.src.utils import clean_price
+from scrapers.stick_scraper.src.utils import clean_price
 
 
 class Price(Item):

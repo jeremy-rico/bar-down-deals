@@ -4,25 +4,11 @@ import re
 import sys
 from pathlib import Path
 
+from api.src.currencies.models import ExchangeRate
+from sqlmodel import col, select
+
+from scrapers.site_scraper.src.database import get_session
 from scrapers.site_scraper.src.settings import LOG_LEVEL
-
-
-def setup_logging() -> None:
-    """Set up logging configuration."""
-    format_string = "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s"
-    logging.getLogger("botocore").setLevel(LOG_LEVEL)
-    logging.getLogger("urllib3").setLevel(LOG_LEVEL)
-    logging.basicConfig(
-        level=LOG_LEVEL,
-        format=format_string,
-        datefmt="%H:%M:%S",
-        stream=sys.stdout,
-    )
-
-
-def get_logger(name: str) -> logging.Logger:
-    """Get a logger instance."""
-    return logging.getLogger(name)
 
 
 def clean_price(s: str) -> str | None:
@@ -80,3 +66,18 @@ def get_discount(sale_price: float, original_price: float | None) -> float | Non
 def read_json(jsonPath: Path) -> dict:
     with open(str(jsonPath)) as f:
         return json.load(f)
+
+
+def convert_to_usd(amount: float, base_currency: str) -> float:
+
+    session = get_session()
+    stmt = select(col(ExchangeRate.rate)).where(
+        ExchangeRate.target_currency == base_currency
+    )
+
+    result = session.execute(stmt)
+    rate = result.scalar()
+    if not rate:
+        raise ValueError(f"No rate found for {base_currency}")
+
+    return round(amount * (1 / float(rate)), 2)

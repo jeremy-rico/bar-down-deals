@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
-from src.core.config import settings
-
 if TYPE_CHECKING:
     from src.products.models import Product, ProductResponse
     from src.sticks.models import StickPrice
@@ -16,7 +14,7 @@ if TYPE_CHECKING:
 class WebsiteBase(SQLModel):
     name: str = Field(max_length=255)
     url: str = Field(unique=True)
-    ships_to: str = Field(max_length=255)
+    country: str = Field(max_length=3)
     logo: str | None = Field()
 
 
@@ -41,7 +39,7 @@ class WebsiteResponse(WebsiteBase):
 class DealBase(SQLModel):
     price: Decimal = Field(max_digits=10, decimal_places=2)
     original_price: Decimal | None = Field(max_digits=10, decimal_places=2)
-    currency: str = Field(max_length=3)
+    currency: str = Field(max_length=3, default="USD")
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
     url: str = Field(unique=True)
     views: int = Field(default=0)

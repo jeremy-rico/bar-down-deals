@@ -10,7 +10,7 @@ from scrapers.site_scraper.src.utils import read_json
 class ProHockeyLifeSpider(scrapy.Spider):
     name = "proHockeyLife"
     website_name = "Pro Hockey Life"
-    ships_to = "CA"
+    country = "CA"
     base_url = "https://www.prohockeylife.com/"
     start_urls = [base_url + "pages/outlet"]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")

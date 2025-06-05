@@ -18,7 +18,7 @@ class HockeyMonkeyCASpider(scrapy.Spider):
 
     name = "hockeyMonkeyCA"
     website_name = "Hockey Monkey (CA)"
-    ships_to = "CA"
+    country = "CA"
     base_url = "https://hockeymonkey.ca/"
     start_urls = [
         base_url + "clearance.html",

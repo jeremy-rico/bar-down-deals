@@ -3,14 +3,14 @@ from urllib.parse import urljoin, urlparse
 
 import scrapy
 
-from scrapers.site_scraper.src.items import Product, ProductLoader
-from scrapers.site_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class PeranisHockeyWorldSpider(scrapy.Spider):
     name = "peranisHockeyWorld"
     website_name = "Peranis Hockey World"
-    ships_to = "US"
+    country = "US"
     base_url = "https://www.hockeyworld.com/"
     start_urls = [
         base_url + "CLEARANCE",

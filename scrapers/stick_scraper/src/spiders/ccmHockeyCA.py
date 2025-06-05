@@ -3,14 +3,14 @@ from urllib.parse import urljoin, urlparse
 
 import scrapy
 
-from scrapers.site_scraper.src.items import Product, ProductLoader
-from scrapers.site_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class CCMHockeyCASpider(scrapy.Spider):
     name = "ccmHockeyCA"
     website_name = "CCM Hockey (CA)"
-    ships_to = "CA"
+    country = "CA"
     base_url = "https://ca.ccmhockey.com/en/"
     start_urls = [
         base_url + "Sale/Skates",

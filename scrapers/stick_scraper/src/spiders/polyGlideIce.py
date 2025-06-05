@@ -3,14 +3,14 @@ from urllib.parse import urljoin
 
 import scrapy
 
-from scrapers.site_scraper.src.items import Product, ProductLoader
-from scrapers.site_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.items import Price, PriceLoader
+from scrapers.stick_scraper.src.utils import read_json
 
 
 class PolyGlideSpider(scrapy.Spider):
     name = "polyGlideIce"
     website_name = "PolyGlide Ice"
-    ships_to = "US"
+    country = "US"
     base_url = "https://www.polyglidesyntheticice.com/"
     start_urls = [base_url]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
