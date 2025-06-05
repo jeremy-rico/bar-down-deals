@@ -21,7 +21,7 @@ from src.users.service import UserService
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 # Resolve nested model forward references
 from src.alerts.models import UserAlertResponse

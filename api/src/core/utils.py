@@ -2,32 +2,40 @@ import subprocess
 import sys
 from decimal import Decimal
 
-import requests
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
 from src.core.config import settings
-from src.core.database import DATABASE_URL, get_session
-from src.deals.models import Deal
-from src.products.models import Tag
+from src.currencies.models import ExchangeRate
 
 
-async def convert_currency(amount: Decimal, from_curr: str, to_curr: str) -> Decimal:
+async def convert_currency(
+    session: AsyncSession, amount_usd: Decimal, target_currency: str
+) -> Decimal:
     """
-    Real time currency conversion
+    Converts specifies amount USD to target currency
     """
-    api_key = settings.EXCHANGERATE_API_KEY
-    url = f"https://v6.exchangerate-api.com/v6/{api_key}/pair/{from_curr}/{to_curr}/{amount}"
 
-    response = requests.get(url)
-    data = response.json()
+    if target_currency == "USD":
+        return round(amount_usd, 2)
 
-    if response.status_code == 200 and data.get("result") == "success":
-        conversion_result = data.get("conversion_result")
-        return round(conversion_result, 2)
-    else:
-        raise Exception("Currency conversion failed.")
+    if target_currency not in settings.SUPPORTED_CURRENCIES:
+        raise HTTPException(
+            status_code=400, detail=f"Unsupported currency: {target_currency}"
+        )
+
+    stmt = select(ExchangeRate).where(
+        ExchangeRate.base_currency == "USD",
+        ExchangeRate.target_currency == target_currency,
+    )
+    result = await session.execute(stmt)
+    rate_obj = result.scalars().first()
+
+    if not rate_obj:
+        raise HTTPException(status_code=503, detail="Exchange rate not available")
+
+    return round(amount_usd * rate_obj.rate, 2)
 
 
 def run_migrations():
@@ -64,29 +72,3 @@ def run_migrations():
     except Exception as e:
         print(f"An error occurred while running migrations: {e}")
         raise
-
-
-async def populate_tags(
-    tags: list[str],
-) -> None:
-    engine = create_async_engine(DATABASE_URL, echo=False, future=True)
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-    async with async_session() as session:
-        try:
-            for tag in tags:
-                stmt = (
-                    insert(Tag)
-                    .values(name=tag)
-                    .on_conflict_do_nothing(index_elements=["name"])
-                    .returning(Tag)
-                )
-                await session.execute(stmt)
-                await session.commit()
-            print("Tags populated.")
-
-        except Exception as e:
-            print(f"An error occurred while populating categories: {e}")
-
-        finally:
-            await session.close()

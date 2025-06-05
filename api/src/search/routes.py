@@ -13,7 +13,7 @@ from src.search.service import SearchService
 # Set up logger for this module
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/search", tags=["search"])
+router = APIRouter(prefix="/search", tags=["Search"])
 
 
 def get_search_service(session: AsyncSession = Depends(get_session)) -> SearchService:

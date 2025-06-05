@@ -45,6 +45,8 @@ class Settings(BaseSettings):
     JWT_EXPIRATION: int = 60 * 24 * 30  # 30 days
     RESET_PASSWORD_JWT_EXPIRATION: int = 10  # minutes
 
+    SUPPORTED_CURRENCIES: set[str] = {"USD", "EUR", "CAD", "GBP", "AUD", "JPY"}
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

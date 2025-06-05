@@ -8,6 +8,7 @@ from sqlmodel import and_, col, func, or_
 
 from src.core.exceptions import NotFoundException
 from src.core.logging import get_logger
+from src.core.utils import convert_currency
 from src.deals.models import Deal, Website
 from src.products.models import Product, Tag, TagProductLink
 
@@ -43,6 +44,7 @@ class DealRepository:
         brands: list[str] | None,
         default_tags: list[str] | None,
         tags: list[str] | None,
+        currency: str,
     ) -> tuple[dict[str, str], list[Deal]]:
         """
         Get filtered deals.
@@ -115,13 +117,23 @@ class DealRepository:
             "x-avail-stores": json.dumps(avail_stores),
         }
 
-        return headers, list(result.scalars().all())
+        # Convert currency
+        deals = list(result.scalars().all())
+        for deal in deals:
+            deal.price = await convert_currency(self.session, deal.price, currency)
+            if deal.original_price:
+                deal.original_price = await convert_currency(
+                    self.session, deal.original_price, currency
+                )
 
-    async def get_by_id(self, deal_id: int) -> Deal:
+        return headers, deals
+
+    async def get_by_id(self, deal_id: int, currency:str) -> Deal:
         """Get deal by ID.
 
         Args:
             deal_id: Deal ID
+            currency: target currency
 
         Returns:
             Deal: Found deal
@@ -135,6 +147,13 @@ class DealRepository:
 
         if not deal:
             raise NotFoundException(f"Deal with id {deal_id} not found")
+
+        deal.price = await convert_currency(self.session, deal.price, currency)
+        if deal.original_price:
+            deal.original_price = await convert_currency(
+                self.session, deal.original_price, currency
+            )
+
         return deal
 
     async def increment_deal_by_id(self, deal_id: int) -> Deal:

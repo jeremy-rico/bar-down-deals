@@ -20,7 +20,7 @@ DealResponse.model_rebuild()
 # Set up logger for this module
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/deals", tags=["deals"])
+router = APIRouter(prefix="/deals", tags=["Deals"])
 
 
 def get_deal_service(session: AsyncSession = Depends(get_session)) -> DealService:

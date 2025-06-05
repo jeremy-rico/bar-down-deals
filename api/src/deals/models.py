@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
+from src.core.config import settings
+
 if TYPE_CHECKING:
     from src.products.models import Product, ProductResponse
     from src.sticks.models import StickPrice
@@ -104,7 +106,7 @@ class DealsQueryParams(BaseModel):
         "Random",
     ] = "Popular"
     page: int = Field(1, ge=1)
-    limit: int = Field(24, gt=0, le=100)
+    limit: int = Field(20, gt=0, le=100)
     added_since: Literal["today", "week", "month", "year", "all"] = "all"
     country: Literal["US", "CA"] | None = Field(default=None)
     min_price: int = Field(0, ge=0)

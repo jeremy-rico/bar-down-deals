@@ -6,6 +6,7 @@ from sqlmodel import col, func
 
 from src.core.exceptions import NotFoundException
 from src.core.logging import get_logger
+from src.core.utils import convert_currency
 from src.deals.models import Website
 from src.sticks.models import (
     CurrentPrice,
@@ -41,6 +42,7 @@ class StickRepository:
         brand: str | None,
         min_price: int | None,
         max_price: int | None,
+        currency: str,
     ) -> list[Stick]:
         """
         Get all sticks.
@@ -81,13 +83,21 @@ class StickRepository:
         stmt = stmt.offset(offset).limit(limit)
         result = await self.session.execute(stmt)
 
-        return list(result.scalars().all())
+        # Convert currency
+        sticks = list(result.scalars().all())
+        for stick in sticks:
+            stick.price = await convert_currency(self.session, stick.price, currency)
+            if stick.msrp:
+                stick.msrp = await convert_currency(self.session, stick.msrp, currency)
 
-    async def get_by_id(self, stick_id: int) -> Stick:
+        return sticks
+
+    async def get_by_id(self, stick_id: int, currency: str) -> Stick:
         """Get stick by ID.
 
         Args:
             stick_id: Stick ID
+            currency: target currency
 
         Returns:
             Stick: Found stick
@@ -101,16 +111,21 @@ class StickRepository:
 
         if not stick:
             raise NotFoundException(f"Stick with id {stick_id} not found")
+
+        stick.price = await convert_currency(self.session, stick.price, currency)
+        stick.msrp = await convert_currency(self.session, stick.msrp, currency)
+
         return stick
 
     async def get_price_history(
-        self, stick_id: int, since: str
+        self, stick_id: int, since: str, currency: str
     ) -> list[HistoricalPrice]:
         """Get price history.
 
         Args:
             stick_id: Stick ID
             since: time window to grab from
+            currency: target currency
 
         Returns:
             list of prices
@@ -127,7 +142,7 @@ class StickRepository:
         }
 
         # Check if stick exists
-        await self.get_by_id(stick_id)
+        await self.get_by_id(stick_id, currency)
 
         truncation = self.granularity_map[since]
 
@@ -146,11 +161,18 @@ class StickRepository:
             stmt = stmt.filter(col(StickPrice.timestamp) >= since_map[since])
 
         result = await self.session.execute(stmt)
+
         return [
-            HistoricalPrice(timestamp=row[0], min_price=row[1]) for row in result.all()
+            HistoricalPrice(
+                timestamp=row[0],
+                min_price=await convert_currency(self.session, row[1], currency),
+            )
+            for row in result.all()
         ]
 
-    async def get_current_prices(self, stick_id: int) -> list[CurrentPrice]:
+    async def get_current_prices(
+        self, stick_id: int, currency: str
+    ) -> list[CurrentPrice]:
         """
         Get all prices for stick scraped in the last 24 hr
         """
@@ -178,7 +200,7 @@ class StickRepository:
         result = await self.session.execute(stmt)
         return [
             CurrentPrice(
-                price=row[0],
+                price=await convert_currency(self.session, row[0], currency),
                 currency=row[1],
                 url=row[2],
                 website_name=row[3],

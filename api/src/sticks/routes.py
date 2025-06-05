@@ -25,7 +25,7 @@ StickPriceResponse.model_rebuild()
 # Set up logger for this module
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/sticks", tags=["sticks"])
+router = APIRouter(prefix="/sticks", tags=["Sticks"])
 
 
 def get_stick_service(session: AsyncSession = Depends(get_session)) -> StickService:

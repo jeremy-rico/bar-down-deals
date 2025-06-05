@@ -32,6 +32,7 @@ class StickService:
             brand=brand,
             min_price=min_price,
             max_price=max_price,
+            currency=currency,
         )
 
         if not sticks:
@@ -44,16 +45,6 @@ class StickService:
         # Attach prices and construct response
         sticks_response = []
         for stick in sticks:
-            # Convert currency if necessary
-            if stick.currency != currency:
-                stick.price = await convert_currency(
-                    stick.price, stick.currency, currency
-                )
-                if stick.msrp:
-                    stick.msrp = await convert_currency(
-                        stick.msrp, stick.currency, currency
-                    )
-
             # Get images
             stick_data = stick.model_dump()
             stick_data["images"] = image_map.get(stick.id)
@@ -70,17 +61,10 @@ class StickService:
         Returns:
             StickResponse: Stick data
         """
-        stick = await self.repository.get_by_id(stick_id)
+        stick = await self.repository.get_by_id(stick_id=stick_id, currency=currency)
         images = await self.repository.get_images(stick_id)
         stick_data = stick.model_dump()
         stick_data["images"] = images
-
-        if stick.currency != currency:
-            stick.price = await convert_currency(stick.price, stick.currency, currency)
-            if stick.msrp:
-                stick.msrp = await convert_currency(
-                    stick.msrp, stick.currency, currency
-                )
 
         return StickResponse.model_validate(stick_data)
 
@@ -90,13 +74,9 @@ class StickService:
         """
         Get prices from all stores for stick scraped in the past 24hrs
         """
-        prices = await self.repository.get_current_prices(stick_id)
-
-        for price in prices:
-            if price.currency != currency:
-                price.price = await convert_currency(
-                    price.price, price.currency, currency
-                )
+        prices = await self.repository.get_current_prices(
+            stick_id=stick_id, currency=currency
+        )
 
         return [CurrentPrice.model_validate(price) for price in prices]
 
@@ -113,5 +93,7 @@ class StickService:
         Returns:
             list[StickPriceResponse]
         """
-        prices = await self.repository.get_price_history(stick_id, since)
+        prices = await self.repository.get_price_history(
+            stick_id=stick_id, since=since, currency=currency
+        )
         return prices

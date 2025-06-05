@@ -8,7 +8,7 @@ from src.alerts.routes import router as alerts_router
 from src.core.config import settings
 from src.core.database import engine
 from src.core.logging import get_logger, setup_logging
-from src.core.utils import populate_tags, run_migrations
+from src.currencies.routes import router as currencies_router
 from src.deals.routes import router as deals_router
 from src.products.routes import router as products_router
 from src.search.routes import router as search_router
@@ -27,9 +27,6 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting server...")
-    # Better off running these manually only when needed.
-    # run_migrations()
-    # await populate_tags(TAGS)
     yield
     logger.info("Shutting down...")
     await engine.dispose()
@@ -66,6 +63,7 @@ app.include_router(search_router)
 app.include_router(auth_router)
 app.include_router(alerts_router)
 app.include_router(sticks_router)
+app.include_router(currencies_router)
 
 
 @app.get("/health")

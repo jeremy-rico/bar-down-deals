@@ -17,7 +17,7 @@ from src.products.service import ProductService
 # Set up logger for this module
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/products", tags=["products"])
+router = APIRouter(prefix="/products", tags=["Products"])
 
 
 def get_product_service(session: AsyncSession = Depends(get_session)) -> ProductService:

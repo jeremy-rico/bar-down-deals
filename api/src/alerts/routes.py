@@ -11,7 +11,7 @@ from src.users.models import UserResponse
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/alerts", tags=["alerts"])
+router = APIRouter(prefix="/alerts", tags=["Alerts"])
 
 
 def get_alert_service(session: AsyncSession = Depends(get_session)) -> AlertService:

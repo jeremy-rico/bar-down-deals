@@ -4,11 +4,14 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
+from api.src.currencies.models import ExchangeRate
 from api.src.sticks.models import Stick, StickPrice
+from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import col, func, select
 
 from scrapers.stick_scraper.src.database import get_session
 from scrapers.stick_scraper.src.logging import get_logger
+from scrapers.stick_scraper.src.settings import EXCHANGERATE_API_KEY
 
 logger = get_logger(__name__)
 
@@ -154,6 +157,41 @@ def update_sticks() -> None:
             session.rollback()
 
         return
+
+
+def fetch_usd_exchange_rates() -> None:
+    """
+    Get exchange rates after nightly scrapes. This function has basically
+    nothing to do with the scraper. It shouldn't be here, but since I'm running
+    it right after both scrapers have completed, here it stays :)
+
+    """
+    session = get_session()
+    url = f"https://v6.exchangerate-api.com/v6/{EXCHANGERATE_API_KEY}/latest/USD"
+    res = requests.get(url)
+    data = res.json()
+    if res.status_code == 200 and data.get("result") == "success":
+        for currency, rate in data.get("conversion_rates").items():
+            stmt = (
+                insert(ExchangeRate)
+                .values(
+                    base_currency="USD",
+                    target_currency=currency,
+                    rate=rate,
+                    timestamp=datetime.now(timezone.utc),
+                )
+                .on_conflict_do_update(
+                    index_elements=["target_currency"],
+                    set_=dict(rate=rate, timestamp=datetime.now(timezone.utc)),
+                )
+                .returning(ExchangeRate)
+            )
+            session.execute(stmt)
+            try:
+                session.commit()
+            except Exception as e:
+                print(f"Failed to upsert exchange rate: {e}")
+                session.rollback()
 
 
 def convert_currency(amount: float, from_curr: str, to_curr: str) -> float:

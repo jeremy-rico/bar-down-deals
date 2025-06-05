@@ -19,7 +19,7 @@ from scrapers.stick_scraper.src.spiders.polyGlideIce import PolyGlideSpider
 from scrapers.stick_scraper.src.spiders.proHockeyLife import ProHockeyLifeSpider
 from scrapers.stick_scraper.src.spiders.pureGoalie import PureGoalieSpider
 from scrapers.stick_scraper.src.spiders.pureHockey import PureHockeyStickSpider
-from scrapers.stick_scraper.src.utils import update_sticks
+from scrapers.stick_scraper.src.utils import fetch_usd_exchange_rates, update_sticks
 
 settings = get_project_settings()
 
@@ -65,6 +65,8 @@ logger.debug(f"Crawls completed in {time_elapsed.total_seconds()} seconds")
 logger.info("Updating sticks...")
 update_sticks()
 
-# Get total elapsed time
+logger.info("Updating exchange rates...")
+fetch_usd_exchange_rates()
+
 time_elapsed = datetime.now(timezone.utc) - start
 logger.info(f"All processes completed in {time_elapsed.total_seconds()} seconds")

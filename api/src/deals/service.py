@@ -48,16 +48,8 @@ class DealService:
             brands=brands,
             default_tags=default_tags,
             tags=tags,
+            currency=currency,
         )
-
-        # Convert currency if necessary
-        for deal in deals:
-            if deal.currency != currency:
-                deal.price = await convert_currency(deal.price, deal.currency, currency)
-                if deal.original_price:
-                    deal.original_price = await convert_currency(
-                        deal.original_price, deal.currency, currency
-                    )
 
         return headers, [DealResponse.model_validate(deal) for deal in deals]
 
@@ -70,15 +62,7 @@ class DealService:
         Returns:
             DealResponse: Deal data
         """
-        deal = await self.repository.get_by_id(deal_id)
-
-        # Convert currency if necessary
-        if deal.currency != currency:
-            deal.price = await convert_currency(deal.price, deal.currency, currency)
-            if deal.original_price:
-                deal.original_price = await convert_currency(
-                    deal.original_price, deal.currency, currency
-                )
+        deal = await self.repository.get_by_id(deal_id, currency)
 
         return DealResponse.model_validate(deal)
 
