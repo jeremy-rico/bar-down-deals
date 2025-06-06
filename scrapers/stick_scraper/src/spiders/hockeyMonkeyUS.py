@@ -24,7 +24,7 @@ class HockeyMonkeyUSStickSpider(scrapy.Spider):
 
     def parse(self, response):
         """
-        Extract product name, price, currency
+        Extract price
         """
         # Get stick id based on url
         stick_id = self.url_map[response.url]
