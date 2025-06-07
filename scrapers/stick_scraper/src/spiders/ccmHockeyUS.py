@@ -13,63 +13,34 @@ class CCMHockeyUSSpider(scrapy.Spider):
     country = "US"
     base_url = "https://us.ccmhockey.com/"
     start_urls = [
-        base_url + "Sale/Skates",
-        base_url + "Sale/Sticks",
-        base_url + "Sale/Protective/Gloves",
-        base_url + "Sale/Protective/Pants",
-        base_url + "Sale/Protective/Shoulder-Pads",
-        base_url + "Sale/Protective/Elbow-Pads",
-        base_url + "Sale/Protective/Shin-Guards",
-        base_url + "Sale/Goalie",
-        # base_url + "Sale/Accessories", # no Accessories page for us site
+        base_url + "Sticks/Shop-All-Sticks/Jetspeed/HSFT8P-SR.html",
     ]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
+    url_map = read_json(
+        Path(__file__).parent.parent.parent / "expressions/url_map.json"
+    )
 
     def parse(self, response):
         """
-        Parse all items from the All Clearance Items page.
+        Extract price
         """
-        # Holder for manually added values
-        manual_vals = {}
-        manual_vals["brand"] = "CCM"
-        manual_vals["tags"] = self.get_tags(response.url)
+        # Get stick id based on url
+        stick_id = self.url_map[response.url]
 
-        # Get all products on page
-        prods = response.css(self.exp["products"]["css"])
+        # Load item
+        l = PriceLoader(item=Price(), selector=response)
 
-        # Extract product details
-        for prod in prods:
-            # Manually extract original price
-            original_price = prod.css(
-                self.exp["product_info"]["original_price"]["css"]
-            ).getall()
-            manual_vals["original_price"] = "".join(original_price)
+        # Add values
+        l.add_value("stick_id", stick_id)
+        l.add_value("currency", "USD")
+        l.add_value("url", response.url)
 
-            # Manually extract url
-            manual_vals["url"] = urljoin(
-                self.base_url, prod.css(self.exp["product_info"]["url"]["css"]).get()
-            )
+        # Check for sale price, fall back to original
+        if response.css(self.exp["sale_price"]).get():
+            price = response.css(self.exp["sale_price"]).get()
+        else:
+            price = response.css(self.exp["price"]).get()
 
-            # Load item
-            l = ProductLoader(item=Product(), selector=prod)
-            for field_name in l.item.fields.keys():
-                if field_name in manual_vals:
-                    l.add_value(field_name, manual_vals[field_name])
-                elif field_name in self.exp["product_info"]:
-                    l.add_css(field_name, self.exp["product_info"][field_name]["css"])
-
-            yield l.load_item()
-
-        # Follow all next links
-        # NOTE: CCM doesn't use next links, but keeping this doesnt hurt in case
-        # they change one day
-        next_links = response.css(self.exp["next_links"]["css"])
-        yield from response.follow_all(next_links, self.parse)
-
-    def get_tags(self, url: str) -> list[str]:
-        """
-        Get tags based on url
-        """
-        url_end = url.split("/")[-1]
-        return self.exp["tags"][url_end]
+        l.add_value("price", price)
+        yield l.load_item()

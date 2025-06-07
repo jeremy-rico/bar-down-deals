@@ -1,10 +1,3 @@
 {
-  "script": {
-    "xpath": "//script[@type=\"module\" and @dynamic]/text()"
-  },
-  "tags": {
-    "hockey-skates-on-sale": ["Skates"],
-    "hockey-sticks-on-sale": ["Sticks"],
-    "protective-equipment-on-sale": ["Protective"]
-  }
+  "script": "//script[@type=\"module\" and @dynamic]/text()"
 }

@@ -14,6 +14,8 @@ class HockeyMonkeyUSStickSpider(scrapy.Spider):
     base_url = "https://www.hockeymonkey.com/"
     start_urls = [
         base_url + "ccm-hockey-stick-jetspeed-ft7-pro-sr.html",
+        base_url + "ccm-hockey-stick-jetspeed-ft8-pro-sr.html",
+        base_url + "bauer-hockey-stick-vapor-hyperlite-2-sr.html",
     ]
     exp = read_json(
         Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")

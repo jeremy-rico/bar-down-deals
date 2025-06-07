@@ -75,7 +75,13 @@ def read_json(jsonPath: Path) -> dict:
 
 def update_sticks() -> None:
     """
-    Update stick timestamp, price, price_drop, and historical_price cols
+    Update stick timestamp, price, price_drop, and historical_price after
+    scrape. This is done here because it will also RAISE the price if a sale
+    ends. No need for currency conversion here. All prices are stored in USD.
+
+    Note: Sticks stay in a price drop and historical low state UNTIL the price
+    rises. As long as the price remains stead or goes down, it will stay in this
+    state.
     """
     # Get db session
     session = get_session()
@@ -91,60 +97,41 @@ def update_sticks() -> None:
     for stick in sticks:
         # Get lowest price in last 24 hrs
         stmt = (
-            select(func.min(StickPrice.price).label("price"), StickPrice.currency)
+            select(func.min(StickPrice.price).label("price"))
             .where(StickPrice.stick_id == stick.id, StickPrice.timestamp >= since)
-            .group_by(col(StickPrice.stick_id), col(StickPrice.currency))
+            .group_by(col(StickPrice.stick_id))
         )
         result = session.execute(stmt)
-        latest_price = result.one_or_none()
+        latest_price = result.scalar_one_or_none()
 
         if not latest_price:
             logger.warning(f"No price for stick {stick.id} in the last 24 hrs")
             continue
 
-        latest_price = {"price": latest_price[0], "currency": latest_price[1]}
-
-        # Convert currency if necessary
-        if latest_price["currency"] != stick.currency:
-            latest_price["price"] = convert_currency(
-                latest_price["price"], latest_price["currency"], stick.currency
-            )
-
-        if latest_price["price"] < stick.price:
+        if latest_price < stick.price:
             # Set price drop
             stick.price_drop = True
 
-            # Get historical low price
+            # Check if price drop is historical low
             stmt = (
-                select(func.min(StickPrice.price).label("price"), StickPrice.currency)
+                select(func.min(StickPrice.price).label("price"))
                 .where(StickPrice.stick_id == stick.id)
-                .group_by(col(StickPrice.stick_id), col(StickPrice.currency))
+                .group_by(col(StickPrice.stick_id))
             )
             result = session.execute(stmt)
-            historical_low_price = result.one()
-
-            historical_low_price = {
-                "price": historical_low_price[0],
-                "currency": historical_low_price[1],
-            }
-
-            # Convert currency if necessary
-            if historical_low_price["currency"] != latest_price["currency"]:
-                historical_low_price["price"] = convert_currency(
-                    historical_low_price["price"],
-                    historical_low_price["currency"],
-                    latest_price["currency"],
-                )
+            historical_low_price = result.scalar()
 
             # Set historical low bool
-            stick.historical_low = latest_price["price"] < historical_low_price["price"]
+            if latest_price < historical_low_price:
+                stick.historical_low = True
 
-            stick.price = latest_price["price"]
-            stick.currency = latest_price["currency"]
-            logger.info(f"Found new price for stick {stick.id}")
-        else:
+            logger.info(f"Found new price {latest_price} for stick {stick.id}")
+        elif latest_price > stick.price:
+            # Reset if now drop
             stick.price_drop = False
+            stick.historical_low = False
 
+        stick.price = latest_price
         stick.updated_at = datetime.now(timezone.utc)
 
         session.add(stick)
@@ -156,7 +143,7 @@ def update_sticks() -> None:
             logger.critical(f"Failed to update stick {stick.id}: {e}")
             session.rollback()
 
-        return
+    return
 
 
 def fetch_usd_exchange_rates() -> None:
@@ -190,7 +177,7 @@ def fetch_usd_exchange_rates() -> None:
             try:
                 session.commit()
             except Exception as e:
-                print(f"Failed to upsert exchange rate: {e}")
+                logger.warning(f"Failed to upsert exchange rate: {e}")
                 session.rollback()
 
 

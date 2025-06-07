@@ -1,28 +1,3 @@
 {
-  "next_links": {
-    "css": "a.next"
-  },
-  "products": {
-    "css": "div.product-block__inner"
-  },
-  "product_info": {
-    "name": {
-      "css": "a.title::text"
-    },
-    "brand": {
-      "css": "a.title div.vendor::text"
-    },
-    "image_urls": {
-      "css": "div.image__primary img::attr(src)"
-    },
-    "price": {
-      "css": "div.price.on-sale span::text"
-    },
-    "original_price": {
-      "css": "div.price.on-sale span::text"
-    },
-    "url": {
-      "css": "a.title::attr(href)"
-    }
-  }
+  "price": "div#price span::text"
 }

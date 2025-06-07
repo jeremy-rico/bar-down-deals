@@ -148,13 +148,12 @@ class StickRepository:
 
         stmt = (
             select(
-                func.date_trunc(truncation, StickPrice.timestamp).label("timestamp"),
+                func.date_trunc(truncation, StickPrice.timestamp).label("trunc_time"),
                 func.min(StickPrice.price).label("min_price"),
             )
             .where(col(StickPrice.stick_id) == stick_id)
-            .group_by("timestamp")
-            .order_by("timestamp")
-            .distinct()
+            .group_by("trunc_time")
+            .order_by("trunc_time")
         )
 
         if since in since_map:

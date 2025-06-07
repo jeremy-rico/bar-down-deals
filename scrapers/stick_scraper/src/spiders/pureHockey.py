@@ -14,7 +14,11 @@ class PureHockeyStickSpider(scrapy.Spider):
     base_url = "https://www.purehockey.com/"
     start_urls = [
         base_url
-        + "product/ccm-jetspeed-ft7-pro-grip-composite-hockey-stick-senior/itm/63165-41/"
+        + "product/ccm-jetspeed-ft7-pro-grip-composite-hockey-stick-senior/itm/63165-41/",
+        base_url
+        + "product/ccm-jetspeed-ft8-pro-grip-composite-hockey-stick-senior/itm/66527-41/",
+        base_url
+        + "product/bauer-vapor-hyperlite-2-grip-composite-hockey-stick-senior/itm/56898-41/",
     ]
     exp = read_json(
         Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")

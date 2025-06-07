@@ -1,5 +1,4 @@
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
 
 import scrapy
 
@@ -12,55 +11,31 @@ class DiscountHockeySpider(scrapy.Spider):
     website_name = "Discount Hockey"
     country = "US"
     base_url = "https://discounthockey.com/"
-    start_urls = [
-        base_url + "collections/all-clearance-items",
-    ]
+    start_urls = [base_url + "products/ccm-hsft7-sr?variant=40891671937087"]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
+    url_map = read_json(
+        Path(__file__).parent.parent.parent / "expressions/url_map.json"
+    )
 
     def parse(self, response):
         """
+        Extract price
         Parse all items from the All Clearance Items page.
         """
-        # Holder for manually added values
-        manual_vals = {}
+        # Get stick id based on url
+        stick_id = self.url_map[response.url]
 
-        # Get all products on page
-        prods = response.css(self.exp["products"]["css"])
+        # Load item
+        l = PriceLoader(item=Price(), selector=response)
 
-        # Extract product details
-        for prod in prods:
-            # Manually extract name
-            manual_vals["name"] = " ".join(
-                prod.css(self.exp["product_info"]["name"]["css"]).getall()
-            )
+        # Add values
+        l.add_value("stick_id", stick_id)
+        l.add_value("currency", "USD")
+        l.add_value("url", response.url)
 
-            # Manually extract prices
-            prices = prod.css(self.exp["product_info"]["price"]["css"]).getall()
-            if len(prices) == 2:
-                manual_vals["price"] = prices[0]
-                manual_vals["original_price"] = prices[1]
+        # This accounts for both regular and sale price
+        price = response.css(self.exp["price"]).get()
+        l.add_value("price", price)
 
-            # Manually extract image_url
-            manual_vals["image_urls"] = (
-                "https:" + prod.css(self.exp["product_info"]["image_urls"]["css"]).get()
-            )
-
-            # Manually extract url
-            manual_vals["url"] = urljoin(
-                self.base_url, prod.css(self.exp["product_info"]["url"]["css"]).get()
-            )
-
-            # Load item
-            l = ProductLoader(item=Product(), selector=prod)
-            for field_name in l.item.fields.keys():
-                if field_name in manual_vals:
-                    l.add_value(field_name, manual_vals[field_name])
-                elif field_name in self.exp["product_info"]:
-                    l.add_css(field_name, self.exp["product_info"][field_name]["css"])
-
-            yield l.load_item()
-
-        # Follow all next links
-        next_links = response.css(self.exp["next_links"]["css"])
-        yield from response.follow_all(next_links, self.parse)
+        yield l.load_item()

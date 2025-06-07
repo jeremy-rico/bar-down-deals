@@ -1,15 +1,13 @@
 import re
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
 
-import chompjs
 import scrapy
 
 from scrapers.stick_scraper.src.items import Price, PriceLoader
 from scrapers.stick_scraper.src.utils import read_json
 
 
-class BauerHockeyUSSpider(scrapy.Spider):
+class BauerHockeyStickUSSpider(scrapy.Spider):
     """
     Bauer is a bitch and holds all their data behind js. Not able to get any
     category or product links so for this scraper we hardcode each category page
@@ -21,56 +19,36 @@ class BauerHockeyUSSpider(scrapy.Spider):
     country = "US"
     base_url = "https://www.bauer.com/"
     start_urls = [
-        base_url + "collections/hockey-sticks-on-sale",
-        base_url + "collections/hockey-skates-on-sale",
-        base_url + "collections/protective-equipment-on-sale",
-        # base_url + "collections/athletic-apparel-on-sale",
+        base_url + "products/vapor-hyperlite2-stick-senior",
     ]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
+    url_map = read_json(
+        Path(__file__).parent.parent.parent / "expressions/url_map.json"
+    )
 
     def parse(self, response):
         """
-        Parse all items from each starting page.
+        Extract price. Gotta use re to extract sprice from a script in the html.
+        This spider will crash if it can't find price.
         """
-        # Holder for manually added values
-        tags = self.get_tags(response.url)
+        # Get stick id based on url
+        stick_id = self.url_map[response.url]
+
+        # Load item
+        l = PriceLoader(item=Price(), selector=response)
 
         # Get all products on page
-        script = response.xpath(self.exp["script"]["xpath"]).get()
-        match = re.search(r"items:\s*(\[[^\]]+\])", script)
-
+        script = response.xpath(self.exp["script"]).get()
+        match = re.search(r"\d+\.\d{2}", script)
         if match:
-            prods_js = match.group(1)
-            prods = chompjs.parse_js_object(prods_js)
-            for prod in prods:
-                url = urljoin(self.base_url,f"products/{prod["handle"]}")
-                image_urls = "https:"+prod["image"]
-                l = ProductLoader(item=Product(), selector=prod)
-                l.add_value("name", prod["name"].title())
-                l.add_value("brand", prod["brand"])
-                l.add_value("url", url)
-                l.add_value("tags", tags)
-                l.add_value("price", prod["price"])
-                l.add_value("image_urls", image_urls)
-                l.add_value("original_price", prod["compareAtPrice"])
+            price = match.group(0)
+            l.add_value("price", price)
+            print(match)
 
-                yield l.load_item()
+        # Add values
+        l.add_value("stick_id", stick_id)
+        l.add_value("currency", "USD")
+        l.add_value("url", response.url)
 
-    def get_tags(self, url: str) -> list[str]:
-        """
-        Get product tags based on url. More tags are added based on the
-        item title in the item pipeline.
-
-        Args:
-            url: response url
-
-        Returns:
-            list[str]: list of tags
-        """
-        try:
-            url_page = urlparse(url).path.split("/")[-1]
-            return self.exp["tags"].get(url_page)
-        except Exception as e:
-            print(f"Unable to infer tags from url {url}. Error: {e}")
-            raise
+        yield l.load_item()
