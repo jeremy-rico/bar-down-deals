@@ -4,8 +4,15 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 from scrapers.stick_scraper.src.logging import get_logger, setup_logging
-from scrapers.stick_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSStickSpider
-from scrapers.stick_scraper.src.spiders.pureHockey import PureHockeyStickSpider
+from scrapers.stick_scraper.src.spiders.bauerHockeyUS import BauerHockeyUSSpider
+from scrapers.stick_scraper.src.spiders.ccmHockeyUS import CCMHockeyUSSpider
+from scrapers.stick_scraper.src.spiders.discountHockey import DiscountHockeySpider
+from scrapers.stick_scraper.src.spiders.hockeyMonkeyUS import HockeyMonkeyUSSpider
+from scrapers.stick_scraper.src.spiders.iceWarehouse import IceWarehouseSpider
+from scrapers.stick_scraper.src.spiders.peranisHockeyWorld import (
+    PeranisHockeyWorldSpider,
+)
+from scrapers.stick_scraper.src.spiders.pureHockey import PureHockeySpider
 from scrapers.stick_scraper.src.utils import fetch_usd_exchange_rates, update_sticks
 
 settings = get_project_settings()
@@ -16,8 +23,13 @@ logger = get_logger(__name__)
 logger.info("Beginning stick crawl...")
 
 spiders = [
-    HockeyMonkeyUSStickSpider,
-    PureHockeyStickSpider,
+    BauerHockeyUSSpider,
+    CCMHockeyUSSpider,
+    DiscountHockeySpider,
+    HockeyMonkeyUSSpider,
+    IceWarehouseSpider,
+    PeranisHockeyWorldSpider,
+    PureHockeySpider,
 ]
 spider_names = [spider.name for spider in spiders]
 logger.info(f"Spiders scheduled to crawl: {spider_names}")

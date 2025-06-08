@@ -6,27 +6,24 @@ import scrapy
 from scrapers.stick_scraper.src.items import Price, PriceLoader
 from scrapers.stick_scraper.src.utils import read_json
 
+urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
 
-class IceWarehouseStickSpider(scrapy.Spider):
+
+class IceWarehouseSpider(scrapy.Spider):
     name = "iceWarehouse"
     website_name = "Ice Warehouse"
     country = "US"
     base_url = "https://www.icewarehouse.com/"
-    start_urls = [
-        base_url + "CCM_Jetspeed_FT7_Pro/descpage-JFT7P.html",
-    ]
+    start_urls = urls[name].keys()
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
-    url_map = read_json(
-        Path(__file__).parent.parent.parent / "expressions/url_map.json"
-    )
 
     def parse(self, response):
         """
         Extract price
         """
         # Get stick id based on url
-        stick_id = self.url_map[response.url]
+        stick_id = urls[self.name][response.url]
 
         # Load item
         l = PriceLoader(item=Price(), selector=response)

@@ -20,6 +20,7 @@ dependencies = [
     "psycopg2-binary (>=2.9.10,<3.0.0)",
     "chompjs (>=1.3.1,<2.0.0)",
     "rapidfuzz (>=3.13.0,<4.0.0)",
+    "scrapy-playwright (>=0.0.43,<0.0.44)",
 ]
 
 [tool.poetry]

@@ -6,8 +6,10 @@ import scrapy
 from scrapers.stick_scraper.src.items import Price, PriceLoader
 from scrapers.stick_scraper.src.utils import read_json
 
+urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
 
-class BauerHockeyStickUSSpider(scrapy.Spider):
+
+class BauerHockeyUSSpider(scrapy.Spider):
     """
     Bauer is a bitch and holds all their data behind js. Not able to get any
     category or product links so for this scraper we hardcode each category page
@@ -18,14 +20,9 @@ class BauerHockeyStickUSSpider(scrapy.Spider):
     website_name = "Bauer Hockey (US)"
     country = "US"
     base_url = "https://www.bauer.com/"
-    start_urls = [
-        base_url + "products/vapor-hyperlite2-stick-senior",
-    ]
+    start_urls = urls[name].keys()
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
-    url_map = read_json(
-        Path(__file__).parent.parent.parent / "expressions/url_map.json"
-    )
 
     def parse(self, response):
         """
@@ -33,7 +30,7 @@ class BauerHockeyStickUSSpider(scrapy.Spider):
         This spider will crash if it can't find price.
         """
         # Get stick id based on url
-        stick_id = self.url_map[response.url]
+        stick_id = urls[self.name][response.url]
 
         # Load item
         l = PriceLoader(item=Price(), selector=response)

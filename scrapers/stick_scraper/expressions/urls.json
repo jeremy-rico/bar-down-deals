@@ -1,0 +1,39 @@
+{
+  "bauerHockeyUS": {
+    "https://www.bauer.com/products/vapor-hyperlite2-stick-senior": 7
+  },
+
+  "ccmHockeyUS": {
+    "https://us.ccmhockey.com/Sticks/Shop-All-Sticks/Jetspeed/HSFT8P-SR.html": 6,
+    "https://us.ccmhockey.com/Sticks/Shop-By-Age-Group/Senior-Sticks/HSVZ24-SR.html": 8
+  },
+
+  "discountHockey": {
+    "https://www.discounthockey.com/products/ccm-hsft7-sr?variant=40891671937087": 1,
+    "https://www.discounthockey.com/products/ccm-jetspeed-ft8-pro-senior-ice-hockey-stick?variant=41738321231935": 6,
+    "https://www.discounthockey.com/products/bauer-vapor-hyperlite2-senior-ice-hockey-stick?variant=40101708169279": 7
+  },
+  "hockeyMonkeyUS": {
+    "https://www.hockeymonkey.com/ccm-hockey-stick-jetspeed-ft7-pro-sr.html": 1,
+    "https://www.hockeymonkey.com/ccm-hockey-stick-jetspeed-ft8-pro-sr.html": 6,
+    "https://www.hockeymonkey.com/bauer-hockey-stick-vapor-hyperlite-2-sr.html": 7,
+    "https://www.hockeymonkey.com/ccm-hockey-stick-vizion-s24-sr.html": 8
+  },
+  "iceWarehouse": {
+    "https://www.icewarehouse.com/CCM_Jetspeed_FT7_Pro/descpage-JFT7P.html": 1,
+    "https://www.icewarehouse.com/CCM_Jetspeed_FT8_Pro/descpage-JFT8P.html": 6,
+    "https://www.icewarehouse.com/CCM_Vizion/descpage-HSVZ.html": 8
+  },
+  "peranisHockeyWorld": {
+    "https://www.hockeyworld.com/CCM-Jetspeed-FT7-Hockey-Stick-Sr": 1,
+    "https://www.hockeyworld.com/CCM-Jetspeed-FT8-Pro-Hockey-Stick-Sr": 6,
+    "https://www.hockeyworld.com/BAUER-Hyperlite-2-Hockey-Stick-Sr": 7,
+    "https://www.hockeyworld.com/CCM-Vizion-Hockey-Stick-Sr": 8
+  },
+  "pureHockey": {
+    "https://www.purehockey.com/product/ccm-jetspeed-ft7-pro-grip-composite-hockey-stick-senior/itm/63165-41/": 1,
+    "https://www.purehockey.com/product/ccm-jetspeed-ft8-pro-grip-composite-hockey-stick-senior/itm/66527-41/": 6,
+    "https://www.purehockey.com/product/bauer-vapor-hyperlite-2-grip-composite-hockey-stick-senior/itm/56898-41/": 7,
+    "https://www.purehockey.com/product/ccm-vizion-composite-hockey-stick-senior/itm/64457-41/": 8
+  }
+}

@@ -43,6 +43,12 @@ DATABASE_URL = URL.create(
 SCRAPERAPI_KEY = get_ssm_param("SCRAPERAPI_KEY", "", secure=True)
 EXCHANGERATE_API_KEY = "1e9c7bb50981cf7a407fd86f"
 
+# Add for playwright functionality
+DOWNLOAD_HANDLERS = {
+    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+}
+
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {

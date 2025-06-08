@@ -5,23 +5,18 @@ import scrapy
 from scrapers.stick_scraper.src.items import Price, PriceLoader
 from scrapers.stick_scraper.src.utils import read_json
 
+urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
 
-class HockeyMonkeyUSStickSpider(scrapy.Spider):
+
+class HockeyMonkeyUSSpider(scrapy.Spider):
 
     name = "hockeyMonkeyUS"
     website_name = "Hockey Monkey (US)"
     country = "US"
     base_url = "https://www.hockeymonkey.com/"
-    start_urls = [
-        base_url + "ccm-hockey-stick-jetspeed-ft7-pro-sr.html",
-        base_url + "ccm-hockey-stick-jetspeed-ft8-pro-sr.html",
-        base_url + "bauer-hockey-stick-vapor-hyperlite-2-sr.html",
-    ]
+    start_urls = urls[name].keys()
     exp = read_json(
         Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
-    )
-    url_map = read_json(
-        Path(__file__).parent.parent.parent / "expressions/url_map.json"
     )
 
     def parse(self, response):
@@ -29,7 +24,7 @@ class HockeyMonkeyUSStickSpider(scrapy.Spider):
         Extract price
         """
         # Get stick id based on url
-        stick_id = self.url_map[response.url]
+        stick_id = urls[self.name][response.url]
 
         # Load item
         l = PriceLoader(item=Price(), selector=response)
