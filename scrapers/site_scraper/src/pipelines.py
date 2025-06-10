@@ -174,13 +174,16 @@ class PostgresPipeline:
         )
 
         # Convert currency if necessary
+        # All prices in the db should be stored as USD
         if item.get("currency") != "USD":
             item["price"] = convert_to_usd(
-                float(item.get("price")), item.get("currency")
+                self.session, float(item.get("price")), item.get("currency")
             )
             if item.get("original_price"):
                 item["original_price"] = convert_to_usd(
-                    float(item.get("original_price")), item.get("currency")
+                    self.session,
+                    float(item.get("original_price")),
+                    item.get("currency"),
                 )
 
         stmt = (

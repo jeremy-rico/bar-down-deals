@@ -14,6 +14,8 @@ class PureHockeySpider(scrapy.Spider):
     base_url = "https://www.purehockey.com/"
     start_urls = [
         base_url + "c/hockey-equipment-sale",
+        base_url
+        + "c/hockey-clearance-accessories?category_2=Accessories%2fMouth%20Guards%2cAccessories%2fStick%20Accessories%2cSkate%20Accessories%2fRunners%2cSkate%20Accessories%2fSkate%20Guards%2cSkate%20Accessories%2fInsoles%2cSkate%20Accessories%2fInline%20Skate%20Hardware%2cSkate%20Accessories%2fInline%20Player%20Wheels%2cSkate%20Accessories%2fHolders%2cSkate%20Accessories%2fHardware%2cHelmets%2fFacemasks%2fShields",
     ]
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
@@ -23,14 +25,22 @@ class PureHockeySpider(scrapy.Spider):
         Starting from the clearance page, explore each category link.
         """
         category_links = response.css(self.exp["category_links"]["css"])
-        yield from response.follow_all(category_links, self.parse_products)
+        if category_links:
+            yield from response.follow_all(category_links, self.parse)
+        else:
+            yield from self.parse_products(response)
 
     def parse_products(self, response):
         """
         Parse all items in category page
         """
-        # NOTE: Skip apparel, its too much clutter
-        if response.url.endswith("hockey-apparel-sale"):
+        # NOTE: Skip apparel page completely, skip default accessories page in
+        # favor of filtered on in the start_urls above
+        skip = [
+            "https://www.purehockey.com/c/hockey-apparel-sale",
+            "https://www.purehockey.com/c/hockey-clearance-accessories",
+        ]
+        if response.url in skip:
             return
 
         # Get tags from url

@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 
 # ============================== Stick Models ===================================
 class StickBase(SQLModel):
-    model_name: str = Field(max_length=255, index=True)
+    model_name: str = Field(max_length=255)
+    slug: str = Field(max_length=255, index=True)
     brand: str | None = Field(max_length=64)
     line: str = Field(max_length=255)
     msrp: Decimal = Field(max_digits=10, decimal_places=2)
@@ -19,16 +20,18 @@ class StickBase(SQLModel):
         max_digits=10,
         decimal_places=2,
     )
-    currency: str = Field(max_length=3, default="USD")
     discount: Decimal | None = Field(max_digits=4, decimal_places=2)
-    price_drop: bool = Field()
-    historical_low: bool = Field()
+    currency: str = Field(max_length=3, default="USD")
     description: str = Field()
     handedness: str = Field(max_length=16)
     flex: int = Field()
+    flex_options: str | None = Field(max_length=32, default=None)
     curve: str = Field(max_length=16)
+    curve_options: str | None = Field(max_length=32, default=None)
     size: str = Field(max_length=16)
     kickpoint: str = Field(max_length=16)
+    price_drop: bool = Field(default=False)
+    historical_low: bool = Field(default=False)
     release_year: int = Field()
 
 
@@ -40,13 +43,18 @@ class Stick(StickBase, table=True):
     price_history: list["StickPrice"] = Relationship(
         back_populates="stick",
         cascade_delete=True,
-        # sa_relationship_kwargs={"lazy": "selectin"},
     )
 
     images: list["StickImage"] = Relationship(
         back_populates="stick",
         cascade_delete=True,
         sa_relationship_kwargs={"lazy": "selectin"},
+    )
+
+    # Used for scraping
+    urls: list["StickURL"] = Relationship(
+        back_populates="stick",
+        cascade_delete=True,
     )
 
 
@@ -63,7 +71,7 @@ class StickResponse(StickBase):
 
 # =========================== Stick Images Models =============================
 class StickImageBase(SQLModel):
-    url: str = Field(max_length=255, unique=True)
+    url: str = Field(max_length=255)
 
 
 class StickImage(StickImageBase, table=True):
@@ -101,10 +109,6 @@ class StickPrice(StickPriceBase, table=True):
     )
 
 
-class StickPriceCreate(StickPriceBase):
-    pass
-
-
 class StickPriceResponse(StickPriceBase):
     id: int
     website: "WebsiteResponse"
@@ -123,7 +127,24 @@ class HistoricalPrice(BaseModel):
     min_price: Decimal = Field(max_digits=10, decimal_places=2)
 
 
-# =============================== Filter Query Model ==========================
+# =============================== Stick URL Model ==========================
+class StickURLBase(SQLModel):
+    url: str = Field(max_length=255)
+    spider_name: str = Field(max_length=32, index=True)
+
+
+class StickURL(StickURLBase, table=True):
+    """
+    This table is for managing urls to be scraped by the spiders. It is not
+    directly used by the api.
+    """
+
+    id: int | None = Field(default=None, primary_key=True)
+    stick_id: int = Field(foreign_key="stick.id", ondelete="CASCADE")
+    stick: "Stick" = Relationship(back_populates="urls")
+
+
+# =============================== Query Param Model ==========================
 class SticksQueryParams(BaseModel):
     """
     Query parameter for sticks endpoint
@@ -148,6 +169,7 @@ class SticksQueryParams(BaseModel):
     ] = "Alphabetical"
     page: int = Field(1, ge=1)
     limit: int = Field(24, gt=0, le=100)
+    size: Literal["Senior", "Intermediate", "Junior", "Youth"] = "Senior"
     brand: str | None = Field(default=None)
     country: Literal["US", "CA"] | None = Field(default=None)
     min_price: int = Field(0, ge=0)
@@ -155,7 +177,12 @@ class SticksQueryParams(BaseModel):
     currency: str = Field(max_length=3, default="USD")
 
 
-class StickQueryParams(BaseModel):
+class StickIDQueryParams(BaseModel):
+    currency: str = Field(max_length=3, default="USD")
+
+
+class StickNameQueryParams(BaseModel):
+    size: Literal["Senior", "Intermediate", "Junior", "Youth"] = "Senior"
     currency: str = Field(max_length=3, default="USD")
 
 

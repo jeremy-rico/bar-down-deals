@@ -1,14 +1,10 @@
 import json
-import logging
 import re
-import sys
 from pathlib import Path
 
 from api.src.currencies.models import ExchangeRate
+from sqlalchemy.orm import Session
 from sqlmodel import col, select
-
-from scrapers.site_scraper.src.database import get_session
-from scrapers.site_scraper.src.settings import LOG_LEVEL
 
 
 def clean_price(s: str) -> str | None:
@@ -68,9 +64,8 @@ def read_json(jsonPath: Path) -> dict:
         return json.load(f)
 
 
-def convert_to_usd(amount: float, base_currency: str) -> float:
+def convert_to_usd(session: Session, amount: float, base_currency: str) -> float:
 
-    session = get_session()
     stmt = select(col(ExchangeRate.rate)).where(
         ExchangeRate.target_currency == base_currency
     )

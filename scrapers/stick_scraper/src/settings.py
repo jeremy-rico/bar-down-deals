@@ -44,10 +44,12 @@ SCRAPERAPI_KEY = get_ssm_param("SCRAPERAPI_KEY", "", secure=True)
 EXCHANGERATE_API_KEY = "1e9c7bb50981cf7a407fd86f"
 
 # Add for playwright functionality
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-}
+# DOWNLOAD_HANDLERS = {
+#     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+#     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+# }
+# # Default is 30000ms
+# PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 60000
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
@@ -63,8 +65,16 @@ DOWNLOADER_MIDDLEWARES = {
     # "scraper.src.middlewares.ScraperApiProxyMiddleware": 350,
     # "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 400,
 }
+
+ITEM_PIPELINES = {
+    # "scrapy.pipelines.images.ImagesPipeline": 1,
+    # Don't need to scrape images with this scraper
+    # "scrapers.stick_scraper.src.pipelines.CustomImagePipeline": 1,
+    "scrapers.stick_scraper.src.pipelines.PostgresPipeline": 300,
+}
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = "scraper (+http://www.yourdomain.com)"
+USER_AGENT = "scraper (+https://www.bardowndeals.com)"
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
@@ -116,18 +126,13 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    # "scrapy.pipelines.images.ImagesPipeline": 1,
-    "scrapers.stick_scraper.src.pipelines.CustomImagePipeline": 1,
-    "scrapers.stick_scraper.src.pipelines.PostgresPipeline": 300,
-}
 
 # AWS configuration
-IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
-S3_HOST = "https://bar-down-deals-bucket.s3.us-west-1.amazonaws.com/images/"
-AWS_REGION = "us-west-1"
-AWS_ACCESS_KEY_ID = None
-AWS_SECRET_ACCESS_KEY = None
+# IMAGES_STORE = "s3://bar-down-deals-bucket/images/"
+# S3_HOST = "https://bar-down-deals-bucket.s3.us-west-1.amazonaws.com/images/"
+# AWS_REGION = "us-west-1"
+# AWS_ACCESS_KEY_ID = None
+# AWS_SECRET_ACCESS_KEY = None
 
 
 # Enable and configure the AutoThrottle extension

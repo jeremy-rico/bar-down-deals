@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 # shared model definitions
 from api.src.deals.models import Website
 from api.src.sticks.models import Stick, StickPrice
+from api.src.products.models import Product
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter

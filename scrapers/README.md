@@ -39,7 +39,7 @@ poetry env info
 2. Navigate to the env's site-packages directory
 
 ```bash
-cd <env_path>/lib/python3.11/site-packages/
+cd <env_path>/lib/python3.<xx>/site-packages/
 ```
 
 3. add a new .pth file (any name is fine) with the absolute path to the

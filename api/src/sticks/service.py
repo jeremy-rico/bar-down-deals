@@ -13,6 +13,7 @@ class StickService:
         sort: str,
         page: int,
         limit: int,
+        size: str,
         brand: str | None,
         min_price: int,
         max_price: int | None,
@@ -28,6 +29,7 @@ class StickService:
             sort=sort,
             page=page,
             limit=limit,
+            size=size,
             brand=brand,
             min_price=min_price,
             max_price=max_price,
@@ -41,7 +43,7 @@ class StickService:
 
         image_map = {image.stick_id: image.image_urls for image in images}
 
-        # Attach prices and construct response
+        # Attach images and construct response
         sticks_response = []
         for stick in sticks:
             # Get images
@@ -51,17 +53,42 @@ class StickService:
 
         return sticks_response
 
-    async def get_stick(self, stick_id: int, currency: str) -> StickResponse:
+    async def get_stick_by_id(self, stick_id: int, currency: str) -> StickResponse:
         """Get stick by ID.
 
         Args:
             stick_id: Stick ID
+            currency: currency to return price in
 
         Returns:
             StickResponse: Stick data
         """
+        from decimal import Decimal
+
         stick = await self.repository.get_by_id(stick_id=stick_id, currency=currency)
         images = await self.repository.get_images(stick_id)
+        stick_data = stick.model_dump()
+        stick_data["images"] = images
+
+        return StickResponse.model_validate(stick_data)
+
+    async def get_stick_by_slug(
+        self, stick_slug: str, stick_size: str, currency: str
+    ) -> StickResponse:
+        """Get stick by name.
+
+        Args:
+            stick_slug: stick slug
+            size: stick age group
+            currency: currency to return price in
+
+        Returns:
+            StickResponse: Stick data
+        """
+        stick = await self.repository.get_by_slug(
+            stick_slug=stick_slug, stick_size=stick_size, currency=currency
+        )
+        images = await self.repository.get_images(stick.id)
         stick_data = stick.model_dump()
         stick_data["images"] = images
 

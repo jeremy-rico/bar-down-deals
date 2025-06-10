@@ -3,9 +3,10 @@ from pathlib import Path
 import scrapy
 
 from scrapers.stick_scraper.src.items import Price, PriceLoader
-from scrapers.stick_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.utils import get_urls, read_json
 
-urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
+urls = get_urls("discountHockey")
+# urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
 
 
 class DiscountHockeySpider(scrapy.Spider):
@@ -13,7 +14,7 @@ class DiscountHockeySpider(scrapy.Spider):
     website_name = "Discount Hockey"
     country = "US"
     base_url = "https://discounthockey.com/"
-    start_urls = urls[name].keys()
+    start_urls = list(urls.keys())
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
 
@@ -23,7 +24,7 @@ class DiscountHockeySpider(scrapy.Spider):
         Parse all items from the All Clearance Items page.
         """
         # Get stick id based on url
-        stick_id = urls[self.name][response.url]
+        stick_id = urls[response.url]
 
         # Load item
         l = PriceLoader(item=Price(), selector=response)

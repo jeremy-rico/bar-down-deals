@@ -11,8 +11,9 @@ from src.sticks.models import (
     CurrentPricesQueryParams,
     HistoricalPrice,
     PriceHistoryQueryParams,
+    StickIDQueryParams,
+    StickNameQueryParams,
     StickPriceResponse,
-    StickQueryParams,
     StickResponse,
     SticksQueryParams,
 )
@@ -46,6 +47,7 @@ async def get_sticks(
             sort=query_params.sort,
             page=query_params.page,
             limit=query_params.limit,
+            size=query_params.size,
             brand=query_params.brand,
             min_price=query_params.min_price,
             max_price=query_params.max_price,
@@ -59,22 +61,43 @@ async def get_sticks(
         raise
 
 
-@router.get("/{stick_id}", response_model=StickResponse)
-async def get_stick(
-    query_params: Annotated[StickQueryParams, Query()],
+@router.get("/id/{stick_id}", response_model=StickResponse)
+async def get_stick_by_id(
+    query_params: Annotated[StickIDQueryParams, Query()],
     stick_id: int,
     service: StickService = Depends(get_stick_service),
 ) -> StickResponse:
     """Get Stick by ID."""
     logger.debug(f"Fetching Stick {stick_id}")
     try:
-        stick = await service.get_stick(
+        stick = await service.get_stick_by_id(
             stick_id=stick_id, currency=query_params.currency
         )
         logger.info(f"Retrieved stick {stick_id}")
         return stick
     except Exception as e:
         logger.error(f"Failed to fetch stick {stick_id}: {str(e)}")
+        raise
+
+
+@router.get("/slug/{stick_slug}", response_model=StickResponse)
+async def get_stick_by_slug(
+    query_params: Annotated[StickNameQueryParams, Query()],
+    stick_slug: str,
+    service: StickService = Depends(get_stick_service),
+) -> StickResponse:
+    """Get Stick by ID."""
+    logger.debug(f"Fetching stick {stick_slug}")
+    try:
+        stick = await service.get_stick_by_slug(
+            stick_slug=stick_slug,
+            stick_size=query_params.size,
+            currency=query_params.currency,
+        )
+        logger.info(f"Retrieved stick {stick_slug}")
+        return stick
+    except Exception as e:
+        logger.error(f"Failed to fetch stick {stick_slug}: {str(e)}")
         raise
 
 

@@ -19,6 +19,17 @@ class PureHockeySpider(scrapy.Spider):
         Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     )
 
+    def start_requests(self):
+        """
+        Enable playwright
+        """
+        for url in self.start_urls:
+            yield scrapy.Request(
+                url,
+                callback=self.parse,
+                meta={"playwright": True},
+            )
+
     def parse(self, response):
         """
         Extract product name, price, currency

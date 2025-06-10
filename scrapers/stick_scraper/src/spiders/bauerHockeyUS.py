@@ -1,12 +1,16 @@
 import re
 from pathlib import Path
 
+import chompjs
 import scrapy
 
 from scrapers.stick_scraper.src.items import Price, PriceLoader
-from scrapers.stick_scraper.src.utils import read_json
+from scrapers.stick_scraper.src.utils import get_urls, read_json
 
-urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
+# urls = get_urls("bauerHockeyUS")
+# urls = read_json(Path(__file__).parent.parent.parent / "expressions/urls.json")
+
+urls = get_urls("bauerHockeyUS")
 
 
 class BauerHockeyUSSpider(scrapy.Spider):
@@ -20,7 +24,7 @@ class BauerHockeyUSSpider(scrapy.Spider):
     website_name = "Bauer Hockey (US)"
     country = "US"
     base_url = "https://www.bauer.com/"
-    start_urls = urls[name].keys()
+    start_urls = []
     jsonPath = Path(__file__).parent.parent.parent / "expressions" / str(name + ".json")
     exp = read_json(jsonPath)
 
@@ -30,22 +34,21 @@ class BauerHockeyUSSpider(scrapy.Spider):
         This spider will crash if it can't find price.
         """
         # Get stick id based on url
-        stick_id = urls[self.name][response.url]
+        stick_id = 0
+        # stick_id = urls[self.name][response.url]
 
         # Load item
         l = PriceLoader(item=Price(), selector=response)
-
-        # Get all products on page
-        script = response.xpath(self.exp["script"]).get()
-        match = re.search(r"\d+\.\d{2}", script)
-        if match:
-            price = match.group(0)
-            l.add_value("price", price)
-            print(match)
 
         # Add values
         l.add_value("stick_id", stick_id)
         l.add_value("currency", "USD")
         l.add_value("url", response.url)
+
+        # Get prices for all size in this order
+        # S, I, J, Y
+        price = response.css(self.exp["prices"]).getall()
+        price_senior = price[0]
+        l.add_value("price", price_senior)
 
         yield l.load_item()

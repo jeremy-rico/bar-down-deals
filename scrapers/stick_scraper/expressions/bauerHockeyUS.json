@@ -1,3 +1,4 @@
 {
-  "script": "//script[@type=\"module\" and @dynamic]/text()"
+  "script": "//script[@type=\"module\" and @dynamic]/text()",
+  "prices": "section.page-width span.product__sibling-variant-price::text"
 }

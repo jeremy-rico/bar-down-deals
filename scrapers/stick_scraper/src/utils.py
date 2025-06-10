@@ -5,7 +5,9 @@ from pathlib import Path
 
 import requests
 from api.src.currencies.models import ExchangeRate
-from api.src.sticks.models import Stick, StickPrice
+from api.src.deals.models import Website  # need because StickPrice
+from api.src.products.models import Product  # need because Website
+from api.src.sticks.models import Stick, StickPrice, StickURL
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import col, func, select
 
@@ -59,13 +61,13 @@ def get_discount(sale_price: float, original_price: float | None) -> float | Non
         original_price: original price of the item
 
     Returns:
-        float: discount percentage
+        float: discount percentage, rounded to two decimal places
         None: if no original_price
     """
     if not original_price:
         return None
     sale_price, original_price = float(sale_price), float(original_price)
-    return (original_price - sale_price) / original_price * 100
+    return round((original_price - sale_price) / original_price * 100, 2)
 
 
 def read_json(jsonPath: Path) -> dict:
@@ -121,17 +123,18 @@ def update_sticks() -> None:
             result = session.execute(stmt)
             historical_low_price = result.scalar()
 
-            # Set historical low bool
+            # Set historical low
             if latest_price < historical_low_price:
                 stick.historical_low = True
 
             logger.info(f"Found new price {latest_price} for stick {stick.id}")
         elif latest_price > stick.price:
-            # Reset if now drop
+            # Reset if price increased
             stick.price_drop = False
             stick.historical_low = False
 
         stick.price = latest_price
+        stick.discount = round((stick.msrp - stick.price) / stick.msrp * 100, 2)
         stick.updated_at = datetime.now(timezone.utc)
 
         session.add(stick)
@@ -197,3 +200,21 @@ def convert_to_usd(amount: float, base_currency: str) -> float:
         raise ValueError(f"No rate found for {base_currency}")
 
     return round(amount * (1 / float(rate)), 2)
+
+
+def get_urls(spider_name: str) -> dict[str, int]:
+    """
+    Get urls for spider to scrape stored in db
+
+    Args:
+        spider_name: str
+
+    Returns:
+        dict: url, stick_id
+    """
+
+    session = get_session()
+    stmt = select(StickURL).where(StickURL.spider_name == spider_name)
+    result = session.execute(stmt)
+    stick_urls = result.scalars().all()
+    return {stick_url.url: stick_url.stick_id for stick_url in stick_urls}

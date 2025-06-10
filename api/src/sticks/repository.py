@@ -39,6 +39,7 @@ class StickRepository:
         sort: str,
         page: int,
         limit: int,
+        size: str,
         brand: str | None,
         min_price: int | None,
         max_price: int | None,
@@ -52,6 +53,7 @@ class StickRepository:
         """
         # Create filters
         filters = []
+        filters.append(Stick.size == size)
         if brand:
             filters.append(Stick.brand == brand)
         if min_price:
@@ -60,7 +62,7 @@ class StickRepository:
             filters.append(Stick.price <= max_price)
 
         # Main query
-        stmt = select(Stick).filter(*filters).distinct()
+        stmt = select(Stick).filter(*filters)
 
         # Sorting
         if sort == "Oldest":
@@ -87,8 +89,7 @@ class StickRepository:
         sticks = list(result.scalars().all())
         for stick in sticks:
             stick.price = await convert_currency(self.session, stick.price, currency)
-            if stick.msrp:
-                stick.msrp = await convert_currency(self.session, stick.msrp, currency)
+            stick.msrp = await convert_currency(self.session, stick.msrp, currency)
 
         return sticks
 
@@ -111,6 +112,38 @@ class StickRepository:
 
         if not stick:
             raise NotFoundException(f"Stick with id {stick_id} not found")
+
+        stick.price = await convert_currency(self.session, stick.price, currency)
+        stick.msrp = await convert_currency(self.session, stick.msrp, currency)
+
+        return stick
+
+    async def get_by_slug(
+        self, stick_slug: str, stick_size: str, currency: str
+    ) -> Stick:
+        """Get stick by slug and size.
+
+        Args:
+            stick_slug: Stick slug
+            size: age group
+            currency: target currency
+
+        Returns:
+            Stick: Found stick
+
+        Raises:
+            NotFoundException: If stick not found
+        """
+        stmt = select(Stick).where(
+            col(Stick.slug) == stick_slug, col(Stick.size) == stick_size
+        )
+        result = await self.session.execute(stmt)
+        stick = result.scalar_one_or_none()
+
+        if not stick:
+            raise NotFoundException(
+                f"Stick with name {stick_slug} and size {stick_size} not found"
+            )
 
         stick.price = await convert_currency(self.session, stick.price, currency)
         stick.msrp = await convert_currency(self.session, stick.msrp, currency)

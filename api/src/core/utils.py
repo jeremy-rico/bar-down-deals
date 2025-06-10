@@ -14,7 +14,7 @@ async def convert_currency(
     session: AsyncSession, amount_usd: Decimal, target_currency: str
 ) -> Decimal:
     """
-    Converts specifies amount USD to target currency
+    Converts specified amount from USD to target currency
     """
 
     if target_currency == "USD":
@@ -35,7 +35,7 @@ async def convert_currency(
     if not rate_obj:
         raise HTTPException(status_code=503, detail="Exchange rate not available")
 
-    return round(amount_usd * rate_obj.rate, 2)
+    return Decimal(round(amount_usd * rate_obj.rate, 2))
 
 
 def run_migrations():
